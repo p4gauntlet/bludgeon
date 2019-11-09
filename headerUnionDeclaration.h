@@ -1,0 +1,43 @@
+#ifndef _HEADERUNIONDECLARATION_H_
+#define _HEADERUNIONDECLARATION_H_
+
+#include "ir/ir.h"
+
+#include "scope.h"
+#include "structFieldList.h"
+
+#include "common.h"
+
+
+namespace CODEGEN {
+
+
+class headerUnionDeclaration {
+public:
+	const char* types[0] = {
+	};
+
+	headerUnionDeclaration() {
+	}
+
+	static IR::Type_HeaderUnion* gen() {
+		IR::ID name;
+		name.name = CODEGEN::randstr(6);
+
+		auto sfl = new structFieldList(HEADER_UNION);
+		IR::IndexedVector< IR::StructField > fields = sfl->gen(rand()%10+1);
+		auto ret = new IR::Type_HeaderUnion(name, fields);
+
+		P4Scope::add_to_scope(ret);
+
+		return ret;
+	}
+};
+
+
+} // namespace CODEGEN
+
+
+
+
+#endif
