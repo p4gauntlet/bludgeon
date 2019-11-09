@@ -22,8 +22,7 @@ public:
 	}
 
 	IR::StructField* gen() {
-		IR::ID name;
-		name.name = CODEGEN::randstr(4);
+		IR::ID* name = new IR::ID(CODEGEN::randstr(4));
 
 		auto t_ref = new typeRef(for_type);
 		IR::Type* tp = t_ref->gen();
@@ -31,7 +30,7 @@ public:
 		if (tp == nullptr) {
 			return nullptr;
 		}
-		return new IR::StructField(name, tp);
+		return new IR::StructField(*name, tp);
 	}
 };
 

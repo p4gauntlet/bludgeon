@@ -23,12 +23,24 @@ public:
 		"tupleType" // not
 	};
 
+	bool if_random;
+	std::vector<int> type;
 	cstring for_type;
 
-	typeRef(cstring for_type) : for_type(for_type) {
+	typeRef(bool if_rand, std::vector<int> &type, cstring for_type) : 
+		if_random(if_rand),
+		type(type),
+		for_type(for_type) {
+	}
+
+	IR::Type* gen_not_rand() {
+		IR::Type* tp = 
 	}
 
 	IR::Type* gen() {
+		if (if_rand == false) {
+			return gen_not_rand();
+		}
 		int num_trials = 100;
 		IR::Type* tp = nullptr;
 		while (num_trials--) {
