@@ -34,6 +34,9 @@ public:
 
 
 	IR::Node* gen();
+	IR::Node* gen_act();
+	IR::Node* gen_struct();
+	IR::Node* gen_t_enum();
 
 };
 

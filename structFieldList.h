@@ -35,6 +35,8 @@ public:
 			
 			// we check the filed name and type here
 			if (fields_name.find(sf->name.name) != fields_name.end()) {
+				delete struct_field;
+				delete sf;
 				continue;
 			}
 
@@ -43,6 +45,8 @@ public:
 				auto tpn = sf->type->to<IR::Type_Name>();
 				hdr_tpn = tpn->path->name.name;
 				if (fields_type.find(hdr_tpn) != fields_type.end()) {
+					delete struct_field;
+					delete sf;
 					continue;
 				}
 			}

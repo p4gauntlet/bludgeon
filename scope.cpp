@@ -3,6 +3,7 @@
 namespace CODEGEN {
 
 std::vector< IR::Vector<IR::Node>* > P4Scope::scope;
+std::set<cstring> P4Scope::used_names;
 
 void P4Scope::add_to_scope(IR::Node* n) {
 	auto l_scope = P4Scope::scope.back();

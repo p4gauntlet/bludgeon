@@ -20,12 +20,12 @@ public:
 	}
 
 	static IR::Type_Header* gen() {
-		IR::ID name;
-		name.name = CODEGEN::randstr(6);
 
+		IR::ID *name;
+		name = new IR::ID(CODEGEN::randstr(6));
 		auto sfl = new structFieldList(HEADER);
 		IR::IndexedVector< IR::StructField > fields = sfl->gen(rand()%10+1);
-		auto ret = new IR::Type_Header(name, fields);
+		auto ret = new IR::Type_Header(*name, fields);
 
 		P4Scope::add_to_scope(ret);
 

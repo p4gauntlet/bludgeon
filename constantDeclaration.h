@@ -3,8 +3,9 @@
 
 #include "ir/ir.h"
 
+#include "codegen.h"
 #include "expression.h"
-#include "typeRef.h"
+#include "baseType.h"
 
 namespace CODEGEN {
 
@@ -23,6 +24,19 @@ public:
 
 
 	IR::Declaration_Constant* gen() {
+		std::vector<int> type;
+		auto base_type = new baseType(true, type);
+		tp = base_type->gen();
+
+		if (tp->is<IR::Type_Boolean>()) {
+			auto ex = new expression(0);
+			expr = ex->gen();
+		} else {
+			auto ex = new expression(1);
+			expr = ex->gen();
+		}
+
+		return new IR::Declaration_Constant(*name, tp, expr);
 	}
 };
 

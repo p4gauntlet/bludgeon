@@ -24,7 +24,8 @@ public:
 	IR::StructField* gen() {
 		IR::ID* name = new IR::ID(CODEGEN::randstr(4));
 
-		auto t_ref = new typeRef(for_type);
+		std::vector<int> type;
+		auto t_ref = new typeRef(true, type, for_type);
 		IR::Type* tp = t_ref->gen();
 
 		if (tp == nullptr) {

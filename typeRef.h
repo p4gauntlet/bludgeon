@@ -31,25 +31,27 @@ public:
 		if_random(if_rand),
 		type(type),
 		for_type(for_type) {
-	}
 
-	IR::Type* gen_not_rand() {
-		IR::Type* tp = 
 	}
 
 	IR::Type* gen() {
-		if (if_rand == false) {
-			return gen_not_rand();
-		}
 		int num_trials = 100;
 		IR::Type* tp = nullptr;
 		while (num_trials--) {
-			switch (rand()%3) {
+			int t;
+			if (if_random == false) {
+				t = type.at(rand()%type.size());
+			} else {
+				t = rand()%3;
+			}
+			switch (t) {
 				case 0: {
 							if (for_type == HEADER_UNION) {
 								break;
 							}
-							tp = baseType::gen(); break;
+							std::vector<int> b_types;
+							auto base_type = new baseType(true, b_types);
+							tp = base_type->gen(); break;
 						}
 				case 1: {
 							auto type_name = new typeName(for_type);

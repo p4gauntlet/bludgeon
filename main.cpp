@@ -31,11 +31,21 @@ int main(int argc, char **argv) {
 
 	auto objects = new IR::Vector<IR::Node>();
 	objects->push_back(cg->gen());
+	objects->push_back(cg->gen_struct());
+	objects->push_back(cg->gen());
+	objects->push_back(cg->gen_struct());
 	objects->push_back(cg->gen());
 	objects->push_back(cg->gen());
+	objects->push_back(cg->gen_struct());
 	objects->push_back(cg->gen());
 	objects->push_back(cg->gen());
-	objects->push_back(cg->gen());
+	objects->push_back(cg->gen_struct());
+	objects->push_back(cg->gen_act());
+	objects->push_back(cg->gen_act());
+	objects->push_back(cg->gen_act());
+	objects->push_back(cg->gen_t_enum());
+	objects->push_back(cg->gen_t_enum());
+	objects->push_back(cg->gen_t_enum());
 	IR::P4Program *program = new IR::P4Program(*objects);
 
 

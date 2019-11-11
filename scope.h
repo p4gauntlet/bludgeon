@@ -15,6 +15,7 @@ class P4Scope {
 public:
 
 	static std::vector< IR::Vector<IR::Node>* > scope;
+	static std::set<cstring> used_names;
 
 
 	P4Scope() {

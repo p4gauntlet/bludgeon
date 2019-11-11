@@ -26,11 +26,23 @@ public:
 		"VARBIT < (expression) >" // not
 	};
 
-	baseType() {
+	bool if_random;
+	std::vector<int> type;
+
+
+	baseType(bool if_rand, std::vector<int> &type) : 
+		if_random(if_rand), type(type) {
 	}
 
-	static IR::Type* gen() {
-		switch (rand()%4) {
+	IR::Type* gen() {
+		int t;
+		if (if_random == false) {
+			t = type.at(rand()%type.size());
+		}
+		else {
+			t = rand()%4;
+		}
+		switch (t) {
 			case 0: return bool_literal::gen(); // bool
 			case 1: return bit_literal::gen(false); // bit<>
 			case 2: return bit_literal::gen(true); // int<>
