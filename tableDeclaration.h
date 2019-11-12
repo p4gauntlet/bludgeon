@@ -4,6 +4,7 @@
 #include "ir/ir.h"
 
 #include "codegen.h"
+#include "keyElement.h"
 
 namespace CODEGEN {
 
@@ -21,6 +22,8 @@ public:
 		name = new IR::ID(CODEGEN::randstr(6));
 	}
 
+	IR::P4Table* gen() {
+	}
 };
 
 

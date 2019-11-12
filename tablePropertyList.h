@@ -3,6 +3,9 @@
 
 #include "ir/ir.h"
 
+
+#include "tableProperty.h"
+
 namespace CODEGEN {
 
 
@@ -18,11 +21,17 @@ public:
 	// 
 
 
-	IR::IndexedVector< IR::Property > tb_properties;
 
 	tablePropertyList() {
 	}
 
+	IR::IndexedVector< IR::Property > gen() {
+		IR::IndexedVector< IR::Property > tab_properties;
+
+
+
+		return tab_properties;
+	}
 };
 
 

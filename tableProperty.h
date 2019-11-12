@@ -6,6 +6,9 @@
 
 #include "codegen.h"
 
+#include "keyElementList.h"
+
+
 namespace CODEGEN {
 
 
@@ -14,13 +17,18 @@ public:
 	const char* types[0] = {
 	};
 
-	IR::ID* name;
-	IR::PropertyValue* val;
 
 	tableProperty() {
-		name = new IR::ID(CODEGEN::randstr(4));
 	}
 
+	IR::Property* gen_keys() {
+		IR::ID* name = new IR::ID("key");
+		auto key_gen = new keyElementList();
+		auto keys = key_gen->gen(4);
+
+		// isConstant ???
+		return new IR::Property(*name, keys, false);
+	}
 };
 
 
