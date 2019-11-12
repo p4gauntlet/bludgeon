@@ -39,6 +39,23 @@ void P4Scope::get_all_type_names(cstring filter, std::vector<cstring> &type_name
 	}
 }
 
+
+std::vector<const IR::P4Action*> P4Scope::get_p4actions() {
+	std::vector<const IR::P4Action*> ret;
+	for (auto i = scope.begin(); i<scope.end(); i++) {
+		for (size_t j=0; j< (*i)->size(); j++) {
+			auto obj = (*i)->at(j);
+
+			if (obj->is<IR::P4Action>()) {
+				const IR::P4Action* tmp_obj = obj->to<IR::P4Action>();
+				ret.push_back(tmp_obj);
+			}
+		}
+	}
+
+	return ret;
+}
+
 int P4Scope::get_num_type_header() {
 	int ret = 0;
 	for (auto i = scope.begin(); i<scope.end(); i++) {

@@ -35,6 +35,7 @@ public:
 	static void add_to_scope(IR::Node *n);
 	static void get_all_type_names(cstring filter, std::vector<cstring> &type_names);
 	static int get_num_type_header();
+	static std::vector<const IR::P4Action*> get_p4actions();
 	static void print_scope();
 };
 

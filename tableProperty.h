@@ -7,6 +7,7 @@
 #include "codegen.h"
 
 #include "keyElementList.h"
+#include "actionList.h"
 
 
 namespace CODEGEN {
@@ -21,14 +22,20 @@ public:
 	tableProperty() {
 	}
 
+	// Tao: note that we always tag the property as not const
 	IR::Property* gen_keys() {
 		IR::ID* name = new IR::ID("key");
 		auto key_gen = new keyElementList();
 		auto keys = key_gen->gen(4);
 
-		// isConstant ???
+		// isConstant --> false
 		return new IR::Property(*name, keys, false);
 	}
+
+	IR::Property* gen_act_lists() {
+		return nullptr;
+	}
+
 };
 
 

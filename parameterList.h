@@ -18,7 +18,7 @@ public:
 	std::set<cstring> params_name;
 	IR::IndexedVector< IR::Parameter > params;
 
-	parameterList(bool if_none_dir) :
+parameterList(bool if_none_dir) :
 		if_none_dir(if_none_dir) {
 	}
 

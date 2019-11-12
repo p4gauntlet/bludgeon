@@ -3,8 +3,9 @@
 
 #include "ir/ir.h"
 
-namespace CODEGEN {
+#include "scope.h"
 
+namespace CODEGEN {
 
 class actionList {
 public:
@@ -13,9 +14,12 @@ public:
 
 	actionList() {
 	}
+	
+
+	IR::ActionList* gen() {
+	}
 
 };
-
 
 } // namespace CODEGEN
 
