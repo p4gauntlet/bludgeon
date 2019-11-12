@@ -12,6 +12,14 @@ public:
 		"tableProperty"
 	};
 
+
+	// Keys
+	// Actions
+	// 
+
+
+	IR::IndexedVector< IR::Property > tb_properties;
+
 	tablePropertyList() {
 	}
 

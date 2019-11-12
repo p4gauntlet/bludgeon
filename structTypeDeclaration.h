@@ -6,6 +6,7 @@
 #include "common.h"
 #include "scope.h"
 
+#include "annotations.h"
 #include "structFieldList.h"
 
 

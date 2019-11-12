@@ -23,7 +23,7 @@ public:
 	}
 
 	IR::P4Action* gen() {
-		auto param_gen = new parameterList();
+		auto param_gen = new parameterList(false);
 		params = param_gen->gen();
 
 		auto blk_gen = new blockStatement();

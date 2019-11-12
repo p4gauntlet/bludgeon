@@ -14,16 +14,18 @@ public:
 		"nonEmptyParameterList"
 	};
 
+	bool if_none_dir = false;
 	std::set<cstring> params_name;
 	IR::IndexedVector< IR::Parameter > params;
 
-	parameterList() {
+	parameterList(bool if_none_dir) :
+		if_none_dir(if_none_dir) {
 	}
 
 	void gen_params(size_t len) {
 
 		for (size_t i=0; i<len; i++) {
-			auto parame = new parameter();
+			auto parame = new parameter(if_none_dir);
 			IR::Parameter* param = parame->gen();
 
 			if (param == nullptr) {

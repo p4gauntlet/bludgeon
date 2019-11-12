@@ -3,6 +3,8 @@
 
 #include "ir/ir.h"
 
+#include "codegen.h"
+
 namespace CODEGEN {
 
 
@@ -11,7 +13,12 @@ public:
 	const char* types[0] = {
 	};
 
+	IR::ID* name;
+	IR::TableProperties* tb_properties;
+
+
 	tableDeclaration() {
+		name = new IR::ID(CODEGEN::randstr(6));
 	}
 
 };

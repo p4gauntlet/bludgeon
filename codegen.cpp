@@ -8,6 +8,8 @@
 #include "structTypeDeclaration.h"
 #include "enumDeclaration.h"
 #include "actionDeclaration.h"
+#include "typedefDeclaration.h"
+#include "controlDeclaration.h"
 
 cstring CODEGEN::randstr(size_t len) {
 	cstring ret;
@@ -84,6 +86,30 @@ IR::Node* CGenerator::gen_t_enum() {
 	while (1) {
 		auto t_enum = new enumDeclaration(rand()%2);
 		n = t_enum->gen();
+		if (n != nullptr) {
+			break;
+		}
+	}
+	return n;
+}
+
+IR::Node* CGenerator::gen_tpdef() {
+	IR::Node* n = nullptr;
+	while (1) {
+		auto tpdef = new typedefDeclaration();
+		n = tpdef->gen();
+		if (n != nullptr) {
+			break;
+		}
+	}
+	return n;
+}
+
+IR::Node* CGenerator::gen_ctrldef() {
+	IR::Node* n = nullptr;
+	while (1) {
+		auto ctrldef = new controlDeclaration();
+		n = ctrldef->gen();
 		if (n != nullptr) {
 			break;
 		}

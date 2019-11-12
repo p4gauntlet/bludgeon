@@ -15,18 +15,25 @@ public:
 	};
 
 
+	bool if_none_dir = false;
 	IR::ID *name;
 	IR::Type *tp;
 	IR::Direction dir;
 	
 
-	parameter() {
+	parameter(bool if_none_dir) :
+		if_none_dir(if_none_dir) {
 		name = new IR::ID(CODEGEN::randstr(4));
-		switch (rand()%4) {
-			case 0: dir = IR::Direction::None; break;
-			case 1: dir = IR::Direction::In; break;
-			case 2: dir = IR::Direction::Out; break;
-			case 3: dir = IR::Direction::InOut; break;
+		if (if_none_dir == false) {
+			switch (rand()%4) {
+				case 0: dir = IR::Direction::None; break;
+				case 1: dir = IR::Direction::In; break;
+				case 2: dir = IR::Direction::Out; break;
+				case 3: dir = IR::Direction::InOut; break;
+			}
+		}
+		else {
+			dir = IR::Direction::None;
 		}
 	}
 

@@ -37,7 +37,8 @@ public:
 	IR::Node* gen_act();
 	IR::Node* gen_struct();
 	IR::Node* gen_t_enum();
-
+	IR::Node* gen_tpdef();
+	IR::Node* gen_ctrldef();
 };
 
 
