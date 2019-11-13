@@ -29,7 +29,9 @@ public:
 		auto blk_gen = new blockStatement();
 		blk = blk_gen->gen();
 
-		return new IR::P4Action(*name, params, blk);
+		auto ret = new IR::P4Action(*name, params, blk);
+		P4Scope::add_to_scope(ret);
+		return ret;
 	}
 };
 

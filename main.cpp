@@ -53,6 +53,7 @@ int main(int argc, char **argv) {
 	objects->push_back(cg->gen_ctrldef());
 	objects->push_back(cg->gen_ctrldef());
 	objects->push_back(cg->gen_ctrldef());
+	cg->gen_actlist();
 	IR::P4Program *program = new IR::P4Program(*objects);
 
 

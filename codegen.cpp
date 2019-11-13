@@ -10,6 +10,7 @@
 #include "actionDeclaration.h"
 #include "typedefDeclaration.h"
 #include "controlDeclaration.h"
+#include "actionList.h"
 
 cstring CODEGEN::randstr(size_t len) {
 	cstring ret;
@@ -115,6 +116,11 @@ IR::Node* CGenerator::gen_ctrldef() {
 		}
 	}
 	return n;
+}
+
+IR::Node* CGenerator::gen_actlist() {
+	auto names = P4Scope::get_name_nodir_p4acts();
+	return nullptr;
 }
 
 
