@@ -29,8 +29,8 @@ public:
 	}
 
 	IR::Annotations* gen() {
-		auto expr_gen = new expression(2); // StringLiteral expr
-		auto str_literal = expr_gen->gen();
+		auto expr_gen = new expression(); // StringLiteral expr
+		auto str_literal = expr_gen->gen_literal(2);
 		exprs.push_back(str_literal);
 
 		auto annotation = new IR::Annotation(si, *name, exprs);

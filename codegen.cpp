@@ -10,6 +10,7 @@
 #include "actionDeclaration.h"
 #include "typedefDeclaration.h"
 #include "controlDeclaration.h"
+#include "tableDeclaration.h"
 #include "actionList.h"
 
 cstring CODEGEN::randstr(size_t len) {
@@ -121,6 +122,11 @@ IR::Node* CGenerator::gen_ctrldef() {
 IR::Node* CGenerator::gen_actlist() {
 	auto names = P4Scope::get_name_nodir_p4acts();
 	return nullptr;
+}
+
+IR::Node* CGenerator::gen_tab() {
+    auto tab_gen = new tableDeclaration();
+    return tab_gen->gen();
 }
 
 

@@ -26,12 +26,12 @@ public:
 
 	headerStackType(cstring for_type) : for_type(for_type) {
 		type_name = new typeName(for_type);
-		expr = new expression(1);
+		expr = new expression();
 	}
 
 	IR::Type* gen() {
 		IR::Type* tp = type_name->gen();
-		IR::Expression* e = expr->gen();
+		IR::Expression* e = expr->gen_literal(1);
 		if (tp == nullptr || e == nullptr) {
 			return nullptr;
 		}

@@ -40,6 +40,7 @@ public:
 	IR::Node* gen_tpdef();
 	IR::Node* gen_ctrldef();
 	IR::Node* gen_actlist();
+    IR::Node* gen_tab();
 };
 
 

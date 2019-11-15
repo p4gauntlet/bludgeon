@@ -24,7 +24,7 @@ public:
 
 	// Tao: note that we always tag the property as not const
 	IR::Property* gen_keys() {
-		IR::ID* name = new IR::ID("key");
+		IR::ID* name = new IR::ID(IR::TableProperties::keyPropertyName);
 		auto key_gen = new keyElementList();
 		auto keys = key_gen->gen(4);
 
@@ -33,8 +33,13 @@ public:
 	}
 
 	IR::Property* gen_act_lists() {
-		return nullptr;
+        IR::ID* name = new IR::ID(IR::TableProperties::actionsPropertyName);
+        auto actlist_gen = new actionList();
+        auto acts = actlist_gen->gen(4);
+		return new IR::Property(*name, acts, false);
 	}
+
+    // TODO: for entries
 
 };
 

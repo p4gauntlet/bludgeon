@@ -32,8 +32,8 @@ public:
 		auto annotat = new Annotations();
 		annotations = annotat->gen();
 		// TODO: how to generate meaningful expr
-		auto expr_gen = new expression(1);
-		expr = expr_gen->gen();
+		auto expr_gen = new expression();
+		expr = expr_gen->gen_literal(1);
 
 		// return
 		return new IR::KeyElement(annotations, expr, match_kind);

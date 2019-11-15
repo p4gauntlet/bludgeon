@@ -54,6 +54,8 @@ int main(int argc, char **argv) {
 	objects->push_back(cg->gen_ctrldef());
 	objects->push_back(cg->gen_ctrldef());
 	cg->gen_actlist();
+    objects->push_back(cg->gen_tab());
+    objects->push_back(cg->gen_tab());
 	IR::P4Program *program = new IR::P4Program(*objects);
 
 

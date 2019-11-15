@@ -4,7 +4,7 @@
 #include "ir/ir.h"
 
 #include "codegen.h"
-#include "keyElement.h"
+#include "tablePropertyList.h"
 
 namespace CODEGEN {
 
@@ -23,6 +23,10 @@ public:
 	}
 
 	IR::P4Table* gen() {
+        auto tab_property_list_gen = new tablePropertyList();
+
+
+        return new IR::P4Table(*name, tab_property_list_gen->gen());
 	}
 };
 

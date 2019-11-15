@@ -29,11 +29,11 @@ public:
 		tp = base_type->gen();
 
 		if (tp->is<IR::Type_Boolean>()) {
-			auto ex = new expression(0);
-			expr = ex->gen();
+			auto ex = new expression();
+			expr = ex->gen_literal(0);
 		} else {
-			auto ex = new expression(1);
-			expr = ex->gen();
+			auto ex = new expression();
+			expr = ex->gen_literal(1);
 		}
 
 		return new IR::Declaration_Constant(*name, tp, expr);

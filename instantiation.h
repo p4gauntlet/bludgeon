@@ -11,6 +11,11 @@ public:
 	const char* types[0] = {
 	};
 
+
+
+    // Declaration_instance
+    //
+    //
 	instantiation() {
 	}
 
