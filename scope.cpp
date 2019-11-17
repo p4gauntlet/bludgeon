@@ -33,7 +33,7 @@ void P4Scope::get_all_type_names(cstring filter, std::vector<cstring> &type_name
 					type_names.push_back(tmp_obj->name.name);
 				}
 			}
-            else if (filter == STRUCT) {
+            else if (filter==STRUCT || filter==STRUCT_HEADERS) {
 				if (!obj->is<IR::Type_Struct>() &&
                         obj->is<IR::Type_Declaration>()) {
 					auto tmp_obj = obj->to<IR::Type_Declaration>();

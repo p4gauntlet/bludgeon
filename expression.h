@@ -41,6 +41,7 @@ public:
     // ( expression )
     // !, ~, -, +
 
+    static IR::Expression* gen_cond();
 };
 
 

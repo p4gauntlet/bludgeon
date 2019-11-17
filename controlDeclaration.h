@@ -70,6 +70,13 @@ public:
 		auto blk_gen = new blockStatement();
 		blk = blk_gen->gen();
 
+        expression::gen_cond();
+        expression::gen_cond();
+        expression::gen_cond();
+        expression::gen_cond();
+        expression::gen_cond();
+        expression::gen_cond();
+
 
 		// return new IR::P4Control((type_ctrl->name), type_ctrl, constructor_params, local_decls, blk);
         // end of scope

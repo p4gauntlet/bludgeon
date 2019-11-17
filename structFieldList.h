@@ -65,7 +65,6 @@ public:
 		}
 
         if (if_contain_stack == true) {
-            std::cout << name << std::endl;
             P4Scope::insert_type_name(name);
         }
 

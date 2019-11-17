@@ -4,6 +4,7 @@
 
 #include <vector>
 #include <map>
+#include <string>
 #include "ir/ir.h"
 
 
@@ -49,6 +50,8 @@ public:
 	}
 
     static void add_name_2_type_p(const cstring &name, const IR::Type* type) {
+        std::cout << "insert to param\n";
+        std::cout << name << std::endl;
         if (name_2_type_param.find(name) != name_2_type_param.end()) {
             BUG("wrong name, must be different");
         }
