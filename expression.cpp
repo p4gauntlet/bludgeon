@@ -5,10 +5,10 @@
 
 namespace CODEGEN {
 
-const IR::Type* pick_field(std::map<const cstring, const IR::Type*> &mp,
+const IR::Type* pick_field(std::map<cstring, const IR::Type*> &mp,
         const IR::Type* tp, std::vector<cstring> &call_bt, cstring &type);
 
-const IR::Type* pick_lval(std::map<const cstring, const IR::Type*> &mp,
+const IR::Type* pick_lval(std::map<cstring, const IR::Type*> &mp,
         std::vector<cstring> &call_bt, cstring &type) {
     size_t cnt = 0;
     cstring name;
@@ -32,7 +32,7 @@ const IR::Type* pick_lval(std::map<const cstring, const IR::Type*> &mp,
     return pick_field(mp, tp, call_bt, type);
 }
 
-const IR::Type* pick_field(std::map<const cstring, const IR::Type*> &mp,
+const IR::Type* pick_field(std::map<cstring, const IR::Type*> &mp,
         const IR::Type* tp, std::vector<cstring> &call_bt, cstring &type) {
     // if (tp->is<IR::Type_Struct>()) {
     //     const IR::Type_Struct* t = tp->to<IR::Type_Struct>();
@@ -49,7 +49,7 @@ const IR::Type* pick_field(std::map<const cstring, const IR::Type*> &mp,
 
     if (tp->is<IR::Type_StructLike>()) {
         const IR::Type_StructLike* t = tp->to<IR::Type_StructLike>();
-        call_bt.push_back(t->name.name);
+        // call_bt.push_back(t->name.name);
         size_t cnt = 0;
         const IR::StructField* sf = nullptr;
         for (size_t i=0; i<t->fields.size(); i++) {
@@ -76,7 +76,10 @@ const IR::Type* pick_field(std::map<const cstring, const IR::Type*> &mp,
     }
     else if (tp->is<IR::Type_Name>()) {
         const IR::Type_Name* t = tp->to<IR::Type_Name>();
-        const IR::Type* ref_tp = mp[t->path->name.name];
+        const IR::Type* ref_tp = P4Scope::get_type_by_name(t->path->name.name);
+		if (ref_tp == nullptr) {
+			BUG("nullptr not possible");
+		}
         return pick_field(mp, ref_tp, call_bt, type);
     }
     else if (tp->is<IR::Type_Bits>()) {

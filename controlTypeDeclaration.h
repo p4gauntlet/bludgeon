@@ -35,7 +35,7 @@ public:
             auto param = params.at(i);
             P4Scope::add_to_scope((IR::Node *)param);
             // add to the name_2_type
-            P4Scope::add_name_2_type_p(param->name.name, param->type);
+            P4Scope::add_name_2_type_p(param->name.toString(), param->type);
         }
 
 		auto ret = new IR::Type_Control(*name, param_list);

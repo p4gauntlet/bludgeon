@@ -19,10 +19,10 @@ public:
 
 	static std::vector< IR::Vector<IR::Node>* > scope;
 	static std::set<cstring> used_names;
-    static std::map<const cstring, const IR::Type*> name_2_type_param;
-    static std::map<const cstring, const IR::Type*> name_2_type_vars;
-    static std::map<const cstring, const IR::Type*> name_2_type_const;
-    static std::set<const cstring> types_w_stack;
+    static std::map<cstring, const IR::Type*> name_2_type_param;
+    static std::map<cstring, const IR::Type*> name_2_type_vars;
+    static std::map<cstring, const IR::Type*> name_2_type_const;
+    static std::set<cstring> types_w_stack;
 
 	P4Scope() {
 	}
@@ -49,7 +49,7 @@ public:
 		scope.pop_back();
 	}
 
-    static void add_name_2_type_p(const cstring &name, const IR::Type* type) {
+    static void add_name_2_type_p(cstring name, const IR::Type* type) {
         std::cout << "insert to param\n";
         std::cout << name << std::endl;
         if (name_2_type_param.find(name) != name_2_type_param.end()) {
@@ -60,7 +60,7 @@ public:
         }
     }
 
-    static void add_name_2_type_v(const cstring &name, const IR::Type* type) {
+    static void add_name_2_type_v(cstring name, const IR::Type* type) {
         if (name_2_type_vars.find(name) != name_2_type_vars.end()) {
             BUG("wrong name, must be different");
         }
@@ -69,7 +69,7 @@ public:
         }
     }
 
-    static void add_name_2_type_c(const cstring &name, const IR::Type* type) {
+    static void add_name_2_type_c(cstring name, const IR::Type* type) {
         if (name_2_type_const.find(name) != name_2_type_const.end()) {
             BUG("wrong name, must be different");
         }
@@ -91,6 +91,7 @@ public:
 	static void get_all_type_names(cstring filter, std::vector<cstring> &type_names);
     static void get_all_decl_names(std::vector<cstring> &decl_names);
 	static int get_num_type_header();
+	static IR::Type* get_type_by_name(cstring name);
 	static std::vector<cstring> get_name_nodir_p4acts();
 	static std::vector<const IR::P4Action*> get_p4actions_nodir();
 	static std::vector<const IR::P4Action*> get_p4actions();

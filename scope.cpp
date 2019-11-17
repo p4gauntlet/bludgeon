@@ -4,10 +4,10 @@ namespace CODEGEN {
 
 std::vector< IR::Vector<IR::Node>* > P4Scope::scope;
 std::set<cstring> P4Scope::used_names;
-std::map<const cstring, const IR::Type*> P4Scope::name_2_type_param;
-std::map<const cstring, const IR::Type*> P4Scope::name_2_type_vars;
-std::map<const cstring, const IR::Type*> P4Scope::name_2_type_const;
-std::set<const cstring> P4Scope::types_w_stack;
+std::map<cstring, const IR::Type*> P4Scope::name_2_type_param;
+std::map<cstring, const IR::Type*> P4Scope::name_2_type_vars;
+std::map<cstring, const IR::Type*> P4Scope::name_2_type_const;
+std::set<cstring> P4Scope::types_w_stack;
 
 void P4Scope::add_to_scope(IR::Node* n) {
 	auto l_scope = P4Scope::scope.back();
@@ -115,6 +115,21 @@ int P4Scope::get_num_type_header() {
 		}
 	}
 	return ret;
+}
+
+IR::Type* P4Scope::get_type_by_name(cstring name) {
+	for (auto i = scope.begin(); i<scope.end(); i++) {
+		for (size_t j=0; j< (*i)->size(); j++) {
+			auto obj = (*i)->at(j);
+			if (obj->is<IR::Type_Declaration>()) {
+				auto decl = obj->to<IR::Type_Declaration>();
+				if (decl->name.name == name) {
+					return (IR::Type *)decl;
+				}
+			}
+		}
+	}
+	return nullptr;
 }
 
 void P4Scope::print_scope() {
