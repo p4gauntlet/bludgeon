@@ -46,11 +46,11 @@ public:
 			}
 			switch (t) {
 				case 0: {
-							if (for_type == HEADER_UNION) {
+							if (for_type==HEADER_UNION || for_type==STRUCT_HEADERS) {
 								break;
 							}
-							std::vector<int> b_types;
-							auto base_type = new baseType(true, b_types);
+							std::vector<int> b_types = {1, 2};
+							auto base_type = new baseType(false, b_types);
 							tp = base_type->gen(); break;
 						}
 				case 1: {

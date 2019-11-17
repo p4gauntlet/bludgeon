@@ -6,6 +6,7 @@
 
 #include "common.h"
 #include "codegen.h"
+#include "scope.h"
 
 
 #include "typeRef.h"
@@ -31,12 +32,13 @@ public:
 	// Tao: maybe some customizations
 	IR::Declaration_Variable* gen() {
 		std::vector<int> types = {};
-		typeRef* type_ref = new typeRef(true, types, "");
+		typeRef* type_ref = new typeRef(true, types, STRUCT);
 		type = type_ref->gen();
 
 
 		auto ret = new IR::Declaration_Variable(*name, type);
-
+        P4Scope::add_to_scope((IR::Node *)ret);
+        P4Scope::add_name_2_type_v(name->name, type);
 
 		return ret;
 	}

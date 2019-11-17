@@ -21,12 +21,12 @@ public:
 	}
 
 	static IR::Type_HeaderUnion* gen() {
-		IR::ID name;
-		name.name = CODEGEN::randstr(6);
+		IR::ID* name;
+		name = new IR::ID(CODEGEN::randstr(6));
 
-		auto sfl = new structFieldList(HEADER_UNION);
+		auto sfl = new structFieldList(HEADER_UNION, name->name);
 		IR::IndexedVector< IR::StructField > fields = sfl->gen(rand()%10+1);
-		auto ret = new IR::Type_HeaderUnion(name, fields);
+		auto ret = new IR::Type_HeaderUnion(*name, fields);
 
 		P4Scope::add_to_scope(ret);
 

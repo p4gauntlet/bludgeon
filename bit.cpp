@@ -2,7 +2,7 @@
 
 
 namespace CODEGEN {
-constexpr int bit_literal::std_size[8];
+constexpr int bit_literal::std_size[5];
 
 
 }

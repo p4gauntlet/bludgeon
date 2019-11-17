@@ -25,11 +25,11 @@ public:
 		if_none_dir(if_none_dir) {
 		name = new IR::ID(CODEGEN::randstr(4));
 		if (if_none_dir == false) {
-			switch (rand()%4) {
-				case 0: dir = IR::Direction::None; break;
-				case 1: dir = IR::Direction::In; break;
-				case 2: dir = IR::Direction::Out; break;
-				case 3: dir = IR::Direction::InOut; break;
+			switch (rand()%3) {
+				// case 0: dir = IR::Direction::None; break;
+				case 0: dir = IR::Direction::In; break;
+				case 1: dir = IR::Direction::Out; break;
+				case 2: dir = IR::Direction::InOut; break;
 			}
 		}
 		else {

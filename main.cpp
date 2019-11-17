@@ -9,10 +9,25 @@
 
 #include "codegen.h"
 #include "scope.h"
+#include "structTypeDeclaration.h"
 
 void printUsage() {
 	std::cout << "###How to use p4codegen###\n";
 	std::cout << "./p4codegen [output_filename]\n";
+}
+
+void emitBottom(std::ostream* out) {
+    *out << "parser p(packet_in b, out Headers h, inout Meta m, inout standard_metadata_t sm) {\n"
+        "state start {"
+        "transition accept;}}\n\n";
+
+    *out << "control vrfy(inout Headers h, inout Meta m) { apply {} }\n\n";
+    *out << "control update(inout Headers h, inout Meta m) { apply {} }\n\n";
+    *out << "control egress(inout Headers h, inout Meta m, inout standard_metadata_t sm) { apply {} }\n\n";
+    *out << "control deparser(packet_out b, in Headers h) { apply {} }\n\n";
+    *out << "control ingress(inout Headers h, inout Meta m, inout standard_metadata_t sm) { apply {} }\n\n";
+
+    *out << "V1Switch(p(), vrfy(), ingress(), egress(), update(), deparser()) main;\n\n";
 }
 
 int main(int argc, char **argv) {
@@ -31,31 +46,16 @@ int main(int argc, char **argv) {
 
 	auto objects = new IR::Vector<IR::Node>();
 	objects->push_back(cg->gen());
-	objects->push_back(cg->gen_struct());
 	objects->push_back(cg->gen());
-	objects->push_back(cg->gen_struct());
-	objects->push_back(cg->gen());
-	objects->push_back(cg->gen());
-	objects->push_back(cg->gen_struct());
 	objects->push_back(cg->gen());
 	objects->push_back(cg->gen());
 	objects->push_back(cg->gen_struct());
-	objects->push_back(cg->gen_act());
-	objects->push_back(cg->gen_act());
-	objects->push_back(cg->gen_act());
-	objects->push_back(cg->gen_t_enum());
-	objects->push_back(cg->gen_t_enum());
-	objects->push_back(cg->gen_t_enum());
-	objects->push_back(cg->gen_tpdef());
-	objects->push_back(cg->gen_tpdef());
-	objects->push_back(cg->gen_tpdef());
-	objects->push_back(cg->gen_tpdef());
+	objects->push_back(cg->gen_struct());
+	objects->push_back(CODEGEN::structTypeDeclaration::gen_Headers());
+	objects->push_back(CODEGEN::structTypeDeclaration::gen_Meta());
 	objects->push_back(cg->gen_ctrldef());
 	objects->push_back(cg->gen_ctrldef());
 	objects->push_back(cg->gen_ctrldef());
-	cg->gen_actlist();
-    objects->push_back(cg->gen_tab());
-    objects->push_back(cg->gen_tab());
 	IR::P4Program *program = new IR::P4Program(*objects);
 
 
@@ -71,5 +71,9 @@ int main(int argc, char **argv) {
     P4::ToP4 top4(ostream, false);
 
 	program->apply(top4);
+
+    emitBottom(ostream);
+
+    ostream->flush();
 	return 0;
 }

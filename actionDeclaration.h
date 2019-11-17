@@ -23,6 +23,7 @@ public:
 	}
 
 	IR::P4Action* gen() {
+        P4Scope::start_local_scope();
 		auto param_gen = new parameterList(false);
 		params = param_gen->gen();
 
@@ -30,6 +31,11 @@ public:
 		blk = blk_gen->gen();
 
 		auto ret = new IR::P4Action(*name, params, blk);
+
+
+        P4Scope::end_local_scope();
+
+
 		P4Scope::add_to_scope(ret);
 		return ret;
 	}

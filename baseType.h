@@ -45,7 +45,7 @@ public:
 		switch (t) {
 			case 0: return bool_literal::gen(); // bool
 			case 1: return bit_literal::gen(false); // bit<>
-			case 2: return bit_literal::gen(true); // int<>
+            case 2: return bit_literal::gen(true); // int<>
 			case 3: return int_literal::gen(); // int
 		}
 

@@ -7,6 +7,9 @@
 #include "scope.h"
 #include "controlTypeDeclaration.h"
 #include "constantDeclaration.h"
+#include "variableDeclaration.h"
+#include "actionDeclaration.h"
+#include "tableDeclaration.h"
 #include "blockStatement.h"
 
 namespace CODEGEN {
@@ -29,16 +32,38 @@ public:
 	}
 
 	IR::P4Control* gen() {
+        // start of new scope
+        P4Scope::start_local_scope();
 		// type_ctrl
 		auto ctrl_type_decl = new controlTypeDeclaration();
 		type_ctrl = ctrl_type_decl->gen();
 
 		// constructor_params
-		auto param_gen = new parameterList(true);
-		constructor_params = param_gen->gen();
+		// auto param_gen = new parameterList(true);
+		// constructor_params = param_gen->gen();
+        
 		// local_decls
-		auto const_decl = new constantDeclaration();
-		local_decls.push_back(const_decl->gen());
+        // constantDeclarations
+        for (int i=0; i<5; i++) {
+		    auto const_decl = new constantDeclaration();
+		    local_decls.push_back(const_decl->gen());
+        }
+        // variableDeclarations
+        for (int i=0; i<5; i++) {
+            auto var_decl = new variableDeclaration();
+            local_decls.push_back(var_decl->gen());
+        }
+        // actionDeclarations
+        for (int i=0; i<5; i++) {
+            auto act_decl = new actionDeclaration();
+            local_decls.push_back(act_decl->gen());
+        }
+        // tableDeclarations
+        for (int i=0; i<5; i++) {
+            auto tab_decl = new tableDeclaration();
+            local_decls.push_back(tab_decl->gen());
+        }
+        // instantiations
 
 
 		// blockstatement
@@ -46,7 +71,10 @@ public:
 		blk = blk_gen->gen();
 
 
-		return new IR::P4Control((type_ctrl->name), type_ctrl, constructor_params, local_decls, blk);
+		// return new IR::P4Control((type_ctrl->name), type_ctrl, constructor_params, local_decls, blk);
+        // end of scope
+        P4Scope::end_local_scope();
+		return new IR::P4Control((type_ctrl->name), type_ctrl, local_decls, blk);
 
 	}
 };

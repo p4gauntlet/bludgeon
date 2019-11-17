@@ -26,7 +26,7 @@ public:
 	static IR::Type_Struct* gen() {
 		IR::ID *name;
 		name = new IR::ID(CODEGEN::randstr(6));
-		auto sfl = new structFieldList(HEADER);
+		auto sfl = new structFieldList(STRUCT, name->name);
 		IR::IndexedVector< IR::StructField > fields = sfl->gen(rand()%10+1);
 
 		auto ret = new IR::Type_Struct(*name, fields);
@@ -35,6 +35,30 @@ public:
 
 		return ret;
 	}
+
+    static IR::Type_Struct* gen_Headers() {
+        IR::ID *name = new IR::ID("Headers");
+		auto sfl = new structFieldList(STRUCT_HEADERS, name->name);
+		IR::IndexedVector< IR::StructField > fields = sfl->gen(rand()%10+1);
+
+		auto ret = new IR::Type_Struct(*name, fields);
+
+		P4Scope::add_to_scope(ret);
+
+		return ret;
+    }
+
+    static IR::Type_Struct* gen_Meta() {
+        IR::ID *name = new IR::ID("Meta");
+		auto sfl = new structFieldList(STRUCT, name->name);
+		IR::IndexedVector< IR::StructField > fields = sfl->gen(rand()%10+1);
+
+		auto ret = new IR::Type_Struct(*name, fields);
+
+		P4Scope::add_to_scope(ret);
+
+		return ret;
+    }
 
 };
 

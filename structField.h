@@ -31,6 +31,9 @@ public:
 		if (tp == nullptr) {
 			return nullptr;
 		}
+
+
+
 		return new IR::StructField(*name, tp);
 	}
 };

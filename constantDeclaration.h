@@ -4,6 +4,7 @@
 #include "ir/ir.h"
 
 #include "codegen.h"
+#include "scope.h"
 #include "expression.h"
 #include "baseType.h"
 
@@ -36,7 +37,11 @@ public:
 			expr = ex->gen_literal(1);
 		}
 
-		return new IR::Declaration_Constant(*name, tp, expr);
+        // add to the scope
+        auto ret = new IR::Declaration_Constant(*name, tp, expr);
+        P4Scope::add_to_scope((IR::Node *) ret);
+        P4Scope::add_name_2_type_c(name->name, tp);
+        return ret;
 	}
 };
 

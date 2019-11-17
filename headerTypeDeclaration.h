@@ -23,7 +23,7 @@ public:
 
 		IR::ID *name;
 		name = new IR::ID(CODEGEN::randstr(6));
-		auto sfl = new structFieldList(HEADER);
+		auto sfl = new structFieldList(HEADER, name->name);
 		IR::IndexedVector< IR::StructField > fields = sfl->gen(rand()%10+1);
 		auto ret = new IR::Type_Header(*name, fields);
 

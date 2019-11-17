@@ -3,6 +3,9 @@
 
 #include "ir/ir.h"
 
+#include "codegen.h"
+#include "scope.h"
+
 namespace CODEGEN {
 
 

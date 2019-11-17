@@ -4,6 +4,10 @@ namespace CODEGEN {
 
 std::vector< IR::Vector<IR::Node>* > P4Scope::scope;
 std::set<cstring> P4Scope::used_names;
+std::map<const cstring, const IR::Type*> P4Scope::name_2_type_param;
+std::map<const cstring, const IR::Type*> P4Scope::name_2_type_vars;
+std::map<const cstring, const IR::Type*> P4Scope::name_2_type_const;
+std::set<const cstring> P4Scope::types_w_stack;
 
 void P4Scope::add_to_scope(IR::Node* n) {
 	auto l_scope = P4Scope::scope.back();
@@ -29,6 +33,13 @@ void P4Scope::get_all_type_names(cstring filter, std::vector<cstring> &type_name
 					type_names.push_back(tmp_obj->name.name);
 				}
 			}
+            else if (filter == STRUCT) {
+				if (!obj->is<IR::Type_Struct>() &&
+                        obj->is<IR::Type_Declaration>()) {
+					auto tmp_obj = obj->to<IR::Type_Declaration>();
+					type_names.push_back(tmp_obj->name.name);
+                }
+            }
 			else {
 				if (obj->is<IR::Type_Declaration>()) {
 					auto tmp_obj = obj->to<IR::Type_Declaration>();

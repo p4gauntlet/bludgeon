@@ -36,6 +36,7 @@ public:
 			return nullptr;
 		}
 		IR::Type* ret =  new IR::Type_Stack(tp, e);
+
 		return ret;
 	}
 
