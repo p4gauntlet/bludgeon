@@ -19,14 +19,23 @@ public:
 	const char* types[0] = {
 	};
 
-	IR::ID* name;
-	IR::Type* type;
-	IR::Expression* expr;
+	IR::ID* name = nullptr;
+	IR::Type* type = nullptr;
+	IR::Expression* expr = nullptr;
 
 
 	variableDeclaration() {
 		name = new IR::ID(CODEGEN::randstr(6));
 	}
+	~variableDeclaration() {
+		delete name;
+		delete type;
+		if (expr != nullptr) {
+			delete expr;
+		}
+	}
+
+
 
 
 	// Tao: maybe some customizations

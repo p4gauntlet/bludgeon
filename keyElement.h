@@ -27,6 +27,11 @@ public:
 		name.name = "exact";
 		match_kind = new IR::PathExpression(new IR::Path(name));
 	}
+	~keyElement() {
+		delete annotations;
+		delete expr;
+		delete match_kind;
+	}
 
 	IR::KeyElement *gen() {
 		auto annotat = new Annotations();

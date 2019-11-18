@@ -21,12 +21,17 @@ public:
 	tableDeclaration() {
 		name = new IR::ID(CODEGEN::randstr(6));
 	}
+	~tableDeclaration() {
+		delete name;
+		delete tb_properties;
+	}
 
 	IR::P4Table* gen() {
         auto tab_property_list_gen = new tablePropertyList();
+		tb_properties = tab_property_list_gen->gen();
 
 
-        return new IR::P4Table(*name, tab_property_list_gen->gen());
+        return new IR::P4Table(*name, tb_properties);
 	}
 };
 

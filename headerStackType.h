@@ -28,6 +28,10 @@ public:
 		type_name = new typeName(for_type);
 		expr = new expression();
 	}
+	~headerStackType() {
+		delete type_name;
+		delete expr;
+	}
 
 	IR::Type* gen() {
 		IR::Type* tp = type_name->gen();

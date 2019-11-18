@@ -30,6 +30,12 @@ public:
 	controlDeclaration() {
 		name = new IR::ID(CODEGEN::randstr(7));
 	}
+	~controlDeclaration() {
+		delete name;
+		delete type_ctrl;
+		// delete constructor_params;
+		delete blk;
+	}
 
 	IR::P4Control* gen() {
         // start of new scope

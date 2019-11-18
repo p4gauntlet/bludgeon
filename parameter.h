@@ -36,6 +36,10 @@ public:
 			dir = IR::Direction::None;
 		}
 	}
+	~parameter() {
+		delete name;
+		delete tp;
+	}
 
 	// Tao: the parameter seems can only be int<> bit<> in bmv2 model
 	IR::Parameter* gen() {

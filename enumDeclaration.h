@@ -19,12 +19,18 @@ public:
 	};
 
 	int type;
-	IR::ID* name;
-	IR::Type_Bits* tp;
+	IR::ID* name = nullptr;
+	IR::Type_Bits* tp = nullptr;
 	
 	enumDeclaration(int type) :
 		type(type) {
 		name = new IR::ID(CODEGEN::randstr(2));
+	}
+	~enumDeclaration() {
+		delete name;
+		if (tp != nullptr) {
+			delete tp;
+		}
 	}
 
 	IR::Type_Enum* gen_enum() {

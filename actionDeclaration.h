@@ -22,6 +22,12 @@ public:
 		name = new IR::ID(CODEGEN::randstr(5));
 	}
 
+	~actionDeclaration() {
+		delete name;
+		delete params;
+		delete blk;
+	}
+
 	IR::P4Action* gen() {
         P4Scope::start_local_scope();
 		auto param_gen = new parameterList(false);

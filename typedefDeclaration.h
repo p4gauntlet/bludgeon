@@ -31,6 +31,14 @@ public:
 	typedefDeclaration() {
 		name = new IR::ID(CODEGEN::randstr(5));
 	}
+	~typedefDeclaration() {
+		if (name != nullptr) {
+			delete name;
+		}
+		if (type != nullptr) {
+			delete type;
+		}
+	}
 
 	void gen_t() {
 		while (1) {

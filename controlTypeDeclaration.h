@@ -23,6 +23,10 @@ public:
 	controlTypeDeclaration() {
 		name = new IR::ID(CODEGEN::randstr(4));
 	}
+	~controlTypeDeclaration() {
+		delete name;
+		delete param_list;
+	}
 
 
 	IR::Type_Control* gen() {

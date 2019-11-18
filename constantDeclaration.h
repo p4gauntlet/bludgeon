@@ -23,6 +23,12 @@ public:
 		name = new IR::ID(CODEGEN::randstr(4));
 	}
 
+	~constantDeclaration() {
+		delete name;
+		delete expr;
+		delete tp;
+	}
+
 
 	IR::Declaration_Constant* gen() {
 		std::vector<int> type;
