@@ -34,15 +34,6 @@ const IR::Type* pick_lval(std::map<cstring, const IR::Type*> &mp,
 
 const IR::Type* pick_field(std::map<cstring, const IR::Type*> &mp,
         const IR::Type* tp, std::vector<cstring> &call_bt, cstring &type) {
-    // if (tp->is<IR::Type_Struct>()) {
-    //     const IR::Type_Struct* t = tp->to<IR::Type_Struct>();
-    // }
-    // else if (tp->is<IR::Type_Header>()) {
-    //     const IR::Type_Header* t = tp->to<IR::Type_Header>();
-    // }
-    // else if (tp->is<IR::Type_HeaderUnion>()) {
-    //     const IR::Type_HeaderUnion* t = tp->to<IR::Type_HeaderUnion>();
-    // }
     if (tp == nullptr) {
         return tp;
     }
