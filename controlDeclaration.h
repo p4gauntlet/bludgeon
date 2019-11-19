@@ -76,12 +76,11 @@ public:
 		auto blk_gen = new blockStatement();
 		blk = blk_gen->gen();
 
-        expression::gen_cond();
-        expression::gen_cond();
-        expression::gen_cond();
-        expression::gen_cond();
-        expression::gen_cond();
-        expression::gen_cond();
+        expression::get_operand();
+        expression::get_operand();
+        expression::get_operand();
+        expression::get_operand();
+        expression::get_operand();
 
 
 		// return new IR::P4Control((type_ctrl->name), type_ctrl, constructor_params, local_decls, blk);
@@ -89,6 +88,37 @@ public:
         P4Scope::end_local_scope();
 		return new IR::P4Control((type_ctrl->name), type_ctrl, local_decls, blk);
 
+	}
+
+	static IR::P4Control* gen_ing_ctrl() {
+        // start of new scope
+        P4Scope::start_local_scope();
+
+
+		//
+		IR::ID* name = new IR::ID("ingress");
+		IR::Type_Control* type_ctrl = controlTypeDeclaration::gen_ing_ctrl_type();
+		// IR::ParameterList* constructor_params;
+		IR::IndexedVector< IR::Declaration > local_decls;
+		IR::BlockStatement *blk = new IR::BlockStatement();
+
+        expression::get_operand();
+        expression::get_operand();
+        expression::get_operand();
+        expression::get_operand();
+        expression::get_operand();
+        expression::get_operand();
+        expression::get_operand();
+        expression::get_operand();
+        expression::get_operand();
+        expression::get_operand();
+
+
+
+        // end of scope
+        P4Scope::end_local_scope();
+
+		return new IR::P4Control(*name, type_ctrl, local_decls, blk);
 	}
 };
 

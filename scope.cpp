@@ -132,6 +132,9 @@ IR::Type* P4Scope::get_type_by_name(cstring name) {
 	return nullptr;
 }
 
+void P4Scope::trim_scope() {
+}
+
 void P4Scope::print_scope() {
 	for (auto i = scope.begin(); i<scope.end(); i++) {
 		for (size_t j=0; j< (*i)->size(); j++) {

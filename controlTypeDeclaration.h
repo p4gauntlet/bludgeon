@@ -39,11 +39,33 @@ public:
             auto param = params.at(i);
             P4Scope::add_to_scope((IR::Node *)param);
             // add to the name_2_type
-            P4Scope::add_name_2_type_p(param->name.toString(), param->type);
+			if (param->direction != IR::Direction::In) {
+				// Tao: we can not modify the params of IN direction
+				P4Scope::add_name_2_type_p(param->name.toString(), param->type);
+			}
         }
 
 		auto ret = new IR::Type_Control(*name, param_list);
 		return ret;
+	}
+
+	static IR::Type_Control* gen_ing_ctrl_type() {
+		IR::ID* ing_name = new IR::ID("ingress");
+		auto param_list = parameterList::gen_ing_params();
+		auto params = param_list->parameters;
+
+        // add to the scope
+        for (size_t i=0; i<params.size(); i++) {
+            auto param = params.at(i);
+            P4Scope::add_to_scope((IR::Node *)param);
+            // add to the name_2_type
+			if (param->direction != IR::Direction::In) {
+				// Tao: we can not modify the params of IN direction
+				P4Scope::add_name_2_type_p(param->name.toString(), param->type);
+			}
+        }
+
+		return new IR::Type_Control(*ing_name, param_list);
 	}
 
 };

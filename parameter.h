@@ -52,6 +52,36 @@ public:
 
 		return new IR::Parameter(*name, dir, tp);
 	}
+
+	static IR::Parameter* gen_ing_headers() {
+		IR::ID hdr("h");
+		IR::Direction hdr_dir = IR::Direction::InOut;
+
+		IR::ID tp_name("Headers");
+		IR::Type* tp = new IR::Type_Name(new IR::Path(tp_name));
+
+		return new IR::Parameter(hdr, hdr_dir, tp);
+	}
+
+	static IR::Parameter* gen_ing_meta() {
+		IR::ID meta("m");
+		IR::Direction meta_dir = IR::Direction::InOut;
+
+		IR::ID tp_name("Meta");
+		IR::Type* tp = new IR::Type_Name(new IR::Path(tp_name));
+
+		return new IR::Parameter(meta, meta_dir, tp);
+	}
+
+	static IR::Parameter* gen_ing_sm() {
+		IR::ID sm("sm");
+		IR::Direction sm_dir = IR::Direction::InOut;
+
+		IR::ID tp_name("standard_metadata_t");
+		IR::Type* tp = new IR::Type_Name(new IR::Path(tp_name));
+
+		return new IR::Parameter(sm, sm_dir, tp);
+	}
 };
 
 

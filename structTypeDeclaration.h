@@ -60,6 +60,17 @@ public:
 		return ret;
     }
 
+	static IR::Type_Struct* gen_Sm() {
+		IR::ID *name = new IR::ID("standard_metadata_t");
+		auto fields = structFieldList::gen_sm();
+
+		auto ret = new IR::Type_Struct(*name, fields);
+
+		P4Scope::add_to_scope(ret);
+
+		return ret;
+	}
+
 };
 
 

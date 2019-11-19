@@ -71,6 +71,55 @@ public:
 		return fields;
 	}
 
+	static IR::IndexedVector<IR::StructField> gen_sm() {
+		IR::IndexedVector< IR::StructField > fields;
+
+		IR::ID* name;
+		IR::Type* tp;
+		name = new IR::ID("ingress_port");
+		tp = new IR::Type_Bits(9, false);
+		fields.push_back(new IR::StructField(*name, tp));
+		name = new IR::ID("egress_spec");
+		tp = new IR::Type_Bits(9, false);
+		fields.push_back(new IR::StructField(*name, tp));
+		name = new IR::ID("egress_port");
+		tp = new IR::Type_Bits(9, false);
+		fields.push_back(new IR::StructField(*name, tp));
+		name = new IR::ID("instance_type");
+		tp = new IR::Type_Bits(32, false);
+		fields.push_back(new IR::StructField(*name, tp));
+		name = new IR::ID("packet_length");
+		tp = new IR::Type_Bits(32, false);
+		fields.push_back(new IR::StructField(*name, tp));
+		name = new IR::ID("enq_timestamp");
+		tp = new IR::Type_Bits(32, false);
+		fields.push_back(new IR::StructField(*name, tp));
+		name = new IR::ID("enq_qdepth");
+		tp = new IR::Type_Bits(19, false);
+		fields.push_back(new IR::StructField(*name, tp));
+		name = new IR::ID("dep_timedelta");
+		tp = new IR::Type_Bits(32, false);
+		fields.push_back(new IR::StructField(*name, tp));
+		name = new IR::ID("deq_qdepth");
+		tp = new IR::Type_Bits(19, false);
+		fields.push_back(new IR::StructField(*name, tp));
+		name = new IR::ID("ingress_global_timestamp");
+		tp = new IR::Type_Bits(48, false);
+		fields.push_back(new IR::StructField(*name, tp));
+		name = new IR::ID("egress_global_timestamp");
+		tp = new IR::Type_Bits(48, false);
+		fields.push_back(new IR::StructField(*name, tp));
+		name = new IR::ID("egress_rid");
+		tp = new IR::Type_Bits(16, false);
+		fields.push_back(new IR::StructField(*name, tp));
+		// Tao: error is omitted here
+		name = new IR::ID("priority");
+		tp = new IR::Type_Bits(3, false);
+		fields.push_back(new IR::StructField(*name, tp));
+
+
+		return fields;
+	}
 };
 
 

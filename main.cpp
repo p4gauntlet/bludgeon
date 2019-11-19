@@ -10,6 +10,7 @@
 #include "codegen.h"
 #include "scope.h"
 #include "structTypeDeclaration.h"
+#include "controlDeclaration.h"
 
 void printUsage() {
 	std::cout << "###How to use p4codegen###\n";
@@ -25,7 +26,7 @@ void emitBottom(std::ostream* out) {
     *out << "control update(inout Headers h, inout Meta m) { apply {} }\n\n";
     *out << "control egress(inout Headers h, inout Meta m, inout standard_metadata_t sm) { apply {} }\n\n";
     *out << "control deparser(packet_out b, in Headers h) { apply {} }\n\n";
-    *out << "control ingress(inout Headers h, inout Meta m, inout standard_metadata_t sm) { apply {} }\n\n";
+    // *out << "control ingress(inout Headers h, inout Meta m, inout standard_metadata_t sm) { apply {} }\n\n";
 
     *out << "V1Switch(p(), vrfy(), ingress(), egress(), update(), deparser()) main;\n\n";
 }
@@ -53,9 +54,11 @@ int main(int argc, char **argv) {
 	objects->push_back(cg->gen_struct());
 	objects->push_back(CODEGEN::structTypeDeclaration::gen_Headers());
 	objects->push_back(CODEGEN::structTypeDeclaration::gen_Meta());
+	CODEGEN::structTypeDeclaration::gen_Sm();
 	objects->push_back(cg->gen_ctrldef());
 	objects->push_back(cg->gen_ctrldef());
 	objects->push_back(cg->gen_ctrldef());
+	objects->push_back(CODEGEN::controlDeclaration::gen_ing_ctrl());
 	IR::P4Program *program = new IR::P4Program(*objects);
 
 

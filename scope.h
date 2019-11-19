@@ -50,10 +50,8 @@ public:
 	}
 
     static void add_name_2_type_p(cstring name, const IR::Type* type) {
-        std::cout << "insert to param\n";
-        std::cout << name << std::endl;
         if (name_2_type_param.find(name) != name_2_type_param.end()) {
-            BUG("wrong name, must be different");
+            BUG("param wrong name, must be different");
         }
         else {
             name_2_type_param.emplace(name, type);
@@ -62,7 +60,7 @@ public:
 
     static void add_name_2_type_v(cstring name, const IR::Type* type) {
         if (name_2_type_vars.find(name) != name_2_type_vars.end()) {
-            BUG("wrong name, must be different");
+            BUG("variable wrong name, must be different");
         }
         else {
             name_2_type_vars.emplace(name, type);
@@ -71,7 +69,7 @@ public:
 
     static void add_name_2_type_c(cstring name, const IR::Type* type) {
         if (name_2_type_const.find(name) != name_2_type_const.end()) {
-            BUG("wrong name, must be different");
+            BUG("const wrong name, must be different");
         }
         else {
             name_2_type_const.emplace(name, type);
@@ -95,6 +93,7 @@ public:
 	static std::vector<cstring> get_name_nodir_p4acts();
 	static std::vector<const IR::P4Action*> get_p4actions_nodir();
 	static std::vector<const IR::P4Action*> get_p4actions();
+	static void trim_scope();
 	static void print_scope();
 };
 

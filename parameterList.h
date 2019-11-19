@@ -49,6 +49,16 @@ public:
 		return new IR::ParameterList(params);
 	}
 
+	static IR::ParameterList* gen_ing_params() {
+		IR::IndexedVector< IR::Parameter > pars;
+
+		pars.push_back(parameter::gen_ing_headers());
+		pars.push_back(parameter::gen_ing_meta());
+		pars.push_back(parameter::gen_ing_sm());
+
+		return new IR::ParameterList(pars);
+	}
+
 };
 
 

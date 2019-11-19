@@ -6,6 +6,7 @@
 
 #include "bool.h"
 #include "bit.h"
+#include "int.h"
 
 #include "codegen.h"
 #include "scope.h"
@@ -17,6 +18,11 @@ class expression {
 public:
 	const char* types[0] = {
 	};
+
+
+	static std::vector<IR::Expression *> boolean_exprs;
+	static std::map<IR::Expression *, cstring> mp_expr_2_type;
+	static std::vector<IR::Expression *> bit_exprs;
 
 	expression (){
     }
@@ -41,7 +47,7 @@ public:
     // ( expression )
     // !, ~, -, +
 
-    static IR::Expression* gen_cond();
+    static IR::Expression* get_operand();
 };
 
 

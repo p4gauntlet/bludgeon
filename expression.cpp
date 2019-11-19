@@ -5,9 +5,33 @@
 
 namespace CODEGEN {
 
+
 const IR::Type* pick_field(std::map<cstring, const IR::Type*> &mp,
         const IR::Type* tp, std::vector<cstring> &call_bt, cstring &type);
 
+// -1: not a int, otherwise: int value;
+int check_if_int(cstring &str) {
+	int ret = -1;
+	bool is_int = true;
+	std::stringstream ss;
+	ss << str;
+	std::string s = ss.str();
+
+	for (auto it=s.begin(); it!=s.end(); it++) {
+		if (!std::isdigit(*it)) {
+			is_int = false;
+			break;
+		}
+	}
+
+	if (is_int == true) {
+		ret = std::stoi(s);
+	}
+
+	return ret;
+}
+
+// pick a lvalue
 const IR::Type* pick_lval(std::map<cstring, const IR::Type*> &mp,
         std::vector<cstring> &call_bt, cstring &type) {
     size_t cnt = 0;
@@ -32,6 +56,7 @@ const IR::Type* pick_lval(std::map<cstring, const IR::Type*> &mp,
     return pick_field(mp, tp, call_bt, type);
 }
 
+// pick field of a var or param
 const IR::Type* pick_field(std::map<cstring, const IR::Type*> &mp,
         const IR::Type* tp, std::vector<cstring> &call_bt, cstring &type) {
     if (tp == nullptr) {
@@ -73,6 +98,15 @@ const IR::Type* pick_field(std::map<cstring, const IR::Type*> &mp,
 		}
         return pick_field(mp, ref_tp, call_bt, type);
     }
+	else if (tp->is<IR::Type_Typedef>()) {
+		const IR::Type_Typedef* t = tp->to<IR::Type_Typedef>();
+		const IR::Type* ref_tp = t->type;
+		if (ref_tp == nullptr) {
+			BUG("nullptr not possible");
+		}
+		return pick_field(mp, ref_tp, call_bt, type);
+	}
+	// Tao: final types, either type_bits or type_boolean
     else if (tp->is<IR::Type_Bits>()) {
         const IR::Type_Bits* t = tp->to<IR::Type_Bits>();
         type = "type_bits";
@@ -83,32 +117,65 @@ const IR::Type* pick_field(std::map<cstring, const IR::Type*> &mp,
         type = "type_boolean";
         return t;
     }
+
+	return nullptr;
 }
 
+IR::Expression* construct_expr(std::vector<cstring> &call_bt) {
+	IR::Expression* expr;
 
-IR::Expression* expression::gen_cond() {
+	size_t cnt = 0;
+	for(auto i=call_bt.begin(); i<call_bt.end(); i++) {
+		if (cnt == 0) {
+			IR::ID name(*i);
+			expr = new IR::PathExpression(new IR::Path(name));
+		}
+		else {
+			int ret = check_if_int((*i));
+			if (ret == -1) {
+				// not int, then IR::Member
+				expr = new IR::Member(expr, IR::ID((*i)));
+			}
+			else {
+				// if int, the IR::ArrayIndex
+				expr = new IR::ArrayIndex(expr, new IR::Constant(int_literal::gen(), ret));
+			}
+		}
+		cnt = cnt+1;
+	}
+
+	return expr;
+}
+
+IR::Expression* expression::get_operand() {
     std::vector<cstring> call_backtrace;
     cstring type;
-    pick_lval(P4Scope::name_2_type_param, call_backtrace, type);
+	const IR::Type* tp = nullptr;
 
-    std::cout << "wdnmlgb\n";
-    for (auto &v : P4Scope::name_2_type_param) {
-        std::cout << v.first << std::endl;
-    }
+	int num_trials = 100;
+	while (num_trials--) {
+		if (rand()%2 == 0) {
+			tp = pick_lval(P4Scope::name_2_type_param, call_backtrace, type);
+		}
+		else {
+			tp = pick_lval(P4Scope::name_2_type_vars, call_backtrace, type);
+		}
 
-    std::cout << type << " call_backtrace11111:\n";
-    for (auto &v : call_backtrace) {
-        std::cout << v << std::endl;
-    }
+		if (tp != nullptr) {
+			break;
+		}
+	}
 
-    call_backtrace.clear();
+	if (tp == nullptr) {
+		return nullptr;
+	}
 
-    pick_lval(P4Scope::name_2_type_vars, call_backtrace, type);
+	std::cout << "call backtrace!!!!!\n";
+	for (auto &i : call_backtrace) {
+		std::cout << i << std::endl;
+	}
 
-    std::cout << type << " call_backtrace22222:\n";
-    for (auto &v : call_backtrace) {
-        std::cout << v << std::endl;
-    }
+	return construct_expr(call_backtrace);
 }
 
 
