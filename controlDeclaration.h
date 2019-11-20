@@ -76,12 +76,11 @@ public:
 		auto blk_gen = new blockStatement();
 		blk = blk_gen->gen();
 
-        expression::get_operand();
-        expression::get_operand();
-        expression::get_operand();
-        expression::get_operand();
-        expression::get_operand();
-
+		std::cout << expression::construct_op_expr() << std::endl;
+		std::cout << expression::construct_op_expr() << std::endl;
+		std::cout << expression::construct_op_expr() << std::endl;
+		std::cout << expression::construct_op_expr() << std::endl;
+		std::cout << expression::construct_op_expr() << std::endl;
 
 		// return new IR::P4Control((type_ctrl->name), type_ctrl, constructor_params, local_decls, blk);
         // end of scope
@@ -101,18 +100,6 @@ public:
 		// IR::ParameterList* constructor_params;
 		IR::IndexedVector< IR::Declaration > local_decls;
 		IR::BlockStatement *blk = new IR::BlockStatement();
-
-        expression::get_operand();
-        expression::get_operand();
-        expression::get_operand();
-        expression::get_operand();
-        expression::get_operand();
-        expression::get_operand();
-        expression::get_operand();
-        expression::get_operand();
-        expression::get_operand();
-        expression::get_operand();
-
 
 
         // end of scope

@@ -5,6 +5,9 @@
 
 namespace CODEGEN {
 
+std::vector<IR::Expression *> expression::boolean_exprs;
+std::map<IR::Expression *, const IR::Type*> expression::mp_expr_2_type;
+std::vector<IR::Expression *> expression::bit_exprs;
 
 const IR::Type* pick_field(std::map<cstring, const IR::Type*> &mp,
         const IR::Type* tp, std::vector<cstring> &call_bt, cstring &type);
@@ -108,14 +111,14 @@ const IR::Type* pick_field(std::map<cstring, const IR::Type*> &mp,
 	}
 	// Tao: final types, either type_bits or type_boolean
     else if (tp->is<IR::Type_Bits>()) {
-        const IR::Type_Bits* t = tp->to<IR::Type_Bits>();
-        type = "type_bits";
-        return t;
+        // const IR::Type_Bits* t = tp->to<IR::Type_Bits>();
+        type = EXPR_TYPE_BITS;
+        return tp;
     }
     else if (tp->is<IR::Type_Boolean>()) {
-        const IR::Type_Boolean* t = tp->to<IR::Type_Boolean>();
-        type = "type_boolean";
-        return t;
+        // const IR::Type_Boolean* t = tp->to<IR::Type_Boolean>();
+        type = EXPR_TYPE_BOOL;
+        return tp;
     }
 
 	return nullptr;
@@ -147,37 +150,165 @@ IR::Expression* construct_expr(std::vector<cstring> &call_bt) {
 	return expr;
 }
 
-IR::Expression* expression::get_operand() {
+IR::Expression* expression::get_operand(int pa_or_var, const IR::Type** tp, cstring &type) {
     std::vector<cstring> call_backtrace;
-    cstring type;
-	const IR::Type* tp = nullptr;
 
-	int num_trials = 100;
-	while (num_trials--) {
-		if (rand()%2 == 0) {
-			tp = pick_lval(P4Scope::name_2_type_param, call_backtrace, type);
-		}
-		else {
-			tp = pick_lval(P4Scope::name_2_type_vars, call_backtrace, type);
-		}
-
-		if (tp != nullptr) {
-			break;
-		}
+	if (pa_or_var == 0) {
+		*tp = pick_lval(P4Scope::name_2_type_param, call_backtrace, type);
+	}
+	else {
+		*tp = pick_lval(P4Scope::name_2_type_vars, call_backtrace, type);
 	}
 
-	if (tp == nullptr) {
+	if (*tp == nullptr) {
 		return nullptr;
-	}
-
-	std::cout << "call backtrace!!!!!\n";
-	for (auto &i : call_backtrace) {
-		std::cout << i << std::endl;
 	}
 
 	return construct_expr(call_backtrace);
 }
 
+IR::Expression* expression::get_bit_operand(const IR::Type** tp) {
+	IR::Expression* expr = nullptr;
+	cstring type;
+	int num_trials = 100;
+	while (num_trials--) {
+		expr = get_operand(rand()%2, tp, type);
+		if (expr!=nullptr && type==EXPR_TYPE_BITS) {
+			break;
+		}
+	}
+
+	return expr;
+}
+
+IR::Expression* expression::get_op_expr() {
+	IR::Expression* expr = nullptr;
+	const IR::Type *tp = nullptr;
+	bool is_from_vector = false;
+	if (bit_exprs.size() != 0) {
+		size_t ind = rand()%bit_exprs.size();
+		expr = bit_exprs.at(ind);
+		bit_exprs.erase(bit_exprs.begin()+ind);
+		is_from_vector = true;
+	}
+	else {
+		expr = get_bit_operand(&tp);
+	}
+
+	if (expr == nullptr) {
+		return nullptr;
+	}
+
+	if (is_from_vector == false) {
+		mp_expr_2_type[expr] = tp;
+	}
+
+	return expr;
+}
+
+IR::Expression* expression::construct_l_val() {
+}
+
+IR::Expression* expression::construct_op_expr() {
+	IR::Expression *expr;
+	IR::Expression *expr1, *expr2;
+	expr1 = get_op_expr();
+	expr2 = get_op_expr();
+	if (expr1==nullptr || expr2==nullptr) {
+		return nullptr;
+	}
+
+	switch(2) {
+		case 0: expr = new IR::Cmpl(expr1); mp_expr_2_type[expr] = mp_expr_2_type[expr1]; break;
+		case 1: expr = new IR::Neg(expr1); mp_expr_2_type[expr] = mp_expr_2_type[expr2]; break;
+		case 2: {
+					auto tp = mp_expr_2_type[expr1];
+					int size = tp->to<IR::Type_Bits>()->size;
+					int r_range = rand()%size;
+					int l_range = rand()%(size-r_range)+r_range;
+					expr = new IR::Slice(expr1, new IR::Constant(l_range),
+											new IR::Constant(r_range));
+				}
+	}
+
+
+
+	return expr;
+}
+
+IR::Expression* expression::get_cond_expr() {
+	IR::Expression* expr = nullptr;
+	const IR::Type* tp = nullptr;
+	cstring type;
+	bool is_from_vector = false;
+	if (boolean_exprs.size() != 0) {
+		size_t ind = rand()%boolean_exprs.size();
+		expr = boolean_exprs.at(ind);
+		boolean_exprs.erase(boolean_exprs.begin()+ind);
+		is_from_vector = true;
+	}
+	else {
+		int num_trials = 100;
+		while (num_trials--) {
+			expr = get_operand(rand()%2, &tp, type);
+			if (expr != nullptr) {
+				break;
+			}
+		}
+	}
+
+	if (expr == nullptr) {
+		return nullptr;
+	}
+
+	if (is_from_vector == false) {
+		if (type == EXPR_TYPE_BOOL) {
+			switch(rand()%6) {
+			case 0: expr = new IR::Equ(expr, bool_literal::gen_literal()); break;
+			case 1: expr = new IR::Geq(expr, bool_literal::gen_literal()); break;
+			case 2: expr = new IR::Grt(expr, bool_literal::gen_literal()); break;
+			case 3: expr = new IR::Leq(expr, bool_literal::gen_literal()); break;
+			case 4: expr = new IR::Lss(expr, bool_literal::gen_literal()); break;
+			case 5: expr = new IR::Neq(expr, bool_literal::gen_literal()); break;
+			}
+		}
+		else if (type == EXPR_TYPE_BITS) {
+			switch(rand()%6) {
+			case 0: expr = new IR::Equ(expr, bit_literal::gen_literal()); break;
+			case 1: expr = new IR::Geq(expr, bit_literal::gen_literal()); break;
+			case 2: expr = new IR::Grt(expr, bit_literal::gen_literal()); break;
+			case 3: expr = new IR::Leq(expr, bit_literal::gen_literal()); break;
+			case 4: expr = new IR::Lss(expr, bit_literal::gen_literal()); break;
+			case 5: expr = new IR::Neq(expr, bit_literal::gen_literal()); break;
+			}
+		}
+	}
+
+	return expr;
+}
+
+IR::Expression* expression::construct_cond_expr() {
+	IR::Expression *expr = nullptr;
+	IR::Expression *expr1, *expr2;
+	expr1 = get_cond_expr();
+	expr2 = get_cond_expr();
+	if (expr1==nullptr || expr2==nullptr) {
+		return nullptr;
+	}
+
+	switch (rand()%3) {
+		case 0: expr = new IR::LNot(expr1); break;
+		case 1: expr = new IR::LAnd(expr1, expr2); break;
+		case 2: expr = new IR::LOr(expr1, expr2); break;
+	}
+
+	if (expr != nullptr) {
+		boolean_exprs.push_back(expr);
+	}
+
+
+	return expr;
+}
 
 
 } // namespace CODEGEN
