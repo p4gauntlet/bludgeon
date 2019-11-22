@@ -76,11 +76,13 @@ public:
 		auto blk_gen = new blockStatement();
 		blk = blk_gen->gen();
 
-		std::cout << expression::construct_op_expr() << std::endl;
-		std::cout << expression::construct_op_expr() << std::endl;
-		std::cout << expression::construct_op_expr() << std::endl;
-		std::cout << expression::construct_op_expr() << std::endl;
-		std::cout << expression::construct_op_expr() << std::endl;
+		int xxx = 5;
+		while (xxx--) {
+			IR::Expression* pppp = expression::construct_op_expr();
+			if (pppp != nullptr) {
+				std::cout << pppp << std::endl;
+			}
+		}
 
 		// return new IR::P4Control((type_ctrl->name), type_ctrl, constructor_params, local_decls, blk);
         // end of scope

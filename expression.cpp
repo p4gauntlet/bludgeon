@@ -8,6 +8,7 @@ namespace CODEGEN {
 std::vector<IR::Expression *> expression::boolean_exprs;
 std::map<IR::Expression *, const IR::Type*> expression::mp_expr_2_type;
 std::vector<IR::Expression *> expression::bit_exprs;
+std::set<IR::Expression *> expression::forbidden_exprs;
 
 const IR::Type* pick_field(std::map<cstring, const IR::Type*> &mp,
         const IR::Type* tp, std::vector<cstring> &call_bt, cstring &type);
@@ -185,7 +186,7 @@ IR::Expression* expression::get_op_expr() {
 	IR::Expression* expr = nullptr;
 	const IR::Type *tp = nullptr;
 	bool is_from_vector = false;
-	if (bit_exprs.size() != 0) {
+	if (bit_exprs.size()!=0 && rand()%2==0) {
 		size_t ind = rand()%bit_exprs.size();
 		expr = bit_exprs.at(ind);
 		bit_exprs.erase(bit_exprs.begin()+ind);
@@ -209,6 +210,93 @@ IR::Expression* expression::get_op_expr() {
 IR::Expression* expression::construct_l_val() {
 }
 
+IR::Expression* construct_slice(IR::Expression* expr1) {
+	IR::Expression* expr = nullptr;
+	if (expression::forbidden_exprs.find(expr1) != expression::forbidden_exprs.end()) {
+		return nullptr;
+	}
+	
+	auto tp = expression::mp_expr_2_type[expr1];
+	int size = tp->to<IR::Type_Bits>()->size;
+	if (size == 0) {
+		return nullptr;
+	}
+	int r_range = rand()%size;
+	int l_range = rand()%(size-r_range)+r_range;
+	expr = new IR::Slice(expr1, new IR::Constant(l_range),
+							new IR::Constant(r_range));
+	expression::mp_expr_2_type.emplace(expr, new IR::Type_Bits(l_range-r_range+1, false));
+	expression::bit_exprs.push_back(expr);
+
+	return expr;
+}
+
+IR::Expression* construct_mux(IR::Expression* expr1, IR::Expression* expr2) {
+	IR::Expression* expr = nullptr;
+	if (expression::forbidden_exprs.find(expr1) != expression::forbidden_exprs.end() ||
+			expression::forbidden_exprs.find(expr2) != expression::forbidden_exprs.end()) {
+		return nullptr;
+	}
+	auto tp1 = expression::mp_expr_2_type[expr1];
+	auto tp2 = expression::mp_expr_2_type[expr2];
+	int size1 = tp1->to<IR::Type_Bits>()->size;
+	int size2 = tp2->to<IR::Type_Bits>()->size;
+	int size = size1>size2?size1:size2;
+	IR::Expression *ca_expr1, *ca_expr2;
+	if (size > size1) {
+		ca_expr1 = new IR::Cast(new IR::Type_Bits(size, false), expr1);
+		expr = new IR::Mux(expression::get_cond_expr(), ca_expr1, expr2);
+	}
+	if (size > size2) {
+		ca_expr2 = new IR::Cast(new IR::Type_Bits(size, false), expr2);
+		expr = new IR::Mux(expression::get_cond_expr(), expr1, ca_expr2);
+	}
+
+	expr = new IR::Mux(expression::get_cond_expr(), ca_expr1, ca_expr2);
+	expression::mp_expr_2_type.emplace(expr, new IR::Type_Bits(size, false));
+
+	return expr;
+}
+
+template<typename T>
+IR::Expression* construct_2_ops(IR::Expression* expr1, IR::Expression* expr2, bool if_cast=true) {
+	IR::Expression* expr = nullptr;
+	if (expression::forbidden_exprs.find(expr1) != expression::forbidden_exprs.end() ||
+			expression::forbidden_exprs.find(expr2) != expression::forbidden_exprs.end()) {
+		return nullptr;
+	}
+	if (if_cast == true) {
+		auto tp1 = expression::mp_expr_2_type[expr1];
+		auto tp2 = expression::mp_expr_2_type[expr2];
+		int size1 = tp1->to<IR::Type_Bits>()->size;
+		int size2 = tp2->to<IR::Type_Bits>()->size;
+		int size = size1>size2?size1:size2;
+		IR::Expression *ca_expr1, *ca_expr2;
+		if (size > size1) {
+			ca_expr1 = new IR::Cast(new IR::Type_Bits(size, false), expr1);
+			expr = new T(ca_expr1, expr2);
+		}
+		if (size > size2) {
+			ca_expr2 = new IR::Cast(new IR::Type_Bits(size, false), expr2);
+			expr = new T(expr1, ca_expr2);
+		}
+
+		expression::mp_expr_2_type.emplace(expr, new IR::Type_Bits(size, false));
+	}
+	else {
+		expr = new T(expr1, expr2);
+		expression::mp_expr_2_type[expr] = expression::mp_expr_2_type[expr1];
+	}
+
+	return expr;
+}
+
+void test_expr(IR::Expression* expr) {
+	auto tp = expression::mp_expr_2_type[expr];
+	int size = tp->to<IR::Type_Bits>()->size;
+	std::cout << size << std::endl;
+}
+
 IR::Expression* expression::construct_op_expr() {
 	IR::Expression *expr;
 	IR::Expression *expr1, *expr2;
@@ -218,17 +306,31 @@ IR::Expression* expression::construct_op_expr() {
 		return nullptr;
 	}
 
-	switch(2) {
-		case 0: expr = new IR::Cmpl(expr1); mp_expr_2_type[expr] = mp_expr_2_type[expr1]; break;
-		case 1: expr = new IR::Neg(expr1); mp_expr_2_type[expr] = mp_expr_2_type[expr2]; break;
-		case 2: {
-					auto tp = mp_expr_2_type[expr1];
-					int size = tp->to<IR::Type_Bits>()->size;
-					int r_range = rand()%size;
-					int l_range = rand()%(size-r_range)+r_range;
-					expr = new IR::Slice(expr1, new IR::Constant(l_range),
-											new IR::Constant(r_range));
-				}
+	int num_trials = 100;
+	while (num_trials--) {
+		switch(3) { // Tao: test it!!!!!
+			case 0: expr = new IR::Cmpl(expr1); mp_expr_2_type[expr] = mp_expr_2_type[expr1]; bit_exprs.push_back(expr); break;
+			case 1: expr = new IR::Neg(expr1); mp_expr_2_type[expr] = mp_expr_2_type[expr1]; bit_exprs.push_back(expr); break;
+			case 2: expr = construct_slice(expr1); break;
+			case 3: expr = construct_2_ops<IR::Mul>(expr1, expr2); break;
+			case 4: expr = construct_2_ops<IR::Div>(expr1, expr2); break;
+			case 5: expr = construct_2_ops<IR::Mod>(expr1, expr2); break;
+			case 6: expr = construct_2_ops<IR::Add>(expr1, expr2); break;
+			case 7: expr = construct_2_ops<IR::Sub>(expr1, expr2); break;
+			case 8: expr = construct_2_ops<IR::AddSat>(expr1, expr2); break;
+			case 9: expr = construct_2_ops<IR::SubSat>(expr1, expr2); break;
+			case 10: expr = construct_2_ops<IR::BAnd>(expr1, expr2); break;
+			case 11: expr = construct_2_ops<IR::BOr>(expr1, expr2); break;
+			case 12: expr = construct_2_ops<IR::BXor>(expr1, expr2); break;
+			case 13: expr = construct_2_ops<IR::Shr>(expr1, expr2, false); break;
+			case 14: expr = construct_2_ops<IR::Shl>(expr1, expr2, false); break;
+			case 15: expr = construct_mux(expr1, expr2); break;
+		}
+
+		if (expr != nullptr) {
+			test_expr(expr);
+			break;
+		}
 	}
 
 
@@ -241,7 +343,7 @@ IR::Expression* expression::get_cond_expr() {
 	const IR::Type* tp = nullptr;
 	cstring type;
 	bool is_from_vector = false;
-	if (boolean_exprs.size() != 0) {
+	if (boolean_exprs.size()!=0 && rand()%2==0) {
 		size_t ind = rand()%boolean_exprs.size();
 		expr = boolean_exprs.at(ind);
 		boolean_exprs.erase(boolean_exprs.begin()+ind);

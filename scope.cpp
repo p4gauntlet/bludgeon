@@ -136,11 +136,11 @@ void P4Scope::trim_scope() {
 }
 
 void P4Scope::print_scope() {
-	for (auto i = scope.begin(); i<scope.end(); i++) {
-		for (size_t j=0; j< (*i)->size(); j++) {
-			std::cout << (*i)->at(j) << std::endl;
-		}
-	}
+	// for (auto i = scope.begin(); i<scope.end(); i++) {
+	// 	for (size_t j=0; j< (*i)->size(); j++) {
+	// 		std::cout << (*i)->at(j) << std::endl;
+	// 	}
+	// }
 }
 
 
