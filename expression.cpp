@@ -252,7 +252,6 @@ IR::Expression* construct_mux(IR::Expression* expr1, IR::Expression* expr2) {
 		expr = new IR::Mux(expression::get_cond_expr(), expr1, ca_expr2);
 	}
 
-	expr = new IR::Mux(expression::get_cond_expr(), ca_expr1, ca_expr2);
 	expression::mp_expr_2_type.emplace(expr, new IR::Type_Bits(size, false));
 
 	return expr;
@@ -308,7 +307,7 @@ IR::Expression* expression::construct_op_expr() {
 
 	int num_trials = 100;
 	while (num_trials--) {
-		switch(3) { // Tao: test it!!!!!
+		switch(15) { // Tao: test it!!!!!
 			case 0: expr = new IR::Cmpl(expr1); mp_expr_2_type[expr] = mp_expr_2_type[expr1]; bit_exprs.push_back(expr); break;
 			case 1: expr = new IR::Neg(expr1); mp_expr_2_type[expr] = mp_expr_2_type[expr1]; bit_exprs.push_back(expr); break;
 			case 2: expr = construct_slice(expr1); break;
