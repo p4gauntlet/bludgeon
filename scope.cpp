@@ -1,5 +1,8 @@
 #include "scope.h"
 
+#include "expression.h"
+
+
 namespace CODEGEN {
 
 std::vector< IR::Vector<IR::Node>* > P4Scope::scope;
@@ -12,6 +15,26 @@ std::set<cstring> P4Scope::types_w_stack;
 void P4Scope::add_to_scope(IR::Node* n) {
 	auto l_scope = P4Scope::scope.back();
 	l_scope->push_back(n);
+}
+
+void P4Scope::end_local_scope() {
+	IR::Vector<IR::Node>* local_scope = scope.back();
+
+    for (size_t i=0; i<local_scope->size(); i++) {
+		auto node = local_scope->at(i);
+        if (node->is<IR::Declaration>()) {
+			auto decl = node->to<IR::Declaration>();
+            name_2_type_param.erase(decl->name.name);
+            name_2_type_vars.erase(decl->name.name);
+            name_2_type_const.erase(decl->name.name);
+        }
+    }
+
+	delete local_scope;
+	scope.pop_back();
+
+	// clear the expressions
+	expression::clear_data_structs();
 }
 
 void P4Scope::get_all_type_names(cstring filter, std::vector<cstring> &type_names) {
@@ -40,6 +63,14 @@ void P4Scope::get_all_type_names(cstring filter, std::vector<cstring> &type_name
 					type_names.push_back(tmp_obj->name.name);
                 }
             }
+			else if (filter==STRUCT_LIKE) {
+				if (obj->is<IR::Type_StructLike>()) {
+					auto tmp_obj = obj->to<IR::Type_StructLike>();
+					// Tao: can we?
+					if (tmp_obj->name.name != "standard_metadata_t")
+						type_names.push_back(tmp_obj->name.name);
+				}
+			}
 			else {
 				if (obj->is<IR::Type_Declaration>()) {
 					auto tmp_obj = obj->to<IR::Type_Declaration>();
@@ -65,7 +96,7 @@ std::vector<cstring> P4Scope::get_name_nodir_p4acts() {
 
 std::vector<const IR::P4Action*> P4Scope::get_p4actions_nodir() {
 	std::vector<const IR::P4Action*> ret;
-	auto p4actions_all = P4Scope::get_p4actions();
+	auto p4actions_all = P4Scope::get_decls<IR::P4Action>();
 
 	for (auto i=p4actions_all.begin(); i<p4actions_all.end(); i++) {
 		const IR::P4Action* p4act = *i;
@@ -88,19 +119,19 @@ std::vector<const IR::P4Action*> P4Scope::get_p4actions_nodir() {
 	return ret;
 }
 
-std::vector<const IR::P4Action*> P4Scope::get_p4actions() {
-	std::vector<const IR::P4Action*> ret;
+template <typename T>
+std::vector<const T*> P4Scope::get_decls() {
+	std::vector<const T*> ret;
 	for (auto i = scope.begin(); i<scope.end(); i++) {
 		for (size_t j=0; j< (*i)->size(); j++) {
 			auto obj = (*i)->at(j);
 
-			if (obj->is<IR::P4Action>()) {
-				const IR::P4Action* tmp_obj = obj->to<IR::P4Action>();
+			if (obj->is<T>()) {
+				const T* tmp_obj = obj->to<T>();
 				ret.push_back(tmp_obj);
 			}
 		}
 	}
-
 	return ret;
 }
 
@@ -130,9 +161,6 @@ IR::Type* P4Scope::get_type_by_name(cstring name) {
 		}
 	}
 	return nullptr;
-}
-
-void P4Scope::trim_scope() {
 }
 
 void P4Scope::print_scope() {

@@ -8,6 +8,7 @@ set (CODEGEN_SRCS
 	scope.cpp
 	scope.h
 	common.h
+	common.cpp
 	annotations.h
 	codegen.cpp
 	codegen.h

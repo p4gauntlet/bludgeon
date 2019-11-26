@@ -55,7 +55,7 @@ public:
 		    local_decls.push_back(const_decl->gen());
         }
         // variableDeclarations
-        for (int i=0; i<5; i++) {
+        for (int i=0; i<15; i++) {
             auto var_decl = new variableDeclaration();
             local_decls.push_back(var_decl->gen());
         }
@@ -78,7 +78,15 @@ public:
 
 		int xxx = 5;
 		while (xxx--) {
-			IR::Expression* pppp = expression::construct_op_expr();
+			IR::Expression* pppp = expression::construct_compound_cond_expr();
+			if (pppp != nullptr) {
+				std::cout << pppp << std::endl;
+			}
+			pppp = expression::construct_cond_expr();
+			if (pppp != nullptr) {
+				std::cout << pppp << std::endl;
+			}
+			pppp = expression::construct_op_expr();
 			if (pppp != nullptr) {
 				std::cout << pppp << std::endl;
 			}

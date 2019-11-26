@@ -13,6 +13,9 @@
 
 #define EXPR_TYPE_BITS "type_bits"
 #define EXPR_TYPE_BOOL "type_boolean"
+#define EXPR_TYPE_STRUCT "type_struct"
+#define EXPR_TYPE_HEADER "type_header"
+#define EXPR_TYPE_HUNION "type_hunion"
 
 namespace CODEGEN {
 
@@ -26,7 +29,7 @@ public:
 	static std::vector<IR::Expression *> boolean_exprs;
 	static std::map<IR::Expression *, const IR::Type*> mp_expr_2_type;
 	static std::vector<IR::Expression *> bit_exprs;
-	static std::set<IR::Expression *> forbidden_exprs;
+	static std::set<IR::Expression *> forbidden_exprs; // Tao: dont remember what it is for
 
 	expression (){
     }
@@ -51,14 +54,21 @@ public:
     // ( expression )
     // !, ~, -, +
 
-	static IR::Expression* get_operand(int pa_or_var, const IR::Type** tp, cstring &type);
+	// basically, use get_operand to get a operand (bit or bool if not compound)
+	static IR::Expression* get_operand(int pa_or_var, const IR::Type** tp, cstring &type, bool if_compound);
+	// want a bit operand, not a bool
 	static IR::Expression* get_bit_operand(const IR::Type** tp);
+	// get an expression of cond or op
 	static IR::Expression* get_cond_expr();
 	static IR::Expression* get_op_expr();
+	// construct more complex operations on cond and op
 	static IR::Expression* construct_cond_expr();
 	static IR::Expression* construct_op_expr();
-	static IR::Expression* construct_l_val();
 
+	// TODO: some allowed operations on compound types
+	// e.g. ==, != for cond, =,
+	static IR::Expression* construct_compound_cond_expr();
+	static IR::Expression* construct_compound_op_expr();
 
 	static void clear_data_structs() {
 		boolean_exprs.clear();

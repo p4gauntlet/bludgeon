@@ -36,12 +36,9 @@ public:
 	}
 
 
-
-
-	// Tao: maybe some customizations
 	IR::Declaration_Variable* gen() {
 		std::vector<int> types = {};
-		typeRef* type_ref = new typeRef(true, types, STRUCT);
+		typeRef* type_ref = new typeRef(true, types, STRUCT_LIKE);
 		type = type_ref->gen();
 
 

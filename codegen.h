@@ -17,9 +17,6 @@ static const char alphanum[] =
 
 namespace CODEGEN {
 
-cstring randstr(size_t len);
-
-
 
 class CGenerator {
 public:

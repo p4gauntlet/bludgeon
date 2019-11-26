@@ -11,7 +11,7 @@ std::vector<IR::Expression *> expression::bit_exprs;
 std::set<IR::Expression *> expression::forbidden_exprs;
 
 const IR::Type* pick_field(std::map<cstring, const IR::Type*> &mp,
-        const IR::Type* tp, std::vector<cstring> &call_bt, cstring &type);
+        const IR::Type* tp, std::vector<cstring> &call_bt, cstring &type, bool if_compound);
 
 // -1: not a int, otherwise: int value;
 int check_if_int(cstring &str) {
@@ -37,7 +37,7 @@ int check_if_int(cstring &str) {
 
 // pick a lvalue
 const IR::Type* pick_lval(std::map<cstring, const IR::Type*> &mp,
-        std::vector<cstring> &call_bt, cstring &type) {
+        std::vector<cstring> &call_bt, cstring &type, bool if_compound) {
     size_t cnt = 0;
     cstring name;
     const IR::Type* tp = nullptr;
@@ -57,19 +57,30 @@ const IR::Type* pick_lval(std::map<cstring, const IR::Type*> &mp,
 
     call_bt.push_back(name);
 
-    return pick_field(mp, tp, call_bt, type);
+    return pick_field(mp, tp, call_bt, type, if_compound);
 }
 
 // pick field of a var or param
 const IR::Type* pick_field(std::map<cstring, const IR::Type*> &mp,
-        const IR::Type* tp, std::vector<cstring> &call_bt, cstring &type) {
+        const IR::Type* tp, std::vector<cstring> &call_bt, cstring &type, bool if_compound) {
     if (tp == nullptr) {
         return tp;
     }
 
     if (tp->is<IR::Type_StructLike>()) {
+		if (if_compound == true) {
+			if (tp->is<IR::Type_Struct>()) {
+				type = EXPR_TYPE_STRUCT;
+			}
+			else if (tp->is<IR::Type_Header>()) {
+				type = EXPR_TYPE_HEADER;
+			}
+			else if (tp->is<IR::Type_HeaderUnion>()) {
+				type = EXPR_TYPE_HUNION;
+			}
+			return tp;
+		}
         const IR::Type_StructLike* t = tp->to<IR::Type_StructLike>();
-        // call_bt.push_back(t->name.name);
         size_t cnt = 0;
         const IR::StructField* sf = nullptr;
         for (size_t i=0; i<t->fields.size(); i++) {
@@ -79,12 +90,12 @@ const IR::Type* pick_field(std::map<cstring, const IR::Type*> &mp,
                 break;
             }
         }
-        return pick_field(mp, (IR::Type *)sf, call_bt, type);
+        return pick_field(mp, (IR::Type *)sf, call_bt, type, if_compound);
     }
     else if (tp->is<IR::StructField>()) {
         const IR::StructField* t = tp->to<IR::StructField>();
         call_bt.push_back(t->name.name);
-        return pick_field(mp, t->type, call_bt, type);
+        return pick_field(mp, t->type, call_bt, type, if_compound);
     }
     else if (tp->is<IR::Type_Stack>()) {
         std::stringstream ss;
@@ -92,7 +103,7 @@ const IR::Type* pick_field(std::map<cstring, const IR::Type*> &mp,
         ss << rand()%t->getSize();
         cstring name(ss.str());
         call_bt.push_back(name);
-        return pick_field(mp, t->elementType, call_bt, type);
+        return pick_field(mp, t->elementType, call_bt, type, if_compound);
     }
     else if (tp->is<IR::Type_Name>()) {
         const IR::Type_Name* t = tp->to<IR::Type_Name>();
@@ -100,7 +111,7 @@ const IR::Type* pick_field(std::map<cstring, const IR::Type*> &mp,
 		if (ref_tp == nullptr) {
 			BUG("nullptr not possible");
 		}
-        return pick_field(mp, ref_tp, call_bt, type);
+        return pick_field(mp, ref_tp, call_bt, type, if_compound);
     }
 	else if (tp->is<IR::Type_Typedef>()) {
 		const IR::Type_Typedef* t = tp->to<IR::Type_Typedef>();
@@ -108,7 +119,7 @@ const IR::Type* pick_field(std::map<cstring, const IR::Type*> &mp,
 		if (ref_tp == nullptr) {
 			BUG("nullptr not possible");
 		}
-		return pick_field(mp, ref_tp, call_bt, type);
+		return pick_field(mp, ref_tp, call_bt, type, if_compound);
 	}
 	// Tao: final types, either type_bits or type_boolean
     else if (tp->is<IR::Type_Bits>()) {
@@ -151,14 +162,14 @@ IR::Expression* construct_expr(std::vector<cstring> &call_bt) {
 	return expr;
 }
 
-IR::Expression* expression::get_operand(int pa_or_var, const IR::Type** tp, cstring &type) {
+IR::Expression* expression::get_operand(int pa_or_var, const IR::Type** tp, cstring &type, bool if_compound) {
     std::vector<cstring> call_backtrace;
 
 	if (pa_or_var == 0) {
-		*tp = pick_lval(P4Scope::name_2_type_param, call_backtrace, type);
+		*tp = pick_lval(P4Scope::name_2_type_param, call_backtrace, type, if_compound);
 	}
 	else {
-		*tp = pick_lval(P4Scope::name_2_type_vars, call_backtrace, type);
+		*tp = pick_lval(P4Scope::name_2_type_vars, call_backtrace, type, if_compound);
 	}
 
 	if (*tp == nullptr) {
@@ -168,12 +179,13 @@ IR::Expression* expression::get_operand(int pa_or_var, const IR::Type** tp, cstr
 	return construct_expr(call_backtrace);
 }
 
+
 IR::Expression* expression::get_bit_operand(const IR::Type** tp) {
 	IR::Expression* expr = nullptr;
 	cstring type;
 	int num_trials = 100;
 	while (num_trials--) {
-		expr = get_operand(rand()%2, tp, type);
+		expr = get_operand(rand()%2, tp, type, false);
 		if (expr!=nullptr && type==EXPR_TYPE_BITS) {
 			break;
 		}
@@ -207,8 +219,6 @@ IR::Expression* expression::get_op_expr() {
 	return expr;
 }
 
-IR::Expression* expression::construct_l_val() {
-}
 
 IR::Expression* construct_slice(IR::Expression* expr1) {
 	IR::Expression* expr = nullptr;
@@ -253,6 +263,7 @@ IR::Expression* construct_mux(IR::Expression* expr1, IR::Expression* expr2) {
 	}
 
 	expression::mp_expr_2_type.emplace(expr, new IR::Type_Bits(size, false));
+	expression::bit_exprs.push_back(expr);
 
 	return expr;
 }
@@ -286,14 +297,9 @@ IR::Expression* construct_2_ops(IR::Expression* expr1, IR::Expression* expr2, bo
 		expr = new T(expr1, expr2);
 		expression::mp_expr_2_type[expr] = expression::mp_expr_2_type[expr1];
 	}
+	expression::bit_exprs.push_back(expr);
 
 	return expr;
-}
-
-void test_expr(IR::Expression* expr) {
-	auto tp = expression::mp_expr_2_type[expr];
-	int size = tp->to<IR::Type_Bits>()->size;
-	std::cout << size << std::endl;
 }
 
 IR::Expression* expression::construct_op_expr() {
@@ -307,7 +313,7 @@ IR::Expression* expression::construct_op_expr() {
 
 	int num_trials = 100;
 	while (num_trials--) {
-		switch(15) { // Tao: test it!!!!!
+		switch(rand()%16) {
 			case 0: expr = new IR::Cmpl(expr1); mp_expr_2_type[expr] = mp_expr_2_type[expr1]; bit_exprs.push_back(expr); break;
 			case 1: expr = new IR::Neg(expr1); mp_expr_2_type[expr] = mp_expr_2_type[expr1]; bit_exprs.push_back(expr); break;
 			case 2: expr = construct_slice(expr1); break;
@@ -327,7 +333,6 @@ IR::Expression* expression::construct_op_expr() {
 		}
 
 		if (expr != nullptr) {
-			test_expr(expr);
 			break;
 		}
 	}
@@ -351,7 +356,7 @@ IR::Expression* expression::get_cond_expr() {
 	else {
 		int num_trials = 100;
 		while (num_trials--) {
-			expr = get_operand(rand()%2, &tp, type);
+			expr = get_operand(rand()%2, &tp, type, false);
 			if (expr != nullptr) {
 				break;
 			}
@@ -383,7 +388,12 @@ IR::Expression* expression::get_cond_expr() {
 			case 5: expr = new IR::Neq(expr, bit_literal::gen_literal()); break;
 			}
 		}
+
+		if (expr != nullptr) {
+			boolean_exprs.push_back(expr);
+		}
 	}
+
 
 	return expr;
 }
@@ -411,6 +421,83 @@ IR::Expression* expression::construct_cond_expr() {
 	return expr;
 }
 
+IR::Expression* get_compound_operand(const IR::Type** tp, cstring compound_type) {
+	IR::Expression* expr = nullptr;
+	cstring type;
+	int num_trials = 100;
+	while (num_trials--) {
+		expr = expression::get_operand(rand()%2, tp, type, true);
+		if (expr!=nullptr && type==compound_type) {
+			break;
+		}
+	}
+	return expr;
+}
+
+bool get_two_compound_operands(IR::Expression** expr1, IR::Expression** expr2, 
+					const IR::Type** tp1, const IR::Type** tp2) {
+	bool ret = false;
+	int num_trails = 500;
+	while (num_trails--) {
+		*expr1 = get_compound_operand(tp1, EXPR_TYPE_STRUCT);
+		*expr2 = get_compound_operand(tp2, EXPR_TYPE_STRUCT);
+		if (*expr1!=nullptr && *expr2!=nullptr && 
+				(*tp1)->is<IR::Type_Struct>() &&
+				(*tp2)->is<IR::Type_Struct>()) {
+			if ((*tp1)->to<IR::Type_Struct>()->name.name ==
+					(*tp2)->to<IR::Type_Struct>()->name.name) {
+				ret = true;
+				return ret;
+			}
+		}
+
+		*expr1 = get_compound_operand(tp1, EXPR_TYPE_HEADER);
+		*expr2 = get_compound_operand(tp2, EXPR_TYPE_HEADER);
+		if (*expr1!=nullptr && *expr2!=nullptr &&
+				(*tp1)->is<IR::Type_Header>() &&
+				(*tp2)->is<IR::Type_Header>()) {
+			if ((*tp1)->to<IR::Type_Header>()->name.name ==
+					(*tp2)->to<IR::Type_Header>()->name.name) {
+				ret = true;
+				return ret;
+			}
+		}
+
+		*expr1 = get_compound_operand(tp1, EXPR_TYPE_HUNION);
+		*expr2 = get_compound_operand(tp2, EXPR_TYPE_HUNION);
+		if (*expr1!=nullptr && *expr2!=nullptr &&
+				(*tp1)->is<IR::Type_HeaderUnion>() &&
+				(*tp2)->is<IR::Type_HeaderUnion>()) {
+			if ((*tp1)->to<IR::Type_HeaderUnion>()->name.name ==
+					(*tp2)->to<IR::Type_HeaderUnion>()->name.name) {
+				return true;
+				return ret;
+			}
+		}
+	}
+
+	return ret;
+}
+
+IR::Expression* expression::construct_compound_cond_expr() {
+	IR::Expression* expr = nullptr;
+	IR::Expression* expr1, * expr2;
+	const IR::Type* tp1;
+	const IR::Type* tp2;
+	if (get_two_compound_operands(&expr1, &expr2, &tp1, &tp2) == true) {
+		switch (rand()%2) {
+			case 0: expr = new IR::Neq(expr1, expr2); break;
+			case 1: expr = new IR::Equ(expr1, expr2); break;
+		}
+		if (expr != nullptr) {
+			boolean_exprs.push_back(expr);
+		}
+	}
+	return expr;
+}
+
+IR::Expression* expression::construct_compound_op_expr() {
+}
 
 } // namespace CODEGEN
 
