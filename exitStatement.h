@@ -13,6 +13,12 @@ public:
 
 	exitStatement() {
 	}
+	~exitStatement() {
+	}
+
+	static IR::ExitStatement* gen() {
+		return new IR::ExitStatement();
+	}
 
 };
 

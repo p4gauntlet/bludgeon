@@ -76,6 +76,7 @@ public:
 		auto blk_gen = new blockStatement();
 		blk = blk_gen->gen();
 
+		// NOTE::::: this is for test, not actual code fragments
 		int xxx = 5;
 		while (xxx--) {
 			IR::Expression* pppp = expression::construct_compound_cond_expr();

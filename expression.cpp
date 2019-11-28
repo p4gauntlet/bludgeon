@@ -369,13 +369,13 @@ IR::Expression* expression::get_cond_expr() {
 
 	if (is_from_vector == false) {
 		if (type == EXPR_TYPE_BOOL) {
-			switch(rand()%6) {
+			switch(rand()%2) {
 			case 0: expr = new IR::Equ(expr, bool_literal::gen_literal()); break;
-			case 1: expr = new IR::Geq(expr, bool_literal::gen_literal()); break;
-			case 2: expr = new IR::Grt(expr, bool_literal::gen_literal()); break;
-			case 3: expr = new IR::Leq(expr, bool_literal::gen_literal()); break;
-			case 4: expr = new IR::Lss(expr, bool_literal::gen_literal()); break;
-			case 5: expr = new IR::Neq(expr, bool_literal::gen_literal()); break;
+			// case 1: expr = new IR::Geq(expr, bool_literal::gen_literal()); break;
+			// case 2: expr = new IR::Grt(expr, bool_literal::gen_literal()); break;
+			// case 3: expr = new IR::Leq(expr, bool_literal::gen_literal()); break;
+			// case 4: expr = new IR::Lss(expr, bool_literal::gen_literal()); break;
+			case 1: expr = new IR::Neq(expr, bool_literal::gen_literal()); break;
 			}
 		}
 		else if (type == EXPR_TYPE_BITS) {
@@ -434,7 +434,7 @@ IR::Expression* get_compound_operand(const IR::Type** tp, cstring compound_type)
 	return expr;
 }
 
-bool get_two_compound_operands(IR::Expression** expr1, IR::Expression** expr2, 
+bool expression::get_two_compound_operands(IR::Expression** expr1, IR::Expression** expr2, 
 					const IR::Type** tp1, const IR::Type** tp2) {
 	bool ret = false;
 	int num_trails = 500;

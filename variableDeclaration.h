@@ -38,7 +38,7 @@ public:
 
 	IR::Declaration_Variable* gen() {
 		std::vector<int> types = {};
-		typeRef* type_ref = new typeRef(true, types, STRUCT_LIKE);
+		typeRef* type_ref = new typeRef(true, types, HEADER_ONLY);
 		type = type_ref->gen();
 
 

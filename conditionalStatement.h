@@ -3,6 +3,9 @@
 
 #include "ir/ir.h"
 
+#include "expression.h"
+#include "statement.h"
+
 namespace CODEGEN {
 
 
@@ -13,7 +16,10 @@ public:
 
 	conditionalStatement() {
 	}
+	~conditionalStatement() {
+	}
 
+	static IR::IfStatement* gen_if_stat();
 };
 
 

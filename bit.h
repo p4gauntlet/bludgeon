@@ -17,6 +17,7 @@ public:
 	}
 
 	// isSigned, true -> int<>, false -> bit<>
+	// Tao: we only use false here
 	static IR::Type_Bits* gen(bool isSigned) {
 		int size = rand()%(sizeof(std_size)/sizeof(int));
 		return new IR::Type_Bits(std_size[size], isSigned);

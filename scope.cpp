@@ -11,6 +11,7 @@ std::map<cstring, const IR::Type*> P4Scope::name_2_type_param;
 std::map<cstring, const IR::Type*> P4Scope::name_2_type_vars;
 std::map<cstring, const IR::Type*> P4Scope::name_2_type_const;
 std::set<cstring> P4Scope::types_w_stack;
+const IR::Type* P4Scope::ret_type = nullptr;
 
 void P4Scope::add_to_scope(IR::Node* n) {
 	auto l_scope = P4Scope::scope.back();
@@ -69,6 +70,13 @@ void P4Scope::get_all_type_names(cstring filter, std::vector<cstring> &type_name
 					// Tao: can we?
 					if (tmp_obj->name.name != "standard_metadata_t")
 						type_names.push_back(tmp_obj->name.name);
+				}
+			}
+			else if (filter==HEADER_ONLY) {
+				if (obj->is<IR::Type_Header>() ||
+						obj->is<IR::Type_HeaderUnion>()) {
+					auto tmp_obj = obj->to<IR::Type_StructLike>();
+					type_names.push_back(tmp_obj->name.name);
 				}
 			}
 			else {

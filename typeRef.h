@@ -49,7 +49,7 @@ public:
 							if (for_type==HEADER_UNION || for_type==STRUCT_HEADERS) {
 								break;
 							}
-							std::vector<int> b_types = {1, 2};
+							std::vector<int> b_types = {1}; // only bit<>
 							auto base_type = new baseType(false, b_types);
 							tp = base_type->gen(); break;
 						}

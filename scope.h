@@ -21,6 +21,7 @@ public:
     static std::map<cstring, const IR::Type*> name_2_type_vars; // variable
     static std::map<cstring, const IR::Type*> name_2_type_const;
     static std::set<cstring> types_w_stack; // which type has a field whose type is stack
+	static const IR::Type* ret_type;
 
 	P4Scope() {
 	}

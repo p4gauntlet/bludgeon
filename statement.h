@@ -3,6 +3,12 @@
 
 #include "ir/ir.h"
 
+#include "assignmentOrMethodCallStatement.h"
+#include "conditionalStatement.h"
+#include "blockStatement.h"
+#include "exitStatement.h"
+#include "returnStatement.h"
+
 namespace CODEGEN {
 
 
@@ -21,7 +27,10 @@ public:
 
 	statement() {
 	}
+	~statement() {
+	}
 
+	static IR::Statement* gen_stat();
 };
 
 

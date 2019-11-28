@@ -6,6 +6,7 @@
 #define STRUCT "struct"
 #define STRUCT_HEADERS "struct_headers"
 #define STRUCT_LIKE "struct_like"
+#define HEADER_ONLY "HEADER_ONLY"
 
 #include "ir/ir.h"
 
