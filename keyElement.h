@@ -34,14 +34,26 @@ public:
 	}
 
 	IR::KeyElement *gen() {
+		IR::KeyElement* ke = nullptr;
 		auto annotat = new Annotations();
 		annotations = annotat->gen();
 		// TODO: how to generate meaningful expr
-		auto expr_gen = new expression();
-		expr = expr_gen->gen_literal(1);
+		IR::Expression* expr = nullptr;
+		const IR::Type *tp;
+		cstring str_type;
+		int num_trials = 100;
+		while(num_trials--) {
+			expr = expression::get_operand(rand()%2, &tp, str_type, false);
+			if (expr != nullptr) {
+				break;
+			}
+		}
 
-		// return
-		return new IR::KeyElement(annotations, expr, match_kind);
+		if (expr != nullptr) {
+			ke = new IR::KeyElement(annotations, expr, match_kind);
+		}
+
+		return ke;
 	}
 };
 

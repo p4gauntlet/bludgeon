@@ -15,6 +15,8 @@
 #include "tableDeclaration.h"
 #include "actionList.h"
 
+const std::vector<cstring> str_keywords = {"if", "else", "key", "actions"};
+
 cstring CODEGEN::randstr(size_t len) {
 	cstring ret;
 	std::stringstream ss;
@@ -24,6 +26,11 @@ cstring CODEGEN::randstr(size_t len) {
 			ss << alphanum[rand() % (sizeof(alphanum) - 1)];
 		}
 		ret = ss.str();
+		if (std::find(str_keywords.begin(),
+					str_keywords.end(), ret) != str_keywords.end()) {
+			continue;
+		}
+
 		if (P4Scope::used_names.find(ret) == P4Scope::used_names.end()) {
 			P4Scope::used_names.insert(ret);
 			break;

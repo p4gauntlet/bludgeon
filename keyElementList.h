@@ -20,6 +20,8 @@ public:
 
 	keyElementList() {
 	}
+	~keyElementList() {
+	}
 
 	IR::Key* gen(size_t len) {
 		IR::Vector< IR::KeyElement > keys;
@@ -27,6 +29,9 @@ public:
 			auto key_ele = new keyElement();
 			IR::KeyElement* key = key_ele->gen();
 
+			if (key == nullptr) {
+				continue;
+			}
 			// @name
 			// Tao: actually, this may never happen
 			auto key_anno = key->annotations->annotations.at(0);
@@ -60,6 +65,7 @@ public:
 			}
 
 			key_exprs.push_back(key_expr);
+			keys.push_back(key);
 		}
 
 
