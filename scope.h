@@ -22,6 +22,8 @@ public:
     static std::map<cstring, const IR::Type*> name_2_type_const;
     static std::set<cstring> types_w_stack; // which type has a field whose type is stack
 	static const IR::Type* ret_type;
+	static std::vector<IR::P4Control*> p4_ctrls;
+	static std::map<cstring, IR::P4Control*> decl_ins_ctrls;
 
 	P4Scope() {
 	}
@@ -81,12 +83,14 @@ public:
 	// get all p4actions w/o dir params
 	static std::vector<const IR::P4Action*> get_p4actions_nodir();
 
+	static std::map<cstring, std::vector<const IR::Type*>> get_action_def();
 	// template to get all declarations
 	template <typename T>
 	static std::vector<const T*> get_decls();
 
 
 
+	static void pr_test();
 	static void print_scope();
 };
 

@@ -70,7 +70,7 @@ public:
 	// e.g. ==, != for cond, =,
 	static bool get_two_compound_operands(IR::Expression** expr1, IR::Expression** expr2, const IR::Type** tp1, const IR::Type** tp2);
 	static IR::Expression* construct_compound_cond_expr();
-	static IR::Expression* construct_compound_op_expr();
+	static IR::Vector<IR::Argument> *construct_params(std::vector<const IR::Type*> &v_tp);
 
 	static void clear_data_structs() {
 		boolean_exprs.clear();

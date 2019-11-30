@@ -32,9 +32,10 @@ public:
 	IR::Type_Control* gen() {
 		auto paramL_gen = new parameterList(false);
 		param_list = paramL_gen->gen();
-        auto params = param_list->parameters;
+        // auto params = param_list->parameters;
 
         // add to the scope
+		/* Tao: we have done it at params
         for (size_t i=0; i<params.size(); i++) {
             auto param = params.at(i);
             P4Scope::add_to_scope((IR::Node *)param);
@@ -43,7 +44,7 @@ public:
 				// Tao: we can not modify the params of IN direction
 				P4Scope::add_name_2_type_p(param->name.toString(), param->type);
 			}
-        }
+        }*/
 
 		auto ret = new IR::Type_Control(*name, param_list);
 		return ret;

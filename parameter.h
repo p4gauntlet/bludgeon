@@ -43,11 +43,8 @@ public:
 
 	// Tao: the parameter seems can only be int<> bit<> in bmv2 model
 	IR::Parameter* gen() {
-		std::vector<int> type;
-		type.push_back(1);
-		type.push_back(2);
-		type.push_back(3);
-		auto base_type = new baseType(true, type);
+		std::vector<int> type = {1, 2};
+		auto base_type = new baseType(false, type);
 		tp = base_type->gen();
 
 		return new IR::Parameter(*name, dir, tp);

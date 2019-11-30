@@ -4,6 +4,7 @@
 #include "ir/ir.h"
 
 #include "parameter.h"
+#include "scope.h"
 
 namespace CODEGEN {
 
@@ -39,6 +40,12 @@ public:
 			params_name.insert(param->name.name);
 
 			params.push_back(param);
+
+			// add to the scope
+			P4Scope::add_to_scope(param);
+			if (param->direction != IR::Direction::In) {
+				P4Scope::add_name_2_type_p(param->name.name, param->type);
+			}
 		}
 
 	}

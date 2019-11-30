@@ -496,8 +496,59 @@ IR::Expression* expression::construct_compound_cond_expr() {
 	return expr;
 }
 
-IR::Expression* expression::construct_compound_op_expr() {
+IR::Vector<IR::Argument> *expression::construct_params(std::vector<const IR::Type*> &v_tp) {
+	IR::Vector<IR::Argument> *args = new IR::Vector<IR::Argument>();
+
+	for (auto i=v_tp.begin(); i<v_tp.end(); i++) {
+		IR::Argument* arg = nullptr;
+		const IR::Type* tp = *i;
+		IR::Expression* expr = nullptr;
+		const IR::Type* expr_tp = nullptr;
+		cstring str_expr_tp;
+		int num_trials = 100;
+		bool expr_found = false;
+		while (num_trials--) {
+			if (tp->is<IR::Type_Bits>()) {
+				auto tp_b = tp->to<IR::Type_Bits>();
+				expr = get_operand(rand()%2, &expr_tp, str_expr_tp, false);
+				if (expr!=nullptr && str_expr_tp==EXPR_TYPE_BITS) {
+					auto expr_tp_b = expr_tp->to<IR::Type_Bits>();
+					int size = tp_b->size;
+					int expr_size = expr_tp_b->size;
+					if (size > expr_size) {
+						continue;
+					}
+					else if (size == expr_size) {
+						expr_found = true;
+						arg = new IR::Argument(expr);
+					}
+					else {
+						expr_found = true;
+						int r_range = rand()%(expr_size-size+1);
+						int l_range = r_range+size-1;
+						arg = new IR::Argument(new IR::Slice(expr, 
+									new IR::Constant(l_range),
+									new IR::Constant(r_range)));
+					}
+				}
+			}
+
+			if (expr_found == true) {
+				break;
+			}
+		}
+
+		if (expr_found == true) {
+		}
+
+		if (arg != nullptr) {
+			args->push_back(arg);
+		}
+	}
+
+	return args;
 }
+
 
 } // namespace CODEGEN
 

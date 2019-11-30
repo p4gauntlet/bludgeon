@@ -6,8 +6,18 @@
 namespace CODEGEN {
 
 IR::BlockStatement* blockStatement::gen() {
-	auto const_decl = new constantDeclaration();
-	stat_or_decls.push_back(const_decl->gen());
+	// auto const_decl = new constantDeclaration();
+	// stat_or_decls.push_back(const_decl->gen());
+	// Tao: generate tab_name .apply()
+	for (auto &tab : tab_names) {
+		IR::Vector<IR::Argument> * args = new IR::Vector<IR::Argument>();
+		IR::ID apply("apply");
+		IR::ID call_name(tab);
+		IR::Member * mem = new IR::Member(new IR::PathExpression(new IR::Path(call_name)), apply);
+		IR::MethodCallExpression * mce = new IR::MethodCallExpression(mem, args);
+		stat_or_decls.push_back(new IR::MethodCallStatement(mce));
+	}
+
 	for (int cnt=0; cnt<5; cnt++) {
 		auto ass = assignmentOrMethodCallStatement::gen_assignstat();
 		if (ass != nullptr)

@@ -12,15 +12,15 @@ std::map<cstring, const IR::Type*> P4Scope::name_2_type_vars;
 std::map<cstring, const IR::Type*> P4Scope::name_2_type_const;
 std::set<cstring> P4Scope::types_w_stack;
 const IR::Type* P4Scope::ret_type = nullptr;
+std::vector<IR::P4Control*> P4Scope::p4_ctrls;
+std::map<cstring, IR::P4Control*> P4Scope::decl_ins_ctrls;
 
 void P4Scope::add_to_scope(IR::Node* n) {
 	auto l_scope = P4Scope::scope.back();
 	l_scope->push_back(n);
 }
 
-void P4Scope::end_local_scope() {
-	IR::Vector<IR::Node>* local_scope = scope.back();
-
+void P4Scope::end_local_scope() { IR::Vector<IR::Node>* local_scope = scope.back(); 
     for (size_t i=0; i<local_scope->size(); i++) {
 		auto node = local_scope->at(i);
         if (node->is<IR::Declaration>()) {
@@ -36,6 +36,8 @@ void P4Scope::end_local_scope() {
 
 	// clear the expressions
 	expression::clear_data_structs();
+	// clear the declaration instances
+	decl_ins_ctrls.clear();
 }
 
 void P4Scope::get_all_type_names(cstring filter, std::vector<cstring> &type_names) {
@@ -124,6 +126,24 @@ std::vector<const IR::P4Action*> P4Scope::get_p4actions_nodir() {
 		}
 	}
 
+	return ret;
+}
+
+std::map<cstring, std::vector<const IR::Type*>> P4Scope::get_action_def() {
+	std::map<cstring, std::vector<const IR::Type*>> ret;
+	auto p4actions_all = P4Scope::get_decls<IR::P4Action>();
+	for (auto i=p4actions_all.begin(); i<p4actions_all.end(); i++) {
+		std::vector<const IR::Type*> pars;
+		const IR::P4Action* p4act = *i;
+		auto act_params = p4act->parameters->parameters;
+		for (size_t ind=0; ind<act_params.size(); ind++) {
+			auto param = act_params.at(ind);
+			if (param->direction != IR::Direction::None) {
+				pars.push_back(param->type);
+			}
+		}
+		ret.emplace(p4act->name.name, pars);
+	}
 	return ret;
 }
 
