@@ -16,7 +16,7 @@ IR::Statement* statement::gen_stat() {
 			case 3: stat = exitStatement::gen(); break;
 			case 4: {
 				std::vector<cstring> tab_names; // empty here
-				auto blk_stat = new blockStatement(tab_names);
+				auto blk_stat = new blockStatement(tab_names, false);
 				stat = blk_stat->gen();
 				break;
 			}

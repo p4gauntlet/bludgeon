@@ -18,9 +18,11 @@ public:
 	// Tao: please take care of the scope thing
 	IR::IndexedVector< IR::StatOrDecl > stat_or_decls;
 	std::vector<cstring> tab_names;
+	bool if_v_initialize = false;
 
-	blockStatement(std::vector<cstring> &tab_names) : 
-			tab_names(tab_names) {
+	blockStatement(std::vector<cstring> &tab_names, bool if_init) : 
+			tab_names(tab_names),
+			if_v_initialize(if_init){
 	}
 	~blockStatement() {
 	}

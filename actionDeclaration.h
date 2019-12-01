@@ -34,7 +34,7 @@ public:
 		params = param_gen->gen();
 
 		std::vector<cstring> tab_names;  // empty
-		auto blk_gen = new blockStatement(tab_names);
+		auto blk_gen = new blockStatement(tab_names, false);
 		blk = blk_gen->gen();
 
 		auto ret = new IR::P4Action(*name, params, blk);

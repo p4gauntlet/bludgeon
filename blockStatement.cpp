@@ -17,6 +17,12 @@ IR::BlockStatement* blockStatement::gen() {
 		IR::MethodCallExpression * mce = new IR::MethodCallExpression(mem, args);
 		stat_or_decls.push_back(new IR::MethodCallStatement(mce));
 	}
+	if (if_v_initialize == true) {
+		auto ass_stats = expression::decl_v_initialize();
+		for (auto i : ass_stats) {
+			stat_or_decls.push_back(i);
+		}
+	}
 
 	for (int cnt=0; cnt<5; cnt++) {
 		auto ass = assignmentOrMethodCallStatement::gen_assignstat();

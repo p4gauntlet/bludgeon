@@ -47,6 +47,10 @@ public:
 		return nullptr;
 	}
 
+	static void initialize(const IR::Type* tp,
+		std::vector<IR::AssignmentStatement*> &ass_stat, 
+		std::vector<cstring> &call_bt);
+	static std::vector<IR::AssignmentStatement*> decl_v_initialize();
     // maybe we can operate on IR::Declaration
     // expression[ expression ] ArrayIndex
     // expression[ expression : expression ] Slice

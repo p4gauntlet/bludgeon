@@ -5,6 +5,7 @@
 
 
 #include "scope.h"
+#include "expression.h"
 #include "controlTypeDeclaration.h"
 #include "constantDeclaration.h"
 #include "variableDeclaration.h"
@@ -83,7 +84,7 @@ public:
 
 
 		// blockstatement
-		auto blk_gen = new blockStatement(tab_names);
+		auto blk_gen = new blockStatement(tab_names, true);
 		blk = blk_gen->gen();
 
 		// NOTE::::: this is for test, not actual code fragments
@@ -156,7 +157,7 @@ public:
 
 
 		// blockstatement
-		auto blk_gen = new blockStatement(tab_names);
+		auto blk_gen = new blockStatement(tab_names, true);
 		auto blk_stat = blk_gen->gen();
 
 

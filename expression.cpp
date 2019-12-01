@@ -35,6 +35,7 @@ int check_if_int(cstring &str) {
 	return ret;
 }
 
+
 // pick a lvalue
 const IR::Type* pick_lval(std::map<cstring, const IR::Type*> &mp,
         std::vector<cstring> &call_bt, cstring &type, bool if_compound) {
@@ -160,6 +161,82 @@ IR::Expression* construct_expr(std::vector<cstring> &call_bt) {
 	}
 
 	return expr;
+}
+
+void expression::initialize(const IR::Type* tp,
+		std::vector<IR::AssignmentStatement*> &ass_stat, 
+		std::vector<cstring> &call_bt) {
+	if (tp->is<IR::Type_StructLike>()) {
+		const IR::Type_StructLike* t = tp->to<IR::Type_StructLike>();
+		const IR::StructField* sf = nullptr;
+		for (size_t i=0; i<t->fields.size(); i++) {
+			sf = t->fields.at(i);
+			initialize((IR::Type *)sf, ass_stat, call_bt);
+		}
+	}
+	else if (tp->is<IR::StructField>()) {
+		const IR::StructField* t = tp->to<IR::StructField>();
+		call_bt.push_back(t->name.name);
+		initialize(t->type, ass_stat, call_bt);
+		call_bt.pop_back();
+	}
+	else if (tp->is<IR::Type_Stack>()) {
+		std::stringstream ss;
+		const IR::Type_Stack* t = tp->to<IR::Type_Stack>();
+		for (unsigned i=0; i<t->getSize(); i++) {
+			ss.str("");
+			ss << i;
+			cstring name(ss.str());
+			call_bt.push_back(name);
+			initialize(t->elementType, ass_stat, call_bt);
+			call_bt.pop_back();
+		}
+	}
+	else if (tp->is<IR::Type_Name>()) {
+		const IR::Type_Name* t = tp->to<IR::Type_Name>();
+		const IR::Type* ref_tp = P4Scope::get_type_by_name(t->path->name.name);
+		if (ref_tp == nullptr) {
+			BUG("nullptr not possible");
+		}
+		initialize(ref_tp, ass_stat, call_bt);
+	}
+	else if (tp->is<IR::Type_Typedef>()) {
+		const IR::Type_Typedef* t = tp->to<IR::Type_Typedef>();
+		const IR::Type* ref_tp = t->type;
+		if (ref_tp == nullptr) {
+			BUG("nullptr not possible");
+		}
+		initialize(ref_tp, ass_stat, call_bt);
+	}
+	else if (tp->is<IR::Type_Bits>()) {
+		IR::Expression* l_expr = construct_expr(call_bt);
+		IR::Constant* r_expr = new IR::Constant(0);
+		IR::AssignmentStatement* ass = new IR::AssignmentStatement(l_expr, r_expr);
+		ass_stat.push_back(ass);
+	}
+	else if (tp->is<IR::Type_Boolean>()) {
+		IR::Expression* l_expr = construct_expr(call_bt);
+		IR::BoolLiteral* r_expr = new IR::BoolLiteral(false);
+		IR::AssignmentStatement* ass = new IR::AssignmentStatement(l_expr, r_expr);
+		ass_stat.push_back(ass);
+	}
+
+	return ;
+}
+
+std::vector<IR::AssignmentStatement*> expression::decl_v_initialize() {
+	std::vector<IR::AssignmentStatement*> ass_stats;
+	std::vector<cstring> call_bt;
+	cstring name;
+	const IR::Type *tp = nullptr;
+	for (auto &k : P4Scope::name_2_type_vars) {
+		name = k.first;
+		tp = k.second;
+		call_bt.push_back(name);
+		initialize(tp, ass_stats, call_bt);
+		call_bt.pop_back();
+	}
+	return ass_stats;
 }
 
 IR::Expression* expression::get_operand(int pa_or_var, const IR::Type** tp, cstring &type, bool if_compound) {
