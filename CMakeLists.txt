@@ -1,6 +1,6 @@
-# Makefile for the toZ3
+# Makefile for the codegen
 
-# sources for toZ3
+# sources for codegen
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/version.h.cmake"
   "${CMAKE_CURRENT_BINARY_DIR}/version.h" @ONLY)
 
@@ -192,11 +192,8 @@ add_cpplint_files (${CMAKE_CURRENT_SOURCE_DIR} "${CODEGEN_SRCS}")
 add_executable(p4codegen ${CODEGEN_SRCS})
 # message (STATUS "libs ${P4C_LIBRARIES}")
 # message (STATUS "deps ${P4C_LIB_DEPS}")
-# target_link_libraries (p4toz3 ${P4C_LIBRARIES} ${P4C_LIB_DEPS})
-# target_link_libraries (p4toz3 ${P4C_LIBRARIES} ${P4C_LIB_DEPS})
 target_link_libraries (p4codegen ${P4C_LIBRARIES} ${P4C_LIB_DEPS})
 add_dependencies(p4codegen genIR frontend)
-#add_dependencies(p4toz3 genIR frontend)
 
 install(TARGETS p4codegen RUNTIME DESTINATION ${P4C_RUNTIME_OUTPUT_DIRECTORY})
 

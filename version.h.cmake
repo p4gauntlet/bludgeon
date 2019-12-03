@@ -33,6 +33,6 @@ limitations under the License.
 
   */
 
-#define P4C_TOZ3_VERSION_STRING "@P4C_VERSION@"
+#define P4C_CODEGEN_VERSION_STRING "@P4C_VERSION@"
 
 #endif _CODEGEN_VERSION_H_
