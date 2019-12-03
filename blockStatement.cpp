@@ -17,6 +17,7 @@ IR::BlockStatement* blockStatement::gen() {
 		IR::MethodCallExpression * mce = new IR::MethodCallExpression(mem, args);
 		stat_or_decls.push_back(new IR::MethodCallStatement(mce));
 	}
+	// initialize variables
 	if (if_v_initialize == true) {
 		auto ass_stats = expression::decl_v_initialize();
 		for (auto i : ass_stats) {
@@ -28,15 +29,17 @@ IR::BlockStatement* blockStatement::gen() {
 		auto ass = assignmentOrMethodCallStatement::gen_assignstat();
 		if (ass != nullptr)
 			stat_or_decls.push_back(ass);
-		auto compound_ass = assignmentOrMethodCallStatement::gen_compound_ass();
-		if (compound_ass != nullptr)
-			stat_or_decls.push_back(compound_ass);
+		// auto compound_ass = assignmentOrMethodCallStatement::gen_compound_ass();
+		// if (compound_ass != nullptr)
+		// 	stat_or_decls.push_back(compound_ass);
 	}
 	// Tao: note here, may be a lot recursions
-	auto if_stat = conditionalStatement::gen_if_stat();
-	if (if_stat != nullptr) 
-		stat_or_decls.push_back(if_stat);
-
+	if (rand()%4 == 0) {
+		auto if_stat = conditionalStatement::gen_if_stat();
+		if (if_stat != nullptr) 
+			stat_or_decls.push_back(if_stat);
+	}
+	
 	return new IR::BlockStatement(stat_or_decls);
 }
 

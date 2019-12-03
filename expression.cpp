@@ -379,6 +379,22 @@ IR::Expression* construct_2_ops(IR::Expression* expr1, IR::Expression* expr2, bo
 	return expr;
 }
 
+IR::Expression* construct_div(IR::Expression* expr1) {
+	IR::Expression* expr = nullptr;
+	expr = new IR::Div(expr1, new IR::Constant((int)(pow(2, rand()%4))));
+	expression::mp_expr_2_type[expr] = expression::mp_expr_2_type[expr1];
+	expression::bit_exprs.push_back(expr);
+	return expr;
+}
+
+IR::Expression* construct_mod(IR::Expression* expr1) {
+	IR::Expression* expr = nullptr;
+	expr = new IR::Mod(expr1, new IR::Constant((int)(pow(2, rand()%4))));
+	expression::mp_expr_2_type[expr] = expression::mp_expr_2_type[expr1];
+	expression::bit_exprs.push_back(expr);
+	return expr;
+}
+
 IR::Expression* expression::construct_op_expr() {
 	IR::Expression *expr;
 	IR::Expression *expr1, *expr2;
@@ -395,18 +411,22 @@ IR::Expression* expression::construct_op_expr() {
 			case 1: expr = new IR::Neg(expr1); mp_expr_2_type[expr] = mp_expr_2_type[expr1]; bit_exprs.push_back(expr); break;
 			case 2: expr = construct_slice(expr1); break;
 			case 3: expr = construct_2_ops<IR::Mul>(expr1, expr2); break;
-			case 4: expr = construct_2_ops<IR::Div>(expr1, expr2); break;
-			case 5: expr = construct_2_ops<IR::Mod>(expr1, expr2); break;
-			case 6: expr = construct_2_ops<IR::Add>(expr1, expr2); break;
-			case 7: expr = construct_2_ops<IR::Sub>(expr1, expr2); break;
-			case 8: expr = construct_2_ops<IR::AddSat>(expr1, expr2); break;
-			case 9: expr = construct_2_ops<IR::SubSat>(expr1, expr2); break;
-			case 10: expr = construct_2_ops<IR::BAnd>(expr1, expr2); break;
-			case 11: expr = construct_2_ops<IR::BOr>(expr1, expr2); break;
-			case 12: expr = construct_2_ops<IR::BXor>(expr1, expr2); break;
-			case 13: expr = construct_2_ops<IR::Shr>(expr1, expr2, false); break;
-			case 14: expr = construct_2_ops<IR::Shl>(expr1, expr2, false); break;
-			case 15: expr = construct_mux(expr1, expr2); break;
+			case 4: expr = construct_div(expr1); break;
+			case 5: expr = construct_2_ops<IR::Add>(expr1, expr2); break;
+			case 6: expr = construct_2_ops<IR::Sub>(expr1, expr2); break;
+			case 7: expr = construct_2_ops<IR::AddSat>(expr1, expr2); break;
+			case 8: expr = construct_2_ops<IR::SubSat>(expr1, expr2); break;
+			case 9: expr = construct_2_ops<IR::BAnd>(expr1, expr2); break;
+			case 10: expr = construct_2_ops<IR::BOr>(expr1, expr2); break;
+			case 11: expr = construct_2_ops<IR::BXor>(expr1, expr2); break;
+			case 12: expr = construct_2_ops<IR::Shr>(expr1, 
+							 new IR::Cast(new IR::Type_Bits(8, false), expr2)
+							 , false); break;
+			case 13: expr = construct_2_ops<IR::Shl>(expr1,
+							 new IR::Cast(new IR::Type_Bits(8, false), expr2)
+							 , false); break;
+			case 14: expr = construct_mux(expr1, expr2); break;
+			case 15: expr = construct_mod(expr1); break;
 		}
 
 		if (expr != nullptr) {
