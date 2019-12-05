@@ -30,7 +30,7 @@ public:
 	~statement() {
 	}
 
-	static IR::Statement* gen_stat();
+	static IR::Statement* gen_stat(bool if_in_ifstat);
 };
 
 

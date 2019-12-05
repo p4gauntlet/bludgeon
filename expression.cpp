@@ -210,7 +210,7 @@ void expression::initialize(const IR::Type* tp,
 	}
 	else if (tp->is<IR::Type_Bits>()) {
 		IR::Expression* l_expr = construct_expr(call_bt);
-		IR::Constant* r_expr = new IR::Constant(0);
+		IR::Constant* r_expr = new IR::Constant(tp->to<IR::Type_Bits>(), 0);
 		IR::AssignmentStatement* ass = new IR::AssignmentStatement(l_expr, r_expr);
 		ass_stat.push_back(ass);
 	}
@@ -680,7 +680,7 @@ void expression::construct_list_expr(const IR::Type *tp,
 								exprs, if_contains_stack);
 	}
 	else if (tp->is<IR::Type_Bits>()) {
-		auto expr = new IR::Constant(0);
+		auto expr = new IR::Constant(tp->to<IR::Type_Bits>(), 0);
 		exprs.push_back(expr);
 	}
 	else if (tp->is<IR::Type_Boolean>()) {

@@ -31,16 +31,14 @@ public:
 
 
 	IR::Declaration_Constant* gen() {
-		std::vector<int> type;
-		auto base_type = new baseType(true, type);
+		std::vector<int> type = {0, 1};
+		auto base_type = new baseType(false, type);
 		tp = base_type->gen();
 
 		if (tp->is<IR::Type_Boolean>()) {
-			auto ex = new expression();
-			expr = ex->gen_literal(0);
+			expr = new IR::BoolLiteral(false);
 		} else {
-			auto ex = new expression();
-			expr = ex->gen_literal(1);
+			expr = new IR::Constant(tp->to<IR::Type_Bits>(), rand()%8+1);
 		}
 
         // add to the scope

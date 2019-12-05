@@ -49,7 +49,8 @@ public:
 		IR::Declaration_Variable *ret;
 		// Tao: construct list expression
 		if (type->is<IR::Type_Bits>()) {
-			ret = new IR::Declaration_Variable(*name, type, new IR::Constant(0));
+			ret = new IR::Declaration_Variable(*name, type, 
+					new IR::Constant(type->to<IR::Type_Bits>(), 0));
 		}
 		else if (type->is<IR::Type_Boolean>()) {
 			ret = new IR::Declaration_Variable(*name, type, new IR::BoolLiteral(false));

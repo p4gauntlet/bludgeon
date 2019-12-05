@@ -5,7 +5,7 @@
 
 namespace CODEGEN {
 
-IR::Statement* statement::gen_stat() {
+IR::Statement* statement::gen_stat(bool if_in_ifstat) {
 	IR::Statement* stat = nullptr;
 	int num_trails = 100;
 	while (num_trails--) {
@@ -21,7 +21,11 @@ IR::Statement* statement::gen_stat() {
 				break;
 			}
 			case 3: stat = returnStatement::gen_ret_stat(); break;
-			case 4: stat = assignmentOrMethodCallStatement::gen_methodcall_stat(); break;
+			case 4: {
+				if (if_in_ifstat == false)
+					stat = assignmentOrMethodCallStatement::gen_methodcall_stat();
+				break;
+			}
 		}
 		if (stat != nullptr) {
 			break;
