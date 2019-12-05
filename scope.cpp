@@ -10,17 +10,20 @@ std::set<cstring> P4Scope::used_names;
 std::map<cstring, const IR::Type*> P4Scope::name_2_type_param;
 std::map<cstring, const IR::Type*> P4Scope::name_2_type_vars;
 std::map<cstring, const IR::Type*> P4Scope::name_2_type_const;
+std::map<cstring, const IR::Type*> P4Scope::name_2_type_stack;
 std::set<cstring> P4Scope::types_w_stack;
 const IR::Type* P4Scope::ret_type = nullptr;
 std::vector<IR::P4Control*> P4Scope::p4_ctrls;
 std::map<cstring, IR::P4Control*> P4Scope::decl_ins_ctrls;
+std::map<cstring, IR::P4Action*> P4Scope::decl_actions;
 
 void P4Scope::add_to_scope(IR::Node* n) {
 	auto l_scope = P4Scope::scope.back();
 	l_scope->push_back(n);
 }
 
-void P4Scope::end_local_scope() { IR::Vector<IR::Node>* local_scope = scope.back(); 
+void P4Scope::end_local_scope() { 
+	IR::Vector<IR::Node>* local_scope = scope.back(); 
     for (size_t i=0; i<local_scope->size(); i++) {
 		auto node = local_scope->at(i);
         if (node->is<IR::Declaration>()) {
@@ -28,7 +31,13 @@ void P4Scope::end_local_scope() { IR::Vector<IR::Node>* local_scope = scope.back
             name_2_type_param.erase(decl->name.name);
             name_2_type_vars.erase(decl->name.name);
             name_2_type_const.erase(decl->name.name);
+			name_2_type_stack.erase(decl->name.name);
         }
+
+		if (node->is<IR::P4Action>()) {
+			auto p4_act = node->to<IR::P4Action>();
+			decl_actions.erase(p4_act->name.name);
+		}
     }
 
 	delete local_scope;
@@ -70,8 +79,11 @@ void P4Scope::get_all_type_names(cstring filter, std::vector<cstring> &type_name
 				if (obj->is<IR::Type_StructLike>()) {
 					auto tmp_obj = obj->to<IR::Type_StructLike>();
 					// Tao: can we?
-					if (tmp_obj->name.name != "standard_metadata_t")
+					if (tmp_obj->name.name != "standard_metadata_t"
+							&& tmp_obj->name.name != "Meta"
+							&& tmp_obj->name.name != "Headers") {
 						type_names.push_back(tmp_obj->name.name);
+					}
 				}
 			}
 			else if (filter==HEADER_ONLY) {

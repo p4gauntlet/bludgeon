@@ -20,10 +20,12 @@ public:
     static std::map<cstring, const IR::Type*> name_2_type_param; // param
     static std::map<cstring, const IR::Type*> name_2_type_vars; // variable
     static std::map<cstring, const IR::Type*> name_2_type_const;
+	static std::map<cstring, const IR::Type*> name_2_type_stack; // contains stack
     static std::set<cstring> types_w_stack; // which type has a field whose type is stack
 	static const IR::Type* ret_type;
 	static std::vector<IR::P4Control*> p4_ctrls;
 	static std::map<cstring, IR::P4Control*> decl_ins_ctrls;
+	static std::map<cstring, IR::P4Action*> decl_actions;
 
 	P4Scope() {
 	}
@@ -59,6 +61,15 @@ public:
         }
         else {
             name_2_type_const.emplace(name, type);
+        }
+    }
+
+    static void add_name_2_type_stack(cstring name, const IR::Type* type) {
+        if (name_2_type_stack.find(name) != name_2_type_stack.end()) {
+            BUG("const wrong name, must be different");
+        }
+        else {
+            name_2_type_stack.emplace(name, type);
         }
     }
 

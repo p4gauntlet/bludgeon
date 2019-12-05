@@ -229,7 +229,8 @@ std::vector<IR::AssignmentStatement*> expression::decl_v_initialize() {
 	std::vector<cstring> call_bt;
 	cstring name;
 	const IR::Type *tp = nullptr;
-	for (auto &k : P4Scope::name_2_type_vars) {
+	// for (auto &k : P4Scope::name_2_type_vars) {
+	for (auto &k : P4Scope::name_2_type_stack) {
 		name = k.first;
 		tp = k.second;
 		call_bt.push_back(name);
@@ -381,7 +382,9 @@ IR::Expression* construct_2_ops(IR::Expression* expr1, IR::Expression* expr2, bo
 
 IR::Expression* construct_div(IR::Expression* expr1) {
 	IR::Expression* expr = nullptr;
-	expr = new IR::Div(expr1, new IR::Constant((int)(pow(2, rand()%4))));
+	const IR::Type* tp = expression::mp_expr_2_type[expr1];
+	int size = tp->to<IR::Type_Bits>()->size;
+	expr = new IR::Div(expr1, new IR::Constant(new IR::Type_Bits(size, false), (int)(pow(2, rand()%4))));
 	expression::mp_expr_2_type[expr] = expression::mp_expr_2_type[expr1];
 	expression::bit_exprs.push_back(expr);
 	return expr;
@@ -389,7 +392,9 @@ IR::Expression* construct_div(IR::Expression* expr1) {
 
 IR::Expression* construct_mod(IR::Expression* expr1) {
 	IR::Expression* expr = nullptr;
-	expr = new IR::Mod(expr1, new IR::Constant((int)(pow(2, rand()%4))));
+	const IR::Type* tp = expression::mp_expr_2_type[expr1];
+	int size = tp->to<IR::Type_Bits>()->size;
+	expr = new IR::Mod(expr1, new IR::Constant(new IR::Type_Bits(size, false), (int)(pow(2, rand()%4))));
 	expression::mp_expr_2_type[expr] = expression::mp_expr_2_type[expr1];
 	expression::bit_exprs.push_back(expr);
 	return expr;
@@ -644,6 +649,44 @@ IR::Vector<IR::Argument> *expression::construct_params(std::vector<const IR::Typ
 	}
 
 	return args;
+}
+
+void expression::construct_list_expr(const IR::Type *tp, 
+		IR::Vector<IR::Expression> &exprs, bool *if_contains_stack) {
+	if (tp->is<IR::Type_StructLike>()) {
+		if (tp->is<IR::Type_HeaderUnion>()) {
+			*if_contains_stack = true;
+		}
+		const IR::Type_StructLike* t = tp->to<IR::Type_StructLike>();
+		const IR::StructField* sf = nullptr;
+		IR::Vector<IR::Expression> v_exprs;
+		for (size_t i=0; i<t->fields.size(); i++) {
+			sf = t->fields.at(i);
+			construct_list_expr((IR::Type *)sf, v_exprs, if_contains_stack);
+		}
+		IR::ListExpression *l_expr = new IR::ListExpression(v_exprs);
+		exprs.push_back(l_expr);
+	}
+	else if (tp->is<IR::StructField>()) {
+		const IR::StructField* t = tp->to<IR::StructField>();
+		construct_list_expr(t->type, exprs, if_contains_stack);
+	}
+	else if (tp->is<IR::Type_Stack>()) {
+		*if_contains_stack = true;
+	}
+	else if (tp->is<IR::Type_Name>()) {
+		auto tp_name = tp->to<IR::Type_Name>();
+		construct_list_expr(P4Scope::get_type_by_name(tp_name->path->name.name), 
+								exprs, if_contains_stack);
+	}
+	else if (tp->is<IR::Type_Bits>()) {
+		auto expr = new IR::Constant(0);
+		exprs.push_back(expr);
+	}
+	else if (tp->is<IR::Type_Boolean>()) {
+		auto expr = new IR::BoolLiteral(false);
+		exprs.push_back(expr);
+	}
 }
 
 

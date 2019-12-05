@@ -29,8 +29,21 @@ public:
 		}
 		else {
 			int size = P4Scope::ret_type->to<IR::Type_Bits>()->size;
-			ret_stat = new IR::ReturnStatement(new IR::Cast(new IR::Type_Bits(size, false), 
-					expression::construct_op_expr()));
+			int num_trials = 100;
+			while (num_trials--) {
+				expr = expression::construct_op_expr();
+				if (expr != nullptr) {
+					break;
+				}
+			}
+
+			if (expr != nullptr) {
+				ret_stat = new IR::ReturnStatement(new IR::Cast(new IR::Type_Bits(size, false), expr));
+			}
+			else {
+				ret_stat = new IR::ReturnStatement(new IR::Constant(0));
+			}
+
 		}
 		return ret_stat;
 	}

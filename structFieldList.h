@@ -97,9 +97,9 @@ public:
 		name = new IR::ID("enq_qdepth");
 		tp = new IR::Type_Bits(19, false);
 		fields.push_back(new IR::StructField(*name, tp));
-		name = new IR::ID("dep_timedelta");
-		tp = new IR::Type_Bits(32, false);
-		fields.push_back(new IR::StructField(*name, tp));
+		// name = new IR::ID("dep_timedelta");
+		// tp = new IR::Type_Bits(32, false);
+		// fields.push_back(new IR::StructField(*name, tp));
 		name = new IR::ID("deq_qdepth");
 		tp = new IR::Type_Bits(19, false);
 		fields.push_back(new IR::StructField(*name, tp));

@@ -124,10 +124,11 @@ public:
 		IR::IndexedVector< IR::Declaration > local_decls;
 		// local_decls
         // constantDeclarations
+		/* Tao: no constant here
         for (int i=0; i<5; i++) {
 		    auto const_decl = new constantDeclaration();
 		    local_decls.push_back(const_decl->gen());
-        }
+        }*/
         // variableDeclarations
         for (int i=0; i<15; i++) {
             auto var_decl = new variableDeclaration();

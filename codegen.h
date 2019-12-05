@@ -38,6 +38,7 @@ public:
 	IR::Node* gen_ctrldef();
 	IR::Node* gen_actlist();
     IR::Node* gen_tab();
+	IR::Node* gen_func();
 };
 
 

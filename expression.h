@@ -70,6 +70,10 @@ public:
 	static IR::Expression* construct_cond_expr();
 	static IR::Expression* construct_op_expr();
 
+	static void construct_list_expr(const IR::Type *tp, 
+									IR::Vector<IR::Expression> &exprs,
+									bool *if_contains_stack);
+
 	// TODO: some allowed operations on compound types
 	// e.g. ==, != for cond, =,
 	static bool get_two_compound_operands(IR::Expression** expr1, IR::Expression** expr2, const IR::Type** tp1, const IR::Type** tp2);

@@ -36,11 +36,11 @@ public:
 		name = new IR::ID(l_types.at(rand()%l_types.size()));
 
 
+		// we do not want it to have a stack type already
         if (P4Scope::check_type_name(name->name)) {
             return nullptr;
         }
-        
-
+       
 
 		IR::Path* path = new IR::Path(*name);
 		return new IR::Type_Name(path);

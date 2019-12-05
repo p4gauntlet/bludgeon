@@ -12,6 +12,7 @@
 #include "controlDeclaration.h"
 #include "tableDeclaration.h"
 #include "actionList.h"
+#include "functionDeclaration.h"
 
 
 namespace CODEGEN {
@@ -109,6 +110,11 @@ IR::Node* CGenerator::gen_actlist() {
 IR::Node* CGenerator::gen_tab() {
     auto tab_gen = new tableDeclaration();
     return tab_gen->gen();
+}
+
+IR::Node* CGenerator::gen_func() {
+	auto func_gen = new functionDeclaration();
+	return func_gen->gen();
 }
 
 

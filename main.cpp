@@ -52,11 +52,17 @@ int main(int argc, char **argv) {
 	// objects->push_back(cg->gen());
 	objects->push_back(cg->gen_struct());
 	objects->push_back(cg->gen_struct());
+	objects->push_back(cg->gen_struct());
+	objects->push_back(cg->gen_struct());
+	objects->push_back(cg->gen_struct());
 	objects->push_back(CODEGEN::structTypeDeclaration::gen_Headers());
 	objects->push_back(CODEGEN::structTypeDeclaration::gen_Meta());
 	CODEGEN::structTypeDeclaration::gen_Sm();
 	// objects->push_back(cg->gen_ctrldef());
 	// objects->push_back(cg->gen_ctrldef());
+	// objects->push_back(cg->gen_func());
+	// objects->push_back(cg->gen_func());
+	// objects->push_back(cg->gen_func());
 	objects->push_back(cg->gen_ctrldef());
 	objects->push_back(CODEGEN::controlDeclaration::gen_ing_ctrl());
 	IR::P4Program *program = new IR::P4Program(*objects);

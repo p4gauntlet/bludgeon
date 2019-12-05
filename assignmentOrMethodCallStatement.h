@@ -87,6 +87,41 @@ public:
 		return mcs;
 	}
 
+	static IR::MethodCallStatement* gen_act_methodcall_stat() {
+		IR::MethodCallStatement* mcs = nullptr;
+
+		if (P4Scope::decl_actions.size() == 0) {
+			return nullptr;
+		}
+
+		size_t ind = rand()%P4Scope::decl_actions.size();
+		size_t cnt = 0;
+		cstring name;
+		IR::P4Action* p4_act;
+		for (auto &i : P4Scope::decl_actions) {
+			if (cnt == ind) {
+				name = i.first;
+				p4_act = i.second;
+			}
+			cnt++;
+		}
+		std::vector<const IR::Type *> params;
+		for (size_t i=0; i<p4_act->parameters->parameters.size(); i++) {
+			auto par = p4_act->parameters->parameters.at(i);
+			params.push_back(par->type);
+		}
+		IR::Vector<IR::Argument> * args = expression::construct_params(params);
+		if (args->size() != params.size()) {
+			return nullptr;
+		}
+		IR::ID call_name(name);
+		auto path_expr = new IR::PathExpression(new IR::Path(call_name));
+		mcs = new IR::MethodCallStatement(new IR::MethodCallExpression(path_expr, args));
+
+		return mcs;
+	}
+
+
 };
 
 
