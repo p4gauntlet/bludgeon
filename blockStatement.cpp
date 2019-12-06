@@ -29,9 +29,9 @@ void blockStatement::gen_sth() {
 		auto ass = assignmentOrMethodCallStatement::gen_assignstat();
 		if (ass != nullptr)
 			stat_or_decls.push_back(ass);
-		// auto compound_ass = assignmentOrMethodCallStatement::gen_compound_ass();
-		// if (compound_ass != nullptr)
-		// 	stat_or_decls.push_back(compound_ass);
+		auto compound_ass = assignmentOrMethodCallStatement::gen_compound_ass();
+		if (compound_ass != nullptr)
+			stat_or_decls.push_back(compound_ass);
 	}
 	// Tao: note here, may be a lot recursions
 	if (rand()%4 == 0) {

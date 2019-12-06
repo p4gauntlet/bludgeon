@@ -11,16 +11,16 @@ IR::Statement* statement::gen_stat(bool if_in_ifstat) {
 	while (num_trails--) {
 		switch (rand()%5) {
 			case 0: stat = assignmentOrMethodCallStatement::gen_assignstat(); break;
-			// case 1: stat = assignmentOrMethodCallStatement::gen_compound_ass(); break;
-			case 1: stat = conditionalStatement::gen_if_stat(); break;
+			case 1: stat = assignmentOrMethodCallStatement::gen_compound_ass(); break;
+			case 2: stat = conditionalStatement::gen_if_stat(); break;
 			// case 2: stat = exitStatement::gen(); break;
-			case 2: {
+			case 3: {
 				std::vector<cstring> tab_names; // empty here
 				auto blk_stat = new blockStatement(tab_names, false);
 				stat = blk_stat->gen();
 				break;
 			}
-			case 3: stat = returnStatement::gen_ret_stat(); break;
+			// case 3: stat = returnStatement::gen_ret_stat(); break;
 			case 4: {
 				if (if_in_ifstat == false)
 					stat = assignmentOrMethodCallStatement::gen_methodcall_stat();

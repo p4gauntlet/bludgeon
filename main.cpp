@@ -3,6 +3,7 @@
 
 #include "frontends/p4/toP4/toP4.h"
 
+#include "sub_toP4.h"
 
 #include "ir/ir.h"
 #include "lib/nullstream.h"
@@ -52,9 +53,9 @@ int main(int argc, char **argv) {
 	// objects->push_back(cg->gen());
 	objects->push_back(cg->gen_struct());
 	objects->push_back(cg->gen_struct());
-	objects->push_back(cg->gen_struct());
-	objects->push_back(cg->gen_struct());
-	objects->push_back(cg->gen_struct());
+	// objects->push_back(cg->gen_struct());
+	// objects->push_back(cg->gen_struct());
+	// objects->push_back(cg->gen_struct());
 	objects->push_back(CODEGEN::structTypeDeclaration::gen_Headers());
 	objects->push_back(CODEGEN::structTypeDeclaration::gen_Meta());
 	CODEGEN::structTypeDeclaration::gen_Sm();
@@ -63,7 +64,7 @@ int main(int argc, char **argv) {
 	// objects->push_back(cg->gen_func());
 	// objects->push_back(cg->gen_func());
 	// objects->push_back(cg->gen_func());
-	objects->push_back(cg->gen_ctrldef());
+	// objects->push_back(cg->gen_ctrldef());
 	objects->push_back(CODEGEN::controlDeclaration::gen_ing_ctrl());
 	IR::P4Program *program = new IR::P4Program(*objects);
 
@@ -77,7 +78,8 @@ int main(int argc, char **argv) {
 	*ostream << "#include <core.p4>\n";
 	*ostream << "#include <v1model.p4>\n\n";
 
-    P4::ToP4 top4(ostream, false);
+    // P4::ToP4 top4(ostream, false);
+    CODEGEN::SubToP4 top4(ostream, false);
 
 	program->apply(top4);
 

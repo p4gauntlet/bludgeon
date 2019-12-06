@@ -184,6 +184,8 @@ set (CODEGEN_SRCS
 	prefixedNonTypeName.cpp
 	lvalue.cpp
 	expression.cpp
+	sub_toP4.h
+	sub_toP4.cpp
     main.cpp
     )
 add_cpplint_files (${CMAKE_CURRENT_SOURCE_DIR} "${CODEGEN_SRCS}")

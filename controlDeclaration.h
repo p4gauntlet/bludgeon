@@ -51,10 +51,11 @@ public:
         
 		// local_decls
         // constantDeclarations
+		/* Tao: No constant declarations
         for (int i=0; i<5; i++) {
 		    auto const_decl = new constantDeclaration();
 		    local_decls.push_back(const_decl->gen());
-        }
+        }*/
         // variableDeclarations
         for (int i=0; i<15; i++) {
             auto var_decl = new variableDeclaration();
@@ -69,13 +70,13 @@ public:
 			local_decls.push_back(decl_ins);
 		}
         // actionDeclarations
-        for (int i=0; i<5; i++) {
+        for (int i=0; i<2; i++) {
             auto act_decl = new actionDeclaration();
             local_decls.push_back(act_decl->gen());
         }
         // tableDeclarations
 		std::vector<cstring> tab_names;
-        for (int i=0; i<5; i++) {
+        for (int i=0; i<2; i++) {
             auto tab_decl = new tableDeclaration();
             local_decls.push_back(tab_decl->gen());
 			tab_names.push_back(tab_decl->name->name);
@@ -88,6 +89,7 @@ public:
 		blk = blk_gen->gen();
 
 		// NOTE::::: this is for test, not actual code fragments
+		/*
 		int xxx = 5;
 		while (xxx--) {
 			IR::Expression* pppp = expression::construct_compound_cond_expr();
@@ -102,7 +104,7 @@ public:
 			if (pppp != nullptr) {
 				std::cout << pppp << std::endl;
 			}
-		}
+		}*/
 
         // end of scope
         P4Scope::end_local_scope();
