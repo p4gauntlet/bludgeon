@@ -1,15 +1,13 @@
 #include <iostream>
 
 
-#include "frontends/p4/toP4/toP4.h"
-
-#include "sub_toP4.h"
 
 #include "ir/ir.h"
 #include "lib/nullstream.h"
 
 #include "codegen.h"
 #include "scope.h"
+#include "sub_toP4.h"
 #include "structTypeDeclaration.h"
 #include "controlDeclaration.h"
 
