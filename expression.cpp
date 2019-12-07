@@ -384,7 +384,7 @@ IR::Expression* construct_div(IR::Expression* expr1) {
 	IR::Expression* expr = nullptr;
 	const IR::Type* tp = expression::mp_expr_2_type[expr1];
 	int size = tp->to<IR::Type_Bits>()->size;
-	expr = new IR::Div(expr1, new IR::Constant(new IR::Type_Bits(size, false), (int)(pow(2, rand()%4))));
+	expr = new IR::Div(expr1, new IR::Constant(new IR::Type_Bits(size, false), rand()%size+1));
 	expression::mp_expr_2_type[expr] = expression::mp_expr_2_type[expr1];
 	expression::bit_exprs.push_back(expr);
 	return expr;
@@ -394,7 +394,7 @@ IR::Expression* construct_mod(IR::Expression* expr1) {
 	IR::Expression* expr = nullptr;
 	const IR::Type* tp = expression::mp_expr_2_type[expr1];
 	int size = tp->to<IR::Type_Bits>()->size;
-	expr = new IR::Mod(expr1, new IR::Constant(new IR::Type_Bits(size, false), (int)(pow(2, rand()%4))));
+	expr = new IR::Mod(expr1, new IR::Constant(new IR::Type_Bits(size, false), rand()%size+1));
 	expression::mp_expr_2_type[expr] = expression::mp_expr_2_type[expr1];
 	expression::bit_exprs.push_back(expr);
 	return expr;

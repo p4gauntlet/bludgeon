@@ -70,13 +70,13 @@ public:
 			local_decls.push_back(decl_ins);
 		}
         // actionDeclarations
-        for (int i=0; i<2; i++) {
+        for (int i=0; i<4; i++) {
             auto act_decl = new actionDeclaration();
             local_decls.push_back(act_decl->gen());
         }
         // tableDeclarations
 		std::vector<cstring> tab_names;
-        for (int i=0; i<2; i++) {
+        for (int i=0; i<4; i++) {
             auto tab_decl = new tableDeclaration();
             local_decls.push_back(tab_decl->gen());
 			tab_names.push_back(tab_decl->name->name);

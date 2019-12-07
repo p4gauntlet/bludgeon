@@ -41,12 +41,19 @@ void blockStatement::gen_sth() {
 	
 	}
 	// Tao: gen action method call statement
-	// for (int cnt=0; cnt<5; cnt++) {
-	// 	auto mcs = assignmentOrMethodCallStatement::gen_act_methodcall_stat();
-	// 	if (mcs != nullptr) {
-	// 		stat_or_decls.push_back(mcs);
-	// 	}
-	// }
+	for (int cnt=0; cnt<3; cnt++) {
+		auto mcs = assignmentOrMethodCallStatement::gen_act_methodcall_stat();
+		if (mcs != nullptr) {
+			stat_or_decls.push_back(mcs);
+		}
+	}
+	// Tao: gen ctrl method call statement
+	for (int cnt=0; cnt<3; cnt++) {
+		auto mcs = assignmentOrMethodCallStatement::gen_methodcall_stat();
+		if (mcs != nullptr) {
+			stat_or_decls.push_back(mcs);
+		}
+	}
 }
 
 IR::BlockStatement* blockStatement::gen() {
