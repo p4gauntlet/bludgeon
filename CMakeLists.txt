@@ -191,18 +191,18 @@ set (CODEGEN_SRCS
 add_cpplint_files (${CMAKE_CURRENT_SOURCE_DIR} "${CODEGEN_SRCS}")
 
 #build_unified(CODEGEN_SRCS)
-add_executable(p4codegen ${CODEGEN_SRCS})
+add_executable(p4bludgeon ${CODEGEN_SRCS})
 # message (STATUS "libs ${P4C_LIBRARIES}")
 # message (STATUS "deps ${P4C_LIB_DEPS}")
-target_link_libraries (p4codegen ${P4C_LIBRARIES} ${P4C_LIB_DEPS})
-add_dependencies(p4codegen genIR frontend)
+target_link_libraries (p4bludgeon ${P4C_LIBRARIES} ${P4C_LIB_DEPS})
+add_dependencies(p4bludgeon genIR frontend)
 
-install(TARGETS p4codegen RUNTIME DESTINATION ${P4C_RUNTIME_OUTPUT_DIRECTORY})
+install(TARGETS p4bludgeon RUNTIME DESTINATION ${P4C_RUNTIME_OUTPUT_DIRECTORY})
 
-add_custom_target(linkp4codegen
-  COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_BINARY_DIR}/p4codegen ${P4C_BINARY_DIR}/p4codegen
+add_custom_target(linkp4bludgeon
+  COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_BINARY_DIR}/p4bludgeon ${P4C_BINARY_DIR}/p4bludgeon
   COMMAND ${CMAKE_COMMAND} -E create_symlink ${P4C_BINARY_DIR}/p4include ${CMAKE_CURRENT_BINARY_DIR}/p4include
   COMMAND ${CMAKE_COMMAND} -E create_symlink ${P4C_BINARY_DIR}/p4_14include ${CMAKE_CURRENT_BINARY_DIR}/p4_14include
   )
-add_dependencies(p4c_driver linkp4codegen)
+add_dependencies(p4c_driver linkp4bludgeon)
 
