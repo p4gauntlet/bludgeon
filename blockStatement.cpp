@@ -48,10 +48,12 @@ void blockStatement::gen_sth() {
 		}
 	}
 	// Tao: gen ctrl method call statement
-	for (int cnt=0; cnt<3; cnt++) {
-		auto mcs = assignmentOrMethodCallStatement::gen_methodcall_stat();
-		if (mcs != nullptr) {
-			stat_or_decls.push_back(mcs);
+	if (if_in_ifs == false) {
+		for (int cnt=0; cnt<3; cnt++) {
+			auto mcs = assignmentOrMethodCallStatement::gen_methodcall_stat();
+			if (mcs != nullptr) {
+				stat_or_decls.push_back(mcs);
+			}
 		}
 	}
 }

@@ -20,10 +20,12 @@ public:
 	IR::IndexedVector< IR::StatOrDecl > stat_or_decls;
 	std::vector<cstring> tab_names;
 	bool if_v_initialize = false;
+	bool if_in_ifs = false;
 
-	blockStatement(std::vector<cstring> &tab_names, bool if_init) : 
+	blockStatement(std::vector<cstring> &tab_names, bool if_init, bool if_in_ifs=false) : 
 			tab_names(tab_names),
-			if_v_initialize(if_init){
+			if_v_initialize(if_init),
+			if_in_ifs(if_in_ifs) {
 	}
 	~blockStatement() {
 	}
