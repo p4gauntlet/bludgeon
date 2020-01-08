@@ -411,7 +411,7 @@ IR::Expression* expression::construct_op_expr() {
 
 	int num_trials = 100;
 	while (num_trials--) {
-		switch(rand()%16) {
+		switch(rand()%15) {
 			case 0: expr = new IR::Cmpl(expr1); mp_expr_2_type[expr] = mp_expr_2_type[expr1]; bit_exprs.push_back(expr); break;
 			case 1: expr = new IR::Neg(expr1); mp_expr_2_type[expr] = mp_expr_2_type[expr1]; bit_exprs.push_back(expr); break;
 			case 2: expr = construct_slice(expr1); break;
@@ -431,7 +431,7 @@ IR::Expression* expression::construct_op_expr() {
 							 new IR::Cast(new IR::Type_Bits(8, false), expr2)
 							 , false); break;
 			case 14: expr = construct_mux(expr1, expr2); break;
-			case 15: expr = construct_mod(expr1); break;
+			// case 15: expr = construct_mod(expr1); break;
 		}
 
 		if (expr != nullptr) {
