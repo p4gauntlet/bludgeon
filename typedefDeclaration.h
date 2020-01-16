@@ -49,10 +49,16 @@ public:
 				auto type_ref =  new typeRef(true, types, "");
 				type = type_ref->gen();
 			} else {
-				switch (rand()%3) {
-					case 0: type = headerTypeDeclaration::gen(); break;
-					case 1: type = structTypeDeclaration::gen(); break;
-					case 2: type = headerUnionDeclaration::gen(); break;
+				std::vector<cstring> names;
+				P4Scope::get_all_type_names(STRUCT_LIKE, names);
+				auto name = names.at(rand()%names.size());
+				type = new IR::Type_Name(new IR::Path(IR::ID(name)));
+				auto type = P4Scope::get_type_by_name(name);
+				if (type->is<IR::Type_Struct>()) {
+				}
+				else if (type->is<IR::Type_Header>()) {
+				}
+				else if (type->is<IR::Type_HeaderUnion>()) {
 				}
 			}
 
@@ -83,12 +89,8 @@ public:
 	}
 
 	IR::Type* gen() {
-		if (rand()%2 == 0) {
-			return gen_typedef();
-		}
-		else {
-			return gen_newtype();
-		}
+		// Tao: we only have typedef now, no newtype
+		return gen_typedef();
 	}
 
 };
