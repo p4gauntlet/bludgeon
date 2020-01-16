@@ -39,6 +39,42 @@ public:
 		return assignstat;
 	}
 
+	static IR::AssignmentStatement* gen_func_ass() {
+		IR::AssignmentStatement *assignstat = nullptr;
+		IR::Expression *left=nullptr, *right=nullptr;
+		const IR::Type *l_tp, *r_tp;
+		std::vector<const IR::Type*> param_tps;
+
+		// get the left side
+		left = expression::get_bit_operand(&l_tp);
+
+		// get the right side
+		auto funcs = P4Scope::get_func_decls();
+		if (funcs.size() != 0) {
+			auto func = funcs.at(rand()%funcs.size());
+			r_tp = func->type->returnType;
+			for (auto param_tp : func->type->parameters->parameters) {
+				param_tps.push_back(param_tp->type);
+			}
+			auto args = expression::construct_params(param_tps);
+			right = new IR::MethodCallExpression(new IR::PathExpression(new IR::Path(func->name)), args);
+			if (left!=nullptr && right!=nullptr) {
+				int l_size = l_tp->to<IR::Type_Bits>()->size;
+				int r_size = r_tp->to<IR::Type_Bits>()->size;
+				if (l_size != r_size) {
+					assignstat = new IR::AssignmentStatement(left, 
+							new IR::Cast(new IR::Type_Bits(l_size, false), right));
+				}
+				else {
+					assignstat = new IR::AssignmentStatement(left, right);
+				}
+			}
+		}
+
+		return assignstat;
+	}
+
+	// compund means it is not a simple operator, i.e., bit<128> a is simple, compound may be struct, header
 	static IR::AssignmentStatement* gen_compound_ass() {
 		IR::AssignmentStatement *assignstat = nullptr;
 		IR::Expression* expr1, * expr2;
