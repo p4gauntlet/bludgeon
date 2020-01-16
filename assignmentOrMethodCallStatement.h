@@ -57,6 +57,10 @@ public:
 				param_tps.push_back(param_tp->type);
 			}
 			auto args = expression::construct_params(param_tps);
+			// std::cout << param_tps.size() << " " << args->size() << std::endl;
+			if (param_tps.size() != args->size()) {
+				return nullptr;
+			}
 			right = new IR::MethodCallExpression(new IR::PathExpression(new IR::Path(func->name)), args);
 			if (left!=nullptr && right!=nullptr) {
 				int l_size = l_tp->to<IR::Type_Bits>()->size;

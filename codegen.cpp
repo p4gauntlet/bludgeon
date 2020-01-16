@@ -69,7 +69,9 @@ IR::Node* CGenerator::gen_struct() {
 IR::Node* CGenerator::gen_t_enum() {
 	IR::Node* n = nullptr;
 	while (1) {
-		auto t_enum = new enumDeclaration(rand()%2);
+		// auto t_enum = new enumDeclaration(rand()%2);
+		// Tao: always generating SerEnum
+		auto t_enum = new enumDeclaration(1);
 		n = t_enum->gen();
 		if (n != nullptr) {
 			break;

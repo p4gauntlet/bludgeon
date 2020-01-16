@@ -71,11 +71,15 @@ void P4Scope::get_all_type_names(cstring filter, std::vector<cstring> &type_name
 			}
             else if (filter==STRUCT || filter==STRUCT_HEADERS) {
 				if (!obj->is<IR::Type_Struct>() &&
+						!obj->is<IR::Type_Enum>() && 
+						!obj->is<IR::Type_SerEnum>() && 
                         obj->is<IR::Type_Declaration>()) {
 					if (obj->is<IR::Type_Typedef>()) {
 						auto tpdef_obj = obj->to<IR::Type_Typedef>();
-						if (!(tpdef_obj->type->is<IR::Type_Header>()
-									|| tpdef_obj->type->is<IR::Type_HeaderUnion>())) {
+						auto tpdef_name = tpdef_obj->type->to<IR::Type_Name>();
+						auto tpdef_type = get_type_by_name(tpdef_name->path->name.name);
+						if (!(tpdef_type->is<IR::Type_Header>()
+									|| tpdef_type->is<IR::Type_HeaderUnion>())) {
 							continue;
 						}
 					}

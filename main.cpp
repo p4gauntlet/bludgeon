@@ -44,8 +44,10 @@ int main(int argc, char **argv) {
 	auto objects = new IR::Vector<IR::Node>();
 	objects->push_back(cg->gen()); // generate hearder or header union
 	objects->push_back(cg->gen());
-	objects->push_back(cg->gen_tpdef());
-	objects->push_back(cg->gen_tpdef());
+	// objects->push_back(cg->gen_t_enum());
+	// objects->push_back(cg->gen_t_enum());
+	// objects->push_back(cg->gen_tpdef());
+	// objects->push_back(cg->gen_tpdef());
 	objects->push_back(cg->gen_struct()); // generate struct
 	objects->push_back(cg->gen_struct());
 	objects->push_back(CODEGEN::structTypeDeclaration::gen_Headers()); // generate struct Headers
@@ -55,7 +57,7 @@ int main(int argc, char **argv) {
 	// objects->push_back(cg->gen_ctrldef());
 	// objects->push_back(cg->gen_ctrldef());
 	objects->push_back(cg->gen_func());
-	objects->push_back(cg->gen_func());
+	// objects->push_back(cg->gen_func());
 	// objects->push_back(cg->gen_func());
 	objects->push_back(CODEGEN::controlDeclaration::gen_ing_ctrl());
 	IR::P4Program *program = new IR::P4Program(*objects);

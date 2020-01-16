@@ -386,7 +386,8 @@ IR::Expression* construct_div(IR::Expression* expr1) {
 	IR::Expression* expr = nullptr;
 	const IR::Type* tp = expression::mp_expr_2_type[expr1];
 	int size = tp->to<IR::Type_Bits>()->size;
-	expr = new IR::Div(expr1, new IR::Constant(new IR::Type_Bits(size, false), 2 << (rand()%size)));
+	int val = 1<<(rand()%(size<=8?size:8));
+	expr = new IR::Div(expr1, new IR::Constant(new IR::Type_Bits(size, false), val));
 	expression::mp_expr_2_type[expr] = expression::mp_expr_2_type[expr1];
 	expression::bit_exprs.push_back(expr);
 	return expr;
@@ -609,12 +610,12 @@ IR::Vector<IR::Argument> *expression::construct_params(std::vector<const IR::Typ
 		IR::Expression* expr = nullptr;
 		const IR::Type* expr_tp = nullptr;
 		cstring str_expr_tp;
-		int num_trials = 100;
+		int num_trials = 400;
 		bool expr_found = false;
 		while (num_trials--) {
 			if (tp->is<IR::Type_Bits>()) {
 				auto tp_b = tp->to<IR::Type_Bits>();
-				expr = get_operand(rand()%2, &expr_tp, str_expr_tp, false);
+				expr = get_operand(rand()%2, &expr_tp, str_expr_tp, rand()%2);
 				if (expr!=nullptr && str_expr_tp==EXPR_TYPE_BITS) {
 					auto expr_tp_b = expr_tp->to<IR::Type_Bits>();
 					int size = tp_b->size;
