@@ -39,36 +39,28 @@ int main(int argc, char **argv) {
 	}
 
 	// Tao: craft a new program
-
 	CODEGEN::CGenerator *cg = new CODEGEN::CGenerator();
 
-
-
 	auto objects = new IR::Vector<IR::Node>();
+	objects->push_back(cg->gen()); // generate hearder or header union
 	objects->push_back(cg->gen());
-	objects->push_back(cg->gen());
-	// objects->push_back(cg->gen());
-	// objects->push_back(cg->gen());
+	objects->push_back(cg->gen_tpdef());
+	objects->push_back(cg->gen_tpdef());
+	objects->push_back(cg->gen_struct()); // generate struct
 	objects->push_back(cg->gen_struct());
-	objects->push_back(cg->gen_struct());
-	objects->push_back(cg->gen_struct());
-	// objects->push_back(cg->gen_struct());
-	// objects->push_back(cg->gen_struct());
-	objects->push_back(CODEGEN::structTypeDeclaration::gen_Headers());
-	objects->push_back(CODEGEN::structTypeDeclaration::gen_Meta());
-	CODEGEN::structTypeDeclaration::gen_Sm();
+	objects->push_back(CODEGEN::structTypeDeclaration::gen_Headers()); // generate struct Headers
+	objects->push_back(CODEGEN::structTypeDeclaration::gen_Meta()); // generate struct Meta
+	CODEGEN::structTypeDeclaration::gen_Sm(); // generate struct standard_metadata_t
 	// objects->push_back(cg->gen_ctrldef());
 	// objects->push_back(cg->gen_ctrldef());
-	// objects->push_back(cg->gen_func());
-	// objects->push_back(cg->gen_func());
-	// objects->push_back(cg->gen_func());
 	// objects->push_back(cg->gen_ctrldef());
+	objects->push_back(cg->gen_func());
+	objects->push_back(cg->gen_func());
+	// objects->push_back(cg->gen_func());
 	objects->push_back(CODEGEN::controlDeclaration::gen_ing_ctrl());
 	IR::P4Program *program = new IR::P4Program(*objects);
 
-
 	CODEGEN::P4Scope::print_scope();
-
 	// end
 
 	// output to the file
@@ -76,7 +68,6 @@ int main(int argc, char **argv) {
 	*ostream << "#include <core.p4>\n";
 	*ostream << "#include <v1model.p4>\n\n";
 
-    // P4::ToP4 top4(ostream, false);
     CODEGEN::SubToP4 top4(ostream, false);
 
 	program->apply(top4);

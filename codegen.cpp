@@ -21,7 +21,7 @@ namespace CODEGEN {
 IR::Node* CGenerator::gen() {
 	IR::Node* n = nullptr;
  	while (1) {
-		switch (rand()%3) {
+		switch (rand()%2) {
 			case 0: {
 						n = headerTypeDeclaration::gen();
 						break;

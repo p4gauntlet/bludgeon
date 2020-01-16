@@ -210,7 +210,9 @@ void expression::initialize(const IR::Type* tp,
 	}
 	else if (tp->is<IR::Type_Bits>()) {
 		IR::Expression* l_expr = construct_expr(call_bt);
-		IR::Constant* r_expr = new IR::Constant(tp->to<IR::Type_Bits>(), 0);
+		auto tp_bits = tp->to<IR::Type_Bits>();
+		int size = (tp_bits->size<=8)?tp_bits->size:8; // Tao: watch out for overflow
+		IR::Constant* r_expr = new IR::Constant(tp_bits, rand()%(2<<(size-1)));
 		IR::AssignmentStatement* ass = new IR::AssignmentStatement(l_expr, r_expr);
 		ass_stat.push_back(ass);
 	}
@@ -384,7 +386,7 @@ IR::Expression* construct_div(IR::Expression* expr1) {
 	IR::Expression* expr = nullptr;
 	const IR::Type* tp = expression::mp_expr_2_type[expr1];
 	int size = tp->to<IR::Type_Bits>()->size;
-	expr = new IR::Div(expr1, new IR::Constant(new IR::Type_Bits(size, false), rand()%size+1));
+	expr = new IR::Div(expr1, new IR::Constant(new IR::Type_Bits(size, false), 2 << (rand()%size)));
 	expression::mp_expr_2_type[expr] = expression::mp_expr_2_type[expr1];
 	expression::bit_exprs.push_back(expr);
 	return expr;
@@ -688,7 +690,6 @@ void expression::construct_list_expr(const IR::Type *tp,
 		exprs.push_back(expr);
 	}
 }
-
 
 } // namespace CODEGEN
 

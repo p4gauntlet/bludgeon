@@ -49,6 +49,7 @@ void P4Scope::end_local_scope() {
 	decl_ins_ctrls.clear();
 }
 
+// Tao: filter is a mess here, sometimes it is filter, sometimes it is indicator
 void P4Scope::get_all_type_names(cstring filter, std::vector<cstring> &type_names) {
 	for (auto i = scope.begin(); i<scope.end(); i++) {
 		for (size_t j=0; j< (*i)->size(); j++) {
@@ -71,6 +72,13 @@ void P4Scope::get_all_type_names(cstring filter, std::vector<cstring> &type_name
             else if (filter==STRUCT || filter==STRUCT_HEADERS) {
 				if (!obj->is<IR::Type_Struct>() &&
                         obj->is<IR::Type_Declaration>()) {
+					if (obj->is<IR::Type_Typedef>()) {
+						auto tpdef_obj = obj->to<IR::Type_Typedef>();
+						if (!(tpdef_obj->type->is<IR::Type_Header>()
+									|| tpdef_obj->type->is<IR::Type_HeaderUnion>())) {
+							continue;
+						}
+					}
 					auto tmp_obj = obj->to<IR::Type_Declaration>();
 					type_names.push_back(tmp_obj->name.name);
                 }
@@ -78,7 +86,6 @@ void P4Scope::get_all_type_names(cstring filter, std::vector<cstring> &type_name
 			else if (filter==STRUCT_LIKE) {
 				if (obj->is<IR::Type_StructLike>()) {
 					auto tmp_obj = obj->to<IR::Type_StructLike>();
-					// Tao: can we?
 					if (tmp_obj->name.name != "standard_metadata_t"
 							&& tmp_obj->name.name != "Meta"
 							&& tmp_obj->name.name != "Headers") {
@@ -157,6 +164,10 @@ std::map<cstring, std::vector<const IR::Type*>> P4Scope::get_action_def() {
 		ret.emplace(p4act->name.name, pars);
 	}
 	return ret;
+}
+
+std::vector<const IR::Function*> P4Scope::get_func_decls() {
+	return P4Scope::get_decls<IR::Function>();
 }
 
 template <typename T>

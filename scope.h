@@ -95,10 +95,10 @@ public:
 	static std::vector<const IR::P4Action*> get_p4actions_nodir();
 
 	static std::map<cstring, std::vector<const IR::Type*>> get_action_def();
+	static std::vector<const IR::Function*> get_func_decls();
 	// template to get all declarations
 	template <typename T>
 	static std::vector<const T*> get_decls();
-
 
 
 	static void pr_test();
