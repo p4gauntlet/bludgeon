@@ -21,7 +21,7 @@ public:
 		IR::AssignmentStatement *assignstat = nullptr;
 		IR::Expression *left=nullptr, *right=nullptr;
 		const IR::Type *l_tp, *r_tp;
-		left = expression::get_bit_operand(&l_tp);
+		left = expression::get_bit_operand(&l_tp, false);
 		right = expression::construct_op_expr();
 		if (left!=nullptr && right!=nullptr) {
 			r_tp = expression::mp_expr_2_type[right];
@@ -46,7 +46,7 @@ public:
 		std::vector<const IR::Type*> param_tps;
 
 		// get the left side
-		left = expression::get_bit_operand(&l_tp);
+		left = expression::get_bit_operand(&l_tp, false);
 
 		// get the right side
 		auto funcs = P4Scope::get_func_decls();

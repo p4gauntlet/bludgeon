@@ -46,6 +46,8 @@ public:
 			if (param->direction != IR::Direction::In) {
 				P4Scope::add_name_2_type_p(param->name.name, param->type);
 			}
+			// add params of all directions 
+			P4Scope::add_name_2_type_p_in(param->name.name, param->type);
 		}
 
 	}

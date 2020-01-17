@@ -8,6 +8,20 @@ namespace CODEGEN {
 void blockStatement::gen_sth() {
 	// auto const_decl = new constantDeclaration();
 	// stat_or_decls.push_back(const_decl->gen());
+
+	// initialize out parameters
+	auto ass_stats = expression::decl_p_initialize();
+	for (auto i : ass_stats) {
+		stat_or_decls.push_back(i);
+	}
+	// initialize variables
+	if (if_v_initialize == true) {
+		auto ass_stats = expression::decl_v_initialize();
+		for (auto i : ass_stats) {
+			stat_or_decls.push_back(i);
+		}
+	}
+	// put tab_name .apply() after some initializations
 	// Tao: generate tab_name .apply()
 	for (auto &tab : tab_names) {
 		IR::Vector<IR::Argument> * args = new IR::Vector<IR::Argument>();
@@ -16,13 +30,6 @@ void blockStatement::gen_sth() {
 		IR::Member * mem = new IR::Member(new IR::PathExpression(new IR::Path(call_name)), apply);
 		IR::MethodCallExpression * mce = new IR::MethodCallExpression(mem, args);
 		stat_or_decls.push_back(new IR::MethodCallStatement(mce));
-	}
-	// initialize variables
-	if (if_v_initialize == true) {
-		auto ass_stats = expression::decl_v_initialize();
-		for (auto i : ass_stats) {
-			stat_or_decls.push_back(i);
-		}
 	}
 
 	for (int cnt=0; cnt<5; cnt++) {

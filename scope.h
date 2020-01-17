@@ -18,6 +18,7 @@ public:
 	static std::vector< IR::Vector<IR::Node>* > scope;
 	static std::set<cstring> used_names;
     static std::map<cstring, const IR::Type*> name_2_type_param; // param
+    static std::map<cstring, const IR::Type*> name_2_type_param_in; // param
     static std::map<cstring, const IR::Type*> name_2_type_vars; // variable
     static std::map<cstring, const IR::Type*> name_2_type_const;
 	static std::map<cstring, const IR::Type*> name_2_type_stack; // contains stack
@@ -43,6 +44,15 @@ public:
         }
         else {
             name_2_type_param.emplace(name, type);
+        }
+    }
+
+    static void add_name_2_type_p_in(cstring name, const IR::Type* type) {
+        if (name_2_type_param_in.find(name) != name_2_type_param_in.end()) {
+            BUG("param wrong name, must be different");
+        }
+        else {
+            name_2_type_param_in.emplace(name, type);
         }
     }
 

@@ -7,6 +7,7 @@ namespace CODEGEN {
 
 std::vector<IR::Expression *> expression::boolean_exprs;
 std::map<IR::Expression *, const IR::Type*> expression::mp_expr_2_type;
+std::map<IR::Expression *, bool> mp_expr_2_if_inc_in;
 std::vector<IR::Expression *> expression::bit_exprs;
 std::set<IR::Expression *> expression::forbidden_exprs;
 
@@ -211,7 +212,8 @@ void expression::initialize(const IR::Type* tp,
 	else if (tp->is<IR::Type_Bits>()) {
 		IR::Expression* l_expr = construct_expr(call_bt);
 		auto tp_bits = tp->to<IR::Type_Bits>();
-		int size = (tp_bits->size<=8)?tp_bits->size:8; // Tao: watch out for overflow
+		int size = (tp_bits->size<=SIZE_BIT_FOR_INITIALIZATION)?
+					tp_bits->size:SIZE_BIT_FOR_INITIALIZATION; // Tao: watch out for overflow
 		IR::Constant* r_expr = new IR::Constant(tp_bits, rand()%(2<<(size-1)));
 		IR::AssignmentStatement* ass = new IR::AssignmentStatement(l_expr, r_expr);
 		ass_stat.push_back(ass);
@@ -226,13 +228,12 @@ void expression::initialize(const IR::Type* tp,
 	return ;
 }
 
-std::vector<IR::AssignmentStatement*> expression::decl_v_initialize() {
+std::vector<IR::AssignmentStatement*> expression::decl_initialize(std::map<cstring, const IR::Type*> &tp_map) {
 	std::vector<IR::AssignmentStatement*> ass_stats;
 	std::vector<cstring> call_bt;
 	cstring name;
 	const IR::Type *tp = nullptr;
-	// for (auto &k : P4Scope::name_2_type_vars) {
-	for (auto &k : P4Scope::name_2_type_stack) {
+	for (auto &k : tp_map) {
 		name = k.first;
 		tp = k.second;
 		call_bt.push_back(name);
@@ -242,11 +243,24 @@ std::vector<IR::AssignmentStatement*> expression::decl_v_initialize() {
 	return ass_stats;
 }
 
-IR::Expression* expression::get_operand(int pa_or_var, const IR::Type** tp, cstring &type, bool if_compound) {
+std::vector<IR::AssignmentStatement*> expression::decl_p_initialize() {
+	return decl_initialize(P4Scope::name_2_type_param);
+}
+
+std::vector<IR::AssignmentStatement*> expression::decl_v_initialize() {
+	return decl_initialize(P4Scope::name_2_type_stack);
+}
+
+IR::Expression* expression::get_operand(int pa_or_var, const IR::Type** tp, cstring &type, bool if_compound, bool if_param_in_inc) {
     std::vector<cstring> call_backtrace;
 
 	if (pa_or_var == 0) {
-		*tp = pick_lval(P4Scope::name_2_type_param, call_backtrace, type, if_compound);
+		if (if_param_in_inc == true) {
+			*tp = pick_lval(P4Scope::name_2_type_param_in, call_backtrace, type, if_compound);
+		}
+		else {
+			*tp = pick_lval(P4Scope::name_2_type_param, call_backtrace, type, if_compound);
+		}
 	}
 	else {
 		*tp = pick_lval(P4Scope::name_2_type_vars, call_backtrace, type, if_compound);
@@ -260,12 +274,12 @@ IR::Expression* expression::get_operand(int pa_or_var, const IR::Type** tp, cstr
 }
 
 
-IR::Expression* expression::get_bit_operand(const IR::Type** tp) {
+IR::Expression* expression::get_bit_operand(const IR::Type** tp, bool if_param_in_inc=false) {
 	IR::Expression* expr = nullptr;
 	cstring type;
 	int num_trials = 100;
 	while (num_trials--) {
-		expr = get_operand(rand()%2, tp, type, false);
+		expr = get_operand(rand()%2, tp, type, false, if_param_in_inc);
 		if (expr!=nullptr && type==EXPR_TYPE_BITS) {
 			break;
 		}
@@ -274,7 +288,7 @@ IR::Expression* expression::get_bit_operand(const IR::Type** tp) {
 	return expr;
 }
 
-IR::Expression* expression::get_op_expr() {
+IR::Expression* expression::get_op_expr(bool if_param_in_inc=false) {
 	IR::Expression* expr = nullptr;
 	const IR::Type *tp = nullptr;
 	bool is_from_vector = false;
@@ -285,7 +299,7 @@ IR::Expression* expression::get_op_expr() {
 		is_from_vector = true;
 	}
 	else {
-		expr = get_bit_operand(&tp);
+		expr = get_bit_operand(&tp, if_param_in_inc);
 	}
 
 	if (expr == nullptr) {
@@ -386,7 +400,7 @@ IR::Expression* construct_div(IR::Expression* expr1) {
 	IR::Expression* expr = nullptr;
 	const IR::Type* tp = expression::mp_expr_2_type[expr1];
 	int size = tp->to<IR::Type_Bits>()->size;
-	int val = 1<<(rand()%(size<=8?size:8));
+	int val = 1<<(rand()%(size<=SIZE_BIT_FOR_INITIALIZATION?size:SIZE_BIT_FOR_INITIALIZATION));
 	expr = new IR::Div(expr1, new IR::Constant(new IR::Type_Bits(size, false), val));
 	expression::mp_expr_2_type[expr] = expression::mp_expr_2_type[expr1];
 	expression::bit_exprs.push_back(expr);
@@ -406,8 +420,8 @@ IR::Expression* construct_mod(IR::Expression* expr1) {
 IR::Expression* expression::construct_op_expr() {
 	IR::Expression *expr;
 	IR::Expression *expr1, *expr2;
-	expr1 = get_op_expr();
-	expr2 = get_op_expr();
+	expr1 = get_op_expr(true);
+	expr2 = get_op_expr(true);
 	if (expr1==nullptr || expr2==nullptr) {
 		return nullptr;
 	}
@@ -461,7 +475,7 @@ IR::Expression* expression::get_cond_expr() {
 	else {
 		int num_trials = 100;
 		while (num_trials--) {
-			expr = get_operand(rand()%2, &tp, type, false);
+			expr = get_operand(rand()%2, &tp, type, false, true);
 			if (expr != nullptr) {
 				break;
 			}
@@ -526,12 +540,12 @@ IR::Expression* expression::construct_cond_expr() {
 	return expr;
 }
 
-IR::Expression* get_compound_operand(const IR::Type** tp, cstring compound_type) {
+IR::Expression* get_compound_operand(const IR::Type** tp, cstring compound_type, bool if_param_in_inc) {
 	IR::Expression* expr = nullptr;
 	cstring type;
 	int num_trials = 100;
 	while (num_trials--) {
-		expr = expression::get_operand(rand()%2, tp, type, true);
+		expr = expression::get_operand(rand()%2, tp, type, true, if_param_in_inc);
 		if (expr!=nullptr && type==compound_type) {
 			break;
 		}
@@ -544,8 +558,8 @@ bool expression::get_two_compound_operands(IR::Expression** expr1, IR::Expressio
 	bool ret = false;
 	int num_trails = 500;
 	while (num_trails--) {
-		*expr1 = get_compound_operand(tp1, EXPR_TYPE_STRUCT);
-		*expr2 = get_compound_operand(tp2, EXPR_TYPE_STRUCT);
+		*expr1 = get_compound_operand(tp1, EXPR_TYPE_STRUCT, false);
+		*expr2 = get_compound_operand(tp2, EXPR_TYPE_STRUCT, true);
 		if (*expr1!=nullptr && *expr2!=nullptr && 
 				(*tp1)->is<IR::Type_Struct>() &&
 				(*tp2)->is<IR::Type_Struct>()) {
@@ -556,8 +570,8 @@ bool expression::get_two_compound_operands(IR::Expression** expr1, IR::Expressio
 			}
 		}
 
-		*expr1 = get_compound_operand(tp1, EXPR_TYPE_HEADER);
-		*expr2 = get_compound_operand(tp2, EXPR_TYPE_HEADER);
+		*expr1 = get_compound_operand(tp1, EXPR_TYPE_HEADER, false);
+		*expr2 = get_compound_operand(tp2, EXPR_TYPE_HEADER, true);
 		if (*expr1!=nullptr && *expr2!=nullptr &&
 				(*tp1)->is<IR::Type_Header>() &&
 				(*tp2)->is<IR::Type_Header>()) {
@@ -568,8 +582,8 @@ bool expression::get_two_compound_operands(IR::Expression** expr1, IR::Expressio
 			}
 		}
 
-		*expr1 = get_compound_operand(tp1, EXPR_TYPE_HUNION);
-		*expr2 = get_compound_operand(tp2, EXPR_TYPE_HUNION);
+		*expr1 = get_compound_operand(tp1, EXPR_TYPE_HUNION, false);
+		*expr2 = get_compound_operand(tp2, EXPR_TYPE_HUNION, true);
 		if (*expr1!=nullptr && *expr2!=nullptr &&
 				(*tp1)->is<IR::Type_HeaderUnion>() &&
 				(*tp2)->is<IR::Type_HeaderUnion>()) {
@@ -615,8 +629,10 @@ IR::Vector<IR::Argument> *expression::construct_params(std::vector<const IR::Typ
 		while (num_trials--) {
 			if (tp->is<IR::Type_Bits>()) {
 				auto tp_b = tp->to<IR::Type_Bits>();
-				expr = get_operand(rand()%2, &expr_tp, str_expr_tp, rand()%2);
-				if (expr!=nullptr && str_expr_tp==EXPR_TYPE_BITS) {
+				expr = get_operand(rand()%2, &expr_tp, str_expr_tp, rand()%2, false);
+				if (expr!=nullptr && 
+						mp_expr_2_if_inc_in[expr]==false && 
+						str_expr_tp==EXPR_TYPE_BITS) {
 					auto expr_tp_b = expr_tp->to<IR::Type_Bits>();
 					int size = tp_b->size;
 					int expr_size = expr_tp_b->size;

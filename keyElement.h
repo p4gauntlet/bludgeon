@@ -43,7 +43,7 @@ public:
 		cstring str_type;
 		int num_trials = 100;
 		while(num_trials--) {
-			expr = expression::get_operand(rand()%2, &tp, str_type, false);
+			expr = expression::get_operand(rand()%2, &tp, str_type, false, true);
 			if (expr != nullptr) {
 				break;
 			}

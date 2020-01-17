@@ -44,7 +44,7 @@ public:
 
 		P4Scope::ret_type = r_tp;
 		std::vector<cstring> tab_names;
-		auto blk_gen = new blockStatement(tab_names, false);
+		auto blk_gen = new blockStatement(tab_names, true);
 		blk = blk_gen->gen_func_blk();
 		P4Scope::ret_type = nullptr;
 

@@ -49,11 +49,19 @@ public:
 		IR::Declaration_Variable *ret;
 		// Tao: construct list expression
 		if (type->is<IR::Type_Bits>()) {
+			auto tp_bits = type->to<IR::Type_Bits>();
+			auto size = tp_bits->size>=SIZE_BIT_FOR_INITIALIZATION?SIZE_BIT_FOR_INITIALIZATION:tp_bits->size;
+			auto rand_num = rand()%(1<<size);
 			ret = new IR::Declaration_Variable(*name, type, 
-					new IR::Constant(type->to<IR::Type_Bits>(), 0));
+					new IR::Constant(tp_bits, rand_num));
 		}
 		else if (type->is<IR::Type_Boolean>()) {
-			ret = new IR::Declaration_Variable(*name, type, new IR::BoolLiteral(false));
+			if (rand()%2==0) {
+				ret = new IR::Declaration_Variable(*name, type, new IR::BoolLiteral(false));
+			}
+			else {
+				ret = new IR::Declaration_Variable(*name, type, new IR::BoolLiteral(true));
+			}
 		}
 		else {
 			IR::Vector<IR::Expression> exprs;
@@ -65,7 +73,7 @@ public:
 			}
 			else {
 				ret = new IR::Declaration_Variable(*name, type);
-				P4Scope::add_name_2_type_stack(name->name, type);
+				P4Scope::add_name_2_type_stack(name->name, type); // Tao: this needs further initialization
 			}
 		}
 

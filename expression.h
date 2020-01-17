@@ -17,6 +17,10 @@
 #define EXPR_TYPE_HEADER "type_header"
 #define EXPR_TYPE_HUNION "type_hunion"
 
+#ifndef SIZE_BIT_FOR_INITIALIZATION
+#define SIZE_BIT_FOR_INITIALIZATION 2
+#endif
+
 namespace CODEGEN {
 
 
@@ -50,7 +54,10 @@ public:
 	static void initialize(const IR::Type* tp,
 		std::vector<IR::AssignmentStatement*> &ass_stat, 
 		std::vector<cstring> &call_bt);
+	static std::vector<IR::AssignmentStatement*> decl_initialize(std::map<cstring, const IR::Type*> &tp_map);
+	std::vector<IR::AssignmentStatement*> ass_stats;
 	static std::vector<IR::AssignmentStatement*> decl_v_initialize();
+	static std::vector<IR::AssignmentStatement*> decl_p_initialize();
     // maybe we can operate on IR::Declaration
     // expression[ expression ] ArrayIndex
     // expression[ expression : expression ] Slice
@@ -60,12 +67,12 @@ public:
     // !, ~, -, +
 
 	// basically, use get_operand to get a operand (bit or bool if not compound)
-	static IR::Expression* get_operand(int pa_or_var, const IR::Type** tp, cstring &type, bool if_compound);
+	static IR::Expression* get_operand(int pa_or_var, const IR::Type** tp, cstring &type, bool if_compound, bool if_param_in_inc);
 	// want a bit operand, not a bool
-	static IR::Expression* get_bit_operand(const IR::Type** tp);
+	static IR::Expression* get_bit_operand(const IR::Type** tp, bool if_param_in_inc);
 	// get an expression of cond or op
 	static IR::Expression* get_cond_expr();
-	static IR::Expression* get_op_expr();
+	static IR::Expression* get_op_expr(bool if_param_in_inc);
 	// construct more complex operations on cond and op
 	static IR::Expression* construct_cond_expr();
 	static IR::Expression* construct_op_expr();

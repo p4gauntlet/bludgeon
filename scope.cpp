@@ -8,6 +8,7 @@ namespace CODEGEN {
 std::vector< IR::Vector<IR::Node>* > P4Scope::scope;
 std::set<cstring> P4Scope::used_names;
 std::map<cstring, const IR::Type*> P4Scope::name_2_type_param;
+std::map<cstring, const IR::Type*> P4Scope::name_2_type_param_in;
 std::map<cstring, const IR::Type*> P4Scope::name_2_type_vars;
 std::map<cstring, const IR::Type*> P4Scope::name_2_type_const;
 std::map<cstring, const IR::Type*> P4Scope::name_2_type_stack;
@@ -29,6 +30,7 @@ void P4Scope::end_local_scope() {
         if (node->is<IR::Declaration>()) {
 			auto decl = node->to<IR::Declaration>();
             name_2_type_param.erase(decl->name.name);
+            name_2_type_param_in.erase(decl->name.name);
             name_2_type_vars.erase(decl->name.name);
             name_2_type_const.erase(decl->name.name);
 			name_2_type_stack.erase(decl->name.name);
