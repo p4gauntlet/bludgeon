@@ -4,6 +4,7 @@
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/version.h.cmake"
   "${CMAKE_CURRENT_BINARY_DIR}/version.h" @ONLY)
 
+set (CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set (CODEGEN_SRCS
 	scope.cpp
 	scope.h

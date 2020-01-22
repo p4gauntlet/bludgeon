@@ -17,6 +17,7 @@ const IR::Type* P4Scope::ret_type = nullptr;
 std::vector<IR::P4Control*> P4Scope::p4_ctrls;
 std::map<cstring, IR::P4Control*> P4Scope::decl_ins_ctrls;
 std::map<cstring, IR::P4Action*> P4Scope::decl_actions;
+std::set<cstring> P4Scope::called_tables;
 
 void P4Scope::add_to_scope(IR::Node* n) {
 	auto l_scope = P4Scope::scope.back();
@@ -174,6 +175,20 @@ std::map<cstring, std::vector<const IR::Type*>> P4Scope::get_action_def() {
 
 std::vector<const IR::Function*> P4Scope::get_func_decls() {
 	return P4Scope::get_decls<IR::Function>();
+}
+
+std::vector<const IR::P4Table*> P4Scope::get_tab_decls() {
+    return P4Scope::get_decls<IR::P4Table>();
+}
+
+std::vector<cstring> P4Scope::get_tab_names() {
+    std::vector<cstring> tab_names;
+    auto tables = P4Scope::get_tab_decls();
+    for (size_t i=0; i<tables.size(); i++) {
+        auto table =  tables.at(i);
+        tab_names.push_back(table->name.name);
+    }
+    return tab_names;
 }
 
 template <typename T>

@@ -31,7 +31,9 @@ public:
 		tb_properties = tab_property_list_gen->gen();
 
 
-        return new IR::P4Table(*name, tb_properties);
+        auto ret = new IR::P4Table(*name, tb_properties);
+        P4Scope::add_to_scope(ret);
+        return ret;
 	}
 };
 

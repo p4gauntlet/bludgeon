@@ -13,6 +13,12 @@
 #include "tableDeclaration.h"
 #include "blockStatement.h"
 
+
+#define NUM_VAR_DECL        5
+#define NUM_DECL_INS_DECL   5
+#define NUM_ACTION_DECL     2
+#define NUM_TABLE_DECL      1 
+
 namespace CODEGEN {
 
 
@@ -57,7 +63,7 @@ public:
 		    local_decls.push_back(const_decl->gen());
         }*/
         // variableDeclarations
-        for (int i=0; i<15; i++) {
+        for (int i=0; i<5; i++) {
             auto var_decl = new variableDeclaration();
             local_decls.push_back(var_decl->gen());
         }
@@ -132,12 +138,12 @@ public:
 		    local_decls.push_back(const_decl->gen());
         }*/
         // variableDeclarations
-        for (int i=0; i<15; i++) {
+        for (int i=0; i<NUM_VAR_DECL; i++) {
             auto var_decl = new variableDeclaration();
             local_decls.push_back(var_decl->gen());
         }
 		// declaration_instance
-		for (int i=0; i<5; i++) {
+		for (int i=0; i<NUM_DECL_INS_DECL; i++) {
 			auto decl_ins = gen_decl_instance();
 			if (decl_ins == nullptr) {
 				continue;
@@ -145,19 +151,18 @@ public:
 			local_decls.push_back(decl_ins);
 		}
         // actionDeclarations
-        for (int i=0; i<2; i++) {
+        for (int i=0; i<NUM_ACTION_DECL; i++) {
             auto act_decl = new actionDeclaration();
             local_decls.push_back(act_decl->gen());
         }
         // tableDeclarations
 		std::vector<cstring> tab_names;
-        for (int i=0; i<1; i++) {
+        for (int i=0; i<NUM_TABLE_DECL; i++) {
             auto tab_decl = new tableDeclaration();
             local_decls.push_back(tab_decl->gen());
 			tab_names.push_back(tab_decl->name->name);
         }
         // instantiations
-
 
 		// blockstatement
 		auto blk_gen = new blockStatement(tab_names, true);

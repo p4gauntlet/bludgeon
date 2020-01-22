@@ -7,6 +7,10 @@
 #include "assignmentOrMethodCallStatement.h"
 #include "conditionalStatement.h"
 #include "variableDeclaration.h"
+#include "switchStatement.h"
+
+
+#define NUM_STAT 10
 
 namespace CODEGEN {
 
@@ -33,6 +37,8 @@ public:
 	// TODO: a lot of work needed to be done here
 
 	IR::BlockStatement* gen();
+    IR::BlockStatement* gen_switch_blk();
+    void initialization();
 	void gen_sth();
 	IR::BlockStatement* gen_func_blk();
 };
