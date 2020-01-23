@@ -23,7 +23,7 @@ void blockStatement::gen_sth() {
 
 	// put tab_name .apply() after some initializations
     for (int num_stat=0; num_stat<NUM_STAT; num_stat++) {
-        switch (rand()%8) {
+        switch (rand()%10) {
         case 0: {
             std::vector<cstring> tab_names = P4Scope::get_tab_names();
             if (tab_names.size() > 0) {
@@ -95,6 +95,14 @@ void blockStatement::gen_sth() {
 	        }
             break;
         }
+        case 8: {
+			stat_or_decls.push_back(returnStatement::gen_ret_stat());
+            break;
+        }
+        case 9: { 
+			stat_or_decls.push_back(exitStatement::gen()); 
+            break;
+        }
         }
     }
 
@@ -134,6 +142,8 @@ IR::BlockStatement* blockStatement::gen_func_blk() {
 
     initialization();
 	gen_sth();
+
+
 	if (P4Scope::ret_type != nullptr) {
 		const IR::Type_Bits *tp_bits = P4Scope::ret_type->to<IR::Type_Bits>();
 

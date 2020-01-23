@@ -8,6 +8,8 @@
 #include "conditionalStatement.h"
 #include "variableDeclaration.h"
 #include "switchStatement.h"
+#include "returnStatement.h"
+#include "exitStatement.h"
 
 
 #define NUM_STAT 10
