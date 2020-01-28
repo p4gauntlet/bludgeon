@@ -21,9 +21,10 @@ void blockStatement::initialization() {
 
 void blockStatement::gen_sth() {
 
+    std::vector<int> percent = {15,15,15,15,15,15,15,15,5,5};
 	// put tab_name .apply() after some initializations
     for (int num_stat=0; num_stat<NUM_STAT; num_stat++) {
-        switch (rand()%10) {
+        switch (CODEGEN::randind(percent, 10)) {
         case 0: {
             std::vector<cstring> tab_names = P4Scope::get_tab_names();
             if (tab_names.size() > 0) {

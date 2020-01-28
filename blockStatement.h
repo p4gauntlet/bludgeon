@@ -3,6 +3,7 @@
 
 #include "ir/ir.h"
 
+#include "common.h"
 #include "constantDeclaration.h"
 #include "assignmentOrMethodCallStatement.h"
 #include "conditionalStatement.h"

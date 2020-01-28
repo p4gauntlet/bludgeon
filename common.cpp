@@ -17,7 +17,9 @@
 
 const std::vector<cstring> str_keywords = {"if", "else", "key", "actions"};
 
-cstring CODEGEN::randstr(size_t len) {
+namespace CODEGEN {
+
+cstring randstr(size_t len) {
 	cstring ret;
 	std::stringstream ss;
 	while (1) {
@@ -40,3 +42,30 @@ cstring CODEGEN::randstr(size_t len) {
 	return ret;
 
 }
+
+int randind(std::vector<int> &percent, size_t n_num) {
+    if (percent.size() != n_num) {
+        BUG("size of percent is not equal to n_num!");
+    }
+
+    int sum = 0;
+    for (auto i : percent) {
+        sum += i;
+    }
+
+    int rand_num = rand()%sum;
+    int ret = 0;
+
+    int ret_sum = 0;
+    for (auto i : percent) {
+        ret_sum += i;
+        if (ret_sum > rand_num) {
+            break;
+        }
+        ret = ret+1;
+    }
+
+    return ret;
+}
+
+} // namesapce CODEGEN
