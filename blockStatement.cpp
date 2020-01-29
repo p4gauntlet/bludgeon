@@ -19,7 +19,7 @@ void blockStatement::initialization() {
 	}
 }
 
-void blockStatement::gen_sth() {
+void blockStatement::gen_sth(bool if_in_func=false) {
 
     std::vector<int> percent = {15,15,15,15,15,15,15,15,5,5};
 	// put tab_name .apply() after some initializations
@@ -72,7 +72,7 @@ void blockStatement::gen_sth() {
 	         *		so add some randomness here
 	         */
 	        if (rand()%4 == 0) {
-	        	auto if_stat = conditionalStatement::gen_if_stat();
+	        	auto if_stat = conditionalStatement::gen_if_stat(if_in_func);
 	        	if (if_stat != nullptr) 
 	        		stat_or_decls.push_back(if_stat);
 	        }
@@ -101,7 +101,8 @@ void blockStatement::gen_sth() {
             break;
         }
         case 9: { 
-			stat_or_decls.push_back(exitStatement::gen()); 
+            if (if_in_func == false)
+			    stat_or_decls.push_back(exitStatement::gen()); 
             break;
         }
         }
@@ -122,19 +123,25 @@ void blockStatement::gen_sth() {
 }
 
 IR::BlockStatement* blockStatement::gen() {
+    P4Scope::start_local_scope();
 
     initialization();
 	gen_sth();
+
+    P4Scope::end_local_scope();
 
 	return new IR::BlockStatement(stat_or_decls);
 }
 
 IR::BlockStatement* blockStatement::gen_switch_blk() {
+    P4Scope::start_local_scope();
     gen_sth();
+    P4Scope::end_local_scope();
     return new IR::BlockStatement(stat_or_decls);
 }
 
 IR::BlockStatement* blockStatement::gen_func_blk() {
+    P4Scope::start_local_scope();
 	// some variable declaration
 	for (int i=0; i<5; i++) {
         auto var_decl = new variableDeclaration();
@@ -142,7 +149,7 @@ IR::BlockStatement* blockStatement::gen_func_blk() {
     }
 
     initialization();
-	gen_sth();
+	gen_sth(true);
 
 
 	if (P4Scope::ret_type != nullptr) {
@@ -166,6 +173,7 @@ IR::BlockStatement* blockStatement::gen_func_blk() {
 		stat_or_decls.push_back(ret_stat);
 	}
 
+    P4Scope::end_local_scope();
 	return new IR::BlockStatement(stat_or_decls);
 }
 

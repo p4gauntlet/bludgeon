@@ -13,6 +13,7 @@
 #include "tableDeclaration.h"
 #include "actionList.h"
 #include "functionDeclaration.h"
+#include "p4parser.h"
 
 
 namespace CODEGEN {
@@ -117,6 +118,11 @@ IR::Node* CGenerator::gen_tab() {
 IR::Node* CGenerator::gen_func() {
 	auto func_gen = new functionDeclaration();
 	return func_gen->gen();
+}
+
+IR::Node* CGenerator::gen_sys_parser() {
+    auto p_gen = new p4Parser();
+    return p_gen->gen_sys_p();
 }
 
 

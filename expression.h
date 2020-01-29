@@ -77,6 +77,7 @@ public:
 	static IR::Expression* construct_cond_expr();
 	static IR::Expression* construct_op_expr();
 
+    // Tao: may be for variable initialization
 	static void construct_list_expr(const IR::Type *tp, 
 									IR::Vector<IR::Expression> &exprs,
 									bool *if_contains_stack);
@@ -86,6 +87,11 @@ public:
 	static bool get_two_compound_operands(IR::Expression** expr1, IR::Expression** expr2, const IR::Type** tp1, const IR::Type** tp2);
 	static IR::Expression* construct_compound_cond_expr();
 	static IR::Vector<IR::Argument> *construct_params(std::vector<const IR::Type*> &v_tp);
+
+    // for ListExpression
+    static bool get_list_expressions(IR::Vector<IR::Expression> &exprs,
+                                std::vector<const IR::Type*> &types,
+                                size_t num);
 
 	static void clear_data_structs() {
 		boolean_exprs.clear();

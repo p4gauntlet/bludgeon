@@ -28,6 +28,7 @@ public:
 	static std::map<cstring, IR::P4Control*> decl_ins_ctrls;
 	static std::map<cstring, IR::P4Action*> decl_actions;
     static std::set<cstring> called_tables;
+    static const IR::Type_Struct* sys_hdr;
 
 	P4Scope() {
 	}

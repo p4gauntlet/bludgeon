@@ -17,23 +17,26 @@ public:
 	assignmentOrMethodCallStatement() {
 	}
 
-	static IR::AssignmentStatement* gen_assignstat() {
+	static IR::AssignmentStatement* gen_assignstat(bool if_in_parser=false) {
 		IR::AssignmentStatement *assignstat = nullptr;
 		IR::Expression *left=nullptr, *right=nullptr;
 		const IR::Type *l_tp, *r_tp;
 		left = expression::get_bit_operand(&l_tp, false);
 		right = expression::construct_op_expr();
 		if (left!=nullptr && right!=nullptr) {
-			r_tp = expression::mp_expr_2_type[right];
-			int l_size = l_tp->to<IR::Type_Bits>()->size;
-			int r_size = r_tp->to<IR::Type_Bits>()->size;
-			if (l_size != r_size) {
-				assignstat = new IR::AssignmentStatement(left, 
-						new IR::Cast(new IR::Type_Bits(l_size, false), right));
-			}
-			else {
-				assignstat = new IR::AssignmentStatement(left, right);
-			}
+            if (!if_in_parser || 
+                    (!left->is<IR::Mux>() && !right->is<IR::Mux>())) {
+			    r_tp = expression::mp_expr_2_type[right];
+			    int l_size = l_tp->to<IR::Type_Bits>()->size;
+			    int r_size = r_tp->to<IR::Type_Bits>()->size;
+			    if (l_size != r_size) {
+			    	assignstat = new IR::AssignmentStatement(left, 
+			    			new IR::Cast(new IR::Type_Bits(l_size, false), right));
+			    }
+			    else {
+			    	assignstat = new IR::AssignmentStatement(left, right);
+			    }
+            }
 		}
 
 		return assignstat;

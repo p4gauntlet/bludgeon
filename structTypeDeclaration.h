@@ -43,6 +43,7 @@ public:
 
 		auto ret = new IR::Type_Struct(*name, fields);
 
+        P4Scope::sys_hdr = ret;
 		P4Scope::add_to_scope(ret);
 
 		return ret;

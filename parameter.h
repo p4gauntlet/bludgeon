@@ -79,6 +79,26 @@ public:
 
 		return new IR::Parameter(sm, sm_dir, tp);
 	}
+
+    static IR::Parameter* gen_pkt_in() {
+        IR::ID pkt("pkt");
+        IR::Direction pkt_dir = IR::Direction::None;
+
+        IR::ID tp_name("packet_in");
+        IR::Type* tp = new IR::Type_Name(new IR::Path(tp_name));
+
+        return new IR::Parameter(pkt, pkt_dir, tp);
+    }
+
+    static IR::Parameter* gen_out_header() {
+		IR::ID hdr("hdr");
+		IR::Direction hdr_dir = IR::Direction::Out;
+
+		IR::ID tp_name("Headers");
+		IR::Type* tp = new IR::Type_Name(new IR::Path(tp_name));
+
+		return new IR::Parameter(hdr, hdr_dir, tp);
+    }
 };
 
 

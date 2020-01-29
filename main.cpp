@@ -10,6 +10,7 @@
 #include "sub_toP4.h"
 #include "structTypeDeclaration.h"
 #include "controlDeclaration.h"
+#include "p4parser.h"
 
 void printUsage() {
 	std::cout << "###How to use p4codegen###\n";
@@ -17,9 +18,9 @@ void printUsage() {
 }
 
 void emitBottom(std::ostream* out) {
-    *out << "parser p(packet_in b, out Headers h, inout Meta m, inout standard_metadata_t sm) {\n"
-        "state start {"
-        "transition accept;}}\n\n";
+    // *out << "parser p(packet_in b, out Headers h, inout Meta m, inout standard_metadata_t sm) {\n"
+    //     "state start {"
+    //     "transition accept;}}\n\n";
 
     *out << "control vrfy(inout Headers h, inout Meta m) { apply {} }\n\n";
     *out << "control update(inout Headers h, inout Meta m) { apply {} }\n\n";
@@ -59,6 +60,7 @@ int main(int argc, char **argv) {
 	objects->push_back(cg->gen_func());
 	// objects->push_back(cg->gen_func());
 	// objects->push_back(cg->gen_func());
+    objects->push_back(cg->gen_sys_parser());
 	objects->push_back(CODEGEN::controlDeclaration::gen_ing_ctrl());
 	IR::P4Program *program = new IR::P4Program(*objects);
 

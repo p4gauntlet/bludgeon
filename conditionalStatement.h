@@ -19,7 +19,7 @@ public:
 	~conditionalStatement() {
 	}
 
-	static IR::IfStatement* gen_if_stat();
+	static IR::IfStatement* gen_if_stat(bool if_in_func=false);
 };
 
 

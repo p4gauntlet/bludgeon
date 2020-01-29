@@ -18,6 +18,7 @@ std::vector<IR::P4Control*> P4Scope::p4_ctrls;
 std::map<cstring, IR::P4Control*> P4Scope::decl_ins_ctrls;
 std::map<cstring, IR::P4Action*> P4Scope::decl_actions;
 std::set<cstring> P4Scope::called_tables;
+const IR::Type_Struct* P4Scope::sys_hdr;
 
 void P4Scope::add_to_scope(IR::Node* n) {
 	auto l_scope = P4Scope::scope.back();

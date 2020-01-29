@@ -111,7 +111,7 @@ const IR::Type* pick_field(std::map<cstring, const IR::Type*> &mp,
         const IR::Type_Name* t = tp->to<IR::Type_Name>();
         const IR::Type* ref_tp = P4Scope::get_type_by_name(t->path->name.name);
 		if (ref_tp == nullptr) {
-			BUG("nullptr not possible");
+			// BUG("nullptr not possible");
 		}
         return pick_field(mp, ref_tp, call_bt, type, if_compound);
     }
@@ -119,7 +119,7 @@ const IR::Type* pick_field(std::map<cstring, const IR::Type*> &mp,
 		const IR::Type_Typedef* t = tp->to<IR::Type_Typedef>();
 		const IR::Type* ref_tp = t->type;
 		if (ref_tp == nullptr) {
-			BUG("nullptr not possible");
+			// BUG("nullptr not possible");
 		}
 		return pick_field(mp, ref_tp, call_bt, type, if_compound);
 	}
@@ -312,6 +312,24 @@ IR::Expression* expression::get_op_expr(bool if_param_in_inc=false) {
 
 	return expr;
 }
+
+bool expression::get_list_expressions(IR::Vector<IR::Expression> &exprs,
+                                std::vector<const IR::Type*> &types,
+                                size_t num) {
+    bool ret = true;
+    for (size_t i=0; i<num; i++) {
+        auto expr = get_op_expr();
+        if (expr == nullptr) {
+            ret = false;
+            break;
+        }
+        exprs.push_back(expr);
+        types.push_back(mp_expr_2_type[expr]);
+    }
+
+    return ret;
+}
+
 
 
 IR::Expression* construct_slice(IR::Expression* expr1) {
