@@ -1,5 +1,5 @@
 #include <iostream>
-
+#include <fstream>
 
 
 #include "ir/ir.h"
@@ -15,6 +15,25 @@
 void printUsage() {
 	std::cout << "###How to use p4codegen###\n";
 	std::cout << "./p4codegen [output_filename]\n";
+}
+
+unsigned int good_seed() {
+    unsigned int random_seed, random_seed_a, random_seed_b;
+    std::ifstream file ("/dev/urandom", std::ios::binary);
+    if (file.is_open()) {
+        char * memblock;
+        int size = sizeof(int);
+        memblock = new char [size];
+        file.read (memblock, size);
+        file.close();
+        random_seed_a = *reinterpret_cast<int*>(memblock);
+        delete[] memblock;
+    } else {
+        random_seed_a = 0;
+    }
+    random_seed_b = std::time(0);
+    random_seed = random_seed_a xor random_seed_b;
+    return random_seed;
 }
 
 void emitBottom(std::ostream* out) {
@@ -33,7 +52,7 @@ void emitBottom(std::ostream* out) {
 
 int main(int argc, char **argv) {
 
-	srand(time(NULL));
+	srand(good_seed());
 	if (argc != 2) {
 		printUsage();
 		exit(-1);
