@@ -167,16 +167,20 @@ public:
         IR::Vector<IR::SelectCase> cases;
         std::vector<const IR::Type*> types;
 
-        switch(rand()%3) {
+        switch(rand()%4) {
         case 0: {
             transition = new IR::PathExpression(new IR::Path(IR::ID("accept")));
             break;
         }
         case 1: {
-            transition = new IR::PathExpression(new IR::Path(IR::ID(states.at(rand()%states.size()))));
+            transition = new IR::PathExpression(new IR::Path(IR::ID("reject")));
             break;
         }
         case 2: {
+            transition = new IR::PathExpression(new IR::Path(IR::ID(states.at(rand()%states.size()))));
+            break;
+        }
+        case 3: {
             size_t num = rand()%3+1;
             auto get_le_flag = expression::get_list_expressions(exprs, types, num);
             if (get_le_flag == true) {
@@ -195,7 +199,12 @@ public:
                     auto sw_case = new IR::SelectCase(keyset, new IR::PathExpression(new IR::Path(IR::ID(states.at(rand()%states.size())))));
                     cases.push_back(sw_case);
                 }
-                cases.push_back(new IR::SelectCase(new IR::DefaultExpression, new IR::PathExpression(new IR::Path(IR::ID("accept")))));
+                if (rand()%2 == 0) {
+                    cases.push_back(new IR::SelectCase(new IR::DefaultExpression, new IR::PathExpression(new IR::Path(IR::ID("accept")))));
+                }
+                else {
+                    cases.push_back(new IR::SelectCase(new IR::DefaultExpression, new IR::PathExpression(new IR::Path(IR::ID("reject")))));
+                }
 
                 transition = new IR::SelectExpression(new IR::ListExpression(exprs), cases);
             }
