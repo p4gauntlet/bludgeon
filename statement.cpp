@@ -17,7 +17,7 @@ IR::Statement* statement::gen_stat(bool if_in_ifstat, bool if_in_func) {
 				std::vector<cstring> tab_names; // empty here
 				auto blk_stat = new blockStatement(tab_names, false, if_in_ifstat);
                 if (if_in_func == true) {
-                    stat = blk_stat->gen_func_blk();
+                    stat = blk_stat->gen_func_blk(if_in_ifstat);
                 }
                 else {
 				    stat = blk_stat->gen();

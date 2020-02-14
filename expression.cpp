@@ -1,5 +1,5 @@
 
-
+#include <stdio.h>
 
 #include "expression.h"
 
@@ -9,6 +9,8 @@ std::vector<IR::Expression *> expression::boolean_exprs;
 std::map<IR::Expression *, const IR::Type*> expression::mp_expr_2_type;
 std::map<IR::Expression *, bool> mp_expr_2_if_inc_in;
 std::vector<IR::Expression *> expression::bit_exprs;
+std::set<IR::Expression *> expression::const_exprs;
+std::set<IR::Expression *> expression::const_width_exprs;
 std::set<IR::Expression *> expression::forbidden_exprs;
 
 const IR::Type* pick_field(std::map<cstring, const IR::Type*> &mp,
@@ -214,7 +216,8 @@ void expression::initialize(const IR::Type* tp,
 		auto tp_bits = tp->to<IR::Type_Bits>();
 		int size = (tp_bits->size<=SIZE_BIT_FOR_INITIALIZATION)?
 					tp_bits->size:SIZE_BIT_FOR_INITIALIZATION; // Tao: watch out for overflow
-		IR::Constant* r_expr = new IR::Constant(tp_bits, rand()%(2<<(size-1)));
+        auto val = rand()%(2<<(size-1));
+		IR::Constant* r_expr = rand()%2==0?new IR::Constant(tp_bits, val): new IR::Constant(val);
 		IR::AssignmentStatement* ass = new IR::AssignmentStatement(l_expr, r_expr);
 		ass_stat.push_back(ass);
 	}
@@ -299,7 +302,23 @@ IR::Expression* expression::get_op_expr(bool if_param_in_inc=false) {
 		is_from_vector = true;
 	}
 	else {
-		expr = get_bit_operand(&tp, if_param_in_inc);
+        // Tao: we can just insert Constant expr here
+        if (rand()%2 == 0) {
+            int bit_size = rand()%4+1;
+            int val = rand()%(1<<(bit_size-1));
+            tp = new IR::Type_Bits(bit_size, false);
+            if (rand()%2 == 0) {
+                expr = new IR::Constant(tp, val);
+                const_width_exprs.insert(expr);
+            }
+            else {
+                expr = new IR::Constant(val);
+                const_exprs.insert(expr);
+            }
+        }
+        else {
+		    expr = get_bit_operand(&tp, if_param_in_inc);
+        }
 	}
 
 	if (expr == nullptr) {
@@ -307,6 +326,7 @@ IR::Expression* expression::get_op_expr(bool if_param_in_inc=false) {
 	}
 
 	if (is_from_vector == false) {
+        assert(tp != nullptr);
 		mp_expr_2_type[expr] = tp;
 	}
 
@@ -319,7 +339,9 @@ bool expression::get_list_expressions(IR::Vector<IR::Expression> &exprs,
     bool ret = true;
     for (size_t i=0; i<num; i++) {
         auto expr = get_op_expr();
-        if (expr == nullptr) {
+        if (expr==nullptr || 
+                const_exprs.find(expr) != const_exprs.end() ||
+                const_width_exprs.find(expr) != const_width_exprs.find(expr)) {
             ret = false;
             break;
         }
@@ -365,7 +387,7 @@ IR::Expression* construct_mux(IR::Expression* expr1, IR::Expression* expr2) {
 	int size2 = tp2->to<IR::Type_Bits>()->size;
 	int size = size1>size2?size1:size2;
 	IR::Expression *ca_expr1, *ca_expr2;
-	if (size > size1) {
+	if (size >= size1) {
 		ca_expr1 = new IR::Cast(new IR::Type_Bits(size, false), expr1);
 		expr = new IR::Mux(expression::get_cond_expr(), ca_expr1, expr2);
 	}
@@ -381,7 +403,7 @@ IR::Expression* construct_mux(IR::Expression* expr1, IR::Expression* expr2) {
 }
 
 template<typename T>
-IR::Expression* construct_2_ops(IR::Expression* expr1, IR::Expression* expr2, bool if_cast=true) {
+IR::Expression* construct_2_ops(IR::Expression* expr1, IR::Expression* expr2, bool if_cast=true, bool is_const_expr=false) {
 	IR::Expression* expr = nullptr;
 	if (expression::forbidden_exprs.find(expr1) != expression::forbidden_exprs.end() ||
 			expression::forbidden_exprs.find(expr2) != expression::forbidden_exprs.end()) {
@@ -411,6 +433,10 @@ IR::Expression* construct_2_ops(IR::Expression* expr1, IR::Expression* expr2, bo
 	}
 	expression::bit_exprs.push_back(expr);
 
+    if (is_const_expr == true) {
+        expression::const_exprs.insert(expr);
+    }
+
 	return expr;
 }
 
@@ -429,7 +455,8 @@ IR::Expression* construct_mod(IR::Expression* expr1) {
 	IR::Expression* expr = nullptr;
 	const IR::Type* tp = expression::mp_expr_2_type[expr1];
 	int size = tp->to<IR::Type_Bits>()->size;
-	expr = new IR::Mod(expr1, new IR::Constant(new IR::Type_Bits(size, false), rand()%size+1));
+	int val = 1<<(rand()%(size<=SIZE_BIT_FOR_INITIALIZATION?size:SIZE_BIT_FOR_INITIALIZATION));
+	expr = new IR::Mod(expr1, new IR::Constant(new IR::Type_Bits(size, false), val));
 	expression::mp_expr_2_type[expr] = expression::mp_expr_2_type[expr1];
 	expression::bit_exprs.push_back(expr);
 	return expr;
@@ -438,35 +465,62 @@ IR::Expression* construct_mod(IR::Expression* expr1) {
 IR::Expression* expression::construct_op_expr() {
 	IR::Expression *expr;
 	IR::Expression *expr1, *expr2;
+    bool is_const_expr = false;
 	expr1 = get_op_expr(true);
 	expr2 = get_op_expr(true);
 	if (expr1==nullptr || expr2==nullptr) {
 		return nullptr;
 	}
 
+    if (expr1->is<IR::Constant>() && expr2->is<IR::Constant>()) {
+        is_const_expr = true;
+    }
+
 	int num_trials = 100;
 	while (num_trials--) {
-		switch(rand()%15) {
-			case 0: expr = new IR::Cmpl(expr1); mp_expr_2_type[expr] = mp_expr_2_type[expr1]; bit_exprs.push_back(expr); break;
-			case 1: expr = new IR::Neg(expr1); mp_expr_2_type[expr] = mp_expr_2_type[expr1]; bit_exprs.push_back(expr); break;
-			case 2: expr = construct_slice(expr1); break;
-			case 3: expr = construct_2_ops<IR::Mul>(expr1, expr2); break;
-			case 4: expr = construct_div(expr1); break;
-			case 5: expr = construct_2_ops<IR::Add>(expr1, expr2); break;
-			case 6: expr = construct_2_ops<IR::Sub>(expr1, expr2); break;
-			case 7: expr = construct_2_ops<IR::AddSat>(expr1, expr2); break;
-			case 8: expr = construct_2_ops<IR::SubSat>(expr1, expr2); break;
-			case 9: expr = construct_2_ops<IR::BAnd>(expr1, expr2); break;
-			case 10: expr = construct_2_ops<IR::BOr>(expr1, expr2); break;
-			case 11: expr = construct_2_ops<IR::BXor>(expr1, expr2); break;
+		switch(rand()%16) {
+			case 0: {
+                if (const_exprs.find(expr1) != const_exprs.end()) {
+                    continue;
+                }
+                expr = new IR::Cmpl(expr1); 
+                mp_expr_2_type[expr] = mp_expr_2_type[expr1]; 
+                bit_exprs.push_back(expr); 
+                break;
+            }
+			case 1: {
+                if (const_exprs.find(expr1) != const_exprs.end()) {
+                    continue;
+                }
+                expr = new IR::Neg(expr1); 
+                mp_expr_2_type[expr] = mp_expr_2_type[expr1]; 
+                bit_exprs.push_back(expr); 
+                break;
+            }
+			case 2: {
+                if (const_exprs.find(expr1) != const_exprs.end()) {
+                    continue;
+                }
+                expr = construct_slice(expr1); 
+                break;
+            }
+			case 3:  expr = construct_2_ops<IR::Mul>(expr1, expr2, true, is_const_expr); break;
+			case 4:  expr = construct_div(expr1); break;
+			case 5:  expr = construct_2_ops<IR::Add>(expr1, expr2, true, is_const_expr); break;
+			case 6:  expr = construct_2_ops<IR::Sub>(expr1, expr2, true, is_const_expr); break;
+			case 7:  expr = construct_2_ops<IR::AddSat>(expr1, expr2, true, is_const_expr); break;
+			case 8:  expr = construct_2_ops<IR::SubSat>(expr1, expr2, true, is_const_expr); break;
+			case 9:  expr = construct_2_ops<IR::BAnd>(expr1, expr2, true, is_const_expr); break;
+			case 10: expr = construct_2_ops<IR::BOr>(expr1, expr2, true, is_const_expr); break;
+			case 11: expr = construct_2_ops<IR::BXor>(expr1, expr2, true, is_const_expr); break;
 			case 12: expr = construct_2_ops<IR::Shr>(expr1, 
 							 new IR::Cast(new IR::Type_Bits(8, false), expr2)
-							 , false); break;
+							 , false, is_const_expr); break;
 			case 13: expr = construct_2_ops<IR::Shl>(expr1,
 							 new IR::Cast(new IR::Type_Bits(8, false), expr2)
-							 , false); break;
+							 , false, is_const_expr); break;
 			case 14: expr = construct_mux(expr1, expr2); break;
-			// case 15: expr = construct_mod(expr1); break;
+			case 15: expr = construct_mod(expr1); break;
 		}
 
 		if (expr != nullptr) {
@@ -717,11 +771,15 @@ void expression::construct_list_expr(const IR::Type *tp,
 								exprs, if_contains_stack);
 	}
 	else if (tp->is<IR::Type_Bits>()) {
-		auto expr = new IR::Constant(tp->to<IR::Type_Bits>(), 0);
+        auto tp_bits = tp->to<IR::Type_Bits>();
+		auto size = (tp_bits->size<=SIZE_BIT_FOR_INITIALIZATION)?
+					tp_bits->size:SIZE_BIT_FOR_INITIALIZATION; // Tao: watch out for overflow
+        auto val = rand()%(2<<(size-1));
+		auto expr = rand()%2==0?new IR::Constant(tp_bits, val):new IR::Constant(val);
 		exprs.push_back(expr);
 	}
 	else if (tp->is<IR::Type_Boolean>()) {
-		auto expr = new IR::BoolLiteral(false);
+		auto expr = rand()%2==0?new IR::BoolLiteral(false):new IR::BoolLiteral(true);
 		exprs.push_back(expr);
 	}
 }

@@ -55,9 +55,11 @@ void blockStatement::gen_sth(bool if_in_func=false) {
             break;
         }
         case 3: {
-	    	auto func_ass = assignmentOrMethodCallStatement::gen_func_ass();
-	    	if (func_ass != nullptr)
-	    		stat_or_decls.push_back(func_ass);
+            if (if_in_ifs == false) {
+	    	    auto func_ass = assignmentOrMethodCallStatement::gen_func_ass();
+	    	    if (func_ass != nullptr)
+	    	    	stat_or_decls.push_back(func_ass);
+            }
             break;
         }
         case 4: {
@@ -101,7 +103,8 @@ void blockStatement::gen_sth(bool if_in_func=false) {
             break;
         }
         case 9: { 
-            if (if_in_func == false)
+            if (if_in_func == false && 
+                    if_in_ifs == false)
 			    stat_or_decls.push_back(exitStatement::gen()); 
             break;
         }
@@ -140,12 +143,14 @@ IR::BlockStatement* blockStatement::gen_switch_blk() {
     return new IR::BlockStatement(stat_or_decls);
 }
 
-IR::BlockStatement* blockStatement::gen_func_blk() {
+IR::BlockStatement* blockStatement::gen_func_blk(bool if_in_ifs=false) {
     P4Scope::start_local_scope();
 	// some variable declaration
-	for (int i=0; i<5; i++) {
-        auto var_decl = new variableDeclaration();
-        stat_or_decls.push_back(var_decl->gen());
+    if (if_in_ifs == false) {
+	    for (int i=0; i<5; i++) {
+            auto var_decl = new variableDeclaration();
+            stat_or_decls.push_back(var_decl->gen());
+        }
     }
 
     initialization();

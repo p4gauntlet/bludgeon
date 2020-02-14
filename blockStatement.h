@@ -43,7 +43,7 @@ public:
     IR::BlockStatement* gen_switch_blk();
     void initialization();
 	void gen_sth(bool if_in_func);
-	IR::BlockStatement* gen_func_blk();
+	IR::BlockStatement* gen_func_blk(bool if_in_ifs);
 };
 
 

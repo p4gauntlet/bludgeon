@@ -34,6 +34,8 @@ public:
 	// hold types for bit_exprs
 	static std::map<IR::Expression *, const IR::Type*> mp_expr_2_type;
 	static std::vector<IR::Expression *> bit_exprs;
+	static std::set<IR::Expression *> const_exprs; // hold const exprs
+	static std::set<IR::Expression *> const_width_exprs; // hold const exprs
 	static std::set<IR::Expression *> forbidden_exprs; // Tao: dont remember what it is for
 
 	expression (){
@@ -97,6 +99,8 @@ public:
 		boolean_exprs.clear();
 		mp_expr_2_type.clear();
 		bit_exprs.clear();
+        const_exprs.clear();
+        const_width_exprs.clear();
 		forbidden_exprs.clear();
 	}
 };
