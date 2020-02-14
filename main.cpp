@@ -9,6 +9,7 @@
 #include "scope.h"
 #include "sub_toP4.h"
 #include "structTypeDeclaration.h"
+#include "headerTypeDeclaration.h"
 #include "controlDeclaration.h"
 #include "p4parser.h"
 
@@ -62,6 +63,7 @@ int main(int argc, char **argv) {
 	CODEGEN::CGenerator *cg = new CODEGEN::CGenerator();
 
 	auto objects = new IR::Vector<IR::Node>();
+    objects->push_back(CODEGEN::headerTypeDeclaration::gen_eth());
 	objects->push_back(cg->gen()); // generate hearder or header union
 	objects->push_back(cg->gen());
 	// objects->push_back(cg->gen_t_enum());

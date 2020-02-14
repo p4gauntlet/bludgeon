@@ -32,11 +32,11 @@ public:
         }
 
         states = {
-            "start",
             "state_0",
             "state_1",
             "state_2",
             "state_3",
+            "state_4",
         };
     }
 
@@ -45,6 +45,7 @@ public:
 
     IR::IndexedVector<IR::ParserState> gen_states() {
         IR::IndexedVector<IR::ParserState> ret;
+        ret.push_back(gen_start_state());
         for (auto name : states) {
             ret.push_back(gen_state(name));
         }
@@ -117,6 +118,25 @@ public:
         return new IR::MethodCallStatement(mce);
     }
 
+    IR::ParserState * gen_start_state() {
+        IR::Expression* transition;
+        IR::IndexedVector<IR::StatOrDecl> components;
+        IR::Vector<IR::Argument> *args = new IR::Vector<IR::Argument>();
+        auto pkt_call = new IR::Member(new IR::PathExpression(new IR::Path(IR::ID("pkt"))),
+                                            IR::ID("extract"));
+
+        IR::Argument *arg = new IR::Argument(new IR::Member(new IR::PathExpression(new IR::Path(IR::ID("hdr"))), IR::ID(ETH_HDR)));
+        args->push_back(arg);
+        auto mce = new IR::MethodCallExpression(pkt_call, args);
+        components.push_back(new IR::MethodCallStatement(mce));
+
+        transition = new IR::PathExpression(new IR::Path(IR::ID("state_0")));
+
+        auto ret = new IR::ParserState(IR::ID("start"), components, transition);
+        P4Scope::add_to_scope(ret);
+        return ret;
+    }
+
     IR::ParserState * gen_state(cstring state_name) {
         IR::ID name(state_name);
         IR::IndexedVector<IR::StatOrDecl> components;
@@ -130,7 +150,7 @@ public:
         }
         // statements
         for (int i=0; i<5; i++) {
-            switch(rand()%333) {
+            switch(rand()%3) {
             case 0: {
 	    	    auto ass = assignmentOrMethodCallStatement::gen_assignstat();
 	    	    if (ass != nullptr)

@@ -32,6 +32,22 @@ public:
 
 		return ret;
 	}
+
+    static IR::Type_Header* gen_eth() {
+        IR::IndexedVector< IR::StructField > fields;
+        auto eth_dst = new IR::StructField(IR::ID("dst_addr"), new IR::Type_Bits(48 ,false));
+        auto eth_src = new IR::StructField(IR::ID("src_addr"), new IR::Type_Bits(48 ,false));
+        auto eth_type = new IR::StructField(IR::ID("eth_type"), new IR::Type_Bits(16 ,false));
+
+        fields.push_back(eth_dst);
+        fields.push_back(eth_src);
+        fields.push_back(eth_type);
+
+        auto ret = new IR::Type_Header(IR::ID(ETH_HEADER_T), fields);
+		P4Scope::add_to_scope(ret);
+
+        return ret;
+    }
 };
 
 
