@@ -30,3 +30,6 @@
 *.exe
 *.out
 *.app
+
+p4include
+*.p4
