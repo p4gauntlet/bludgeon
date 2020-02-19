@@ -121,6 +121,9 @@ void blockStatement::gen_sth(bool if_in_func=false) {
             auto mem = new IR::Member(new IR::PathExpression(new IR::Path(IR::ID(tab_name))), IR::ID("apply"));
             auto mce = new IR::MethodCallExpression(mem, args);
             stat_or_decls.push_back(new IR::MethodCallStatement(mce));
+
+            // add to called_tables
+            P4Scope::called_tables.insert(tab_names.at(i));
         }
     }
 }
