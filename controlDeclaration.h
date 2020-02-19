@@ -122,14 +122,7 @@ public:
 
 	}
 
-	static IR::P4Control* gen_ing_ctrl() {
-        // start of new scope
-        P4Scope::start_local_scope();
-		//
-		IR::ID* name = new IR::ID("ingress");
-		IR::Type_Control* type_ctrl = controlTypeDeclaration::gen_ing_ctrl_type();
-		// IR::ParameterList* constructor_params;
-		IR::IndexedVector< IR::Declaration > local_decls;
+    static IR::BlockStatement *gen_ctrl_components(IR::IndexedVector<IR::Declaration> &local_decls) {
 		// local_decls
         // constantDeclarations
 		/* Tao: no constant here
@@ -168,6 +161,39 @@ public:
 		auto blk_gen = new blockStatement(tab_names, true);
 		auto blk_stat = blk_gen->gen();
 
+        return blk_stat;
+    }
+
+	static IR::P4Control* gen_ing_ctrl() {
+        // start of new scope
+        P4Scope::start_local_scope();
+		//
+		IR::ID* name = new IR::ID("ingress");
+		IR::Type_Control* type_ctrl = controlTypeDeclaration::gen_ing_ctrl_type(0);
+		// IR::ParameterList* constructor_params;
+		IR::IndexedVector< IR::Declaration > local_decls;
+
+        auto blk_stat = controlDeclaration::gen_ctrl_components(local_decls);
+
+        // end of scope
+        P4Scope::end_local_scope();
+		// add to the whole scope
+		IR::P4Control *p4ctrl = new IR::P4Control(*name, type_ctrl, local_decls, blk_stat);
+		P4Scope::add_to_scope(p4ctrl);
+		P4Scope::p4_ctrls.push_back(p4ctrl);
+		return p4ctrl;
+	}
+
+    static IR::P4Control* gen_tf_ing_ctrl() {
+        // start of new scope
+        P4Scope::start_local_scope();
+		//
+		IR::ID* name = new IR::ID("ingress");
+		IR::Type_Control* type_ctrl = controlTypeDeclaration::gen_ing_ctrl_type(1);
+		// IR::ParameterList* constructor_params;
+		IR::IndexedVector< IR::Declaration > local_decls;
+
+        auto blk_stat = controlDeclaration::gen_ctrl_components(local_decls);
 
         // end of scope
         P4Scope::end_local_scope();

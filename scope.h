@@ -30,6 +30,8 @@ public:
     static std::set<cstring> called_tables;
     static const IR::Type_Struct* sys_hdr;
 
+    static std::set<cstring> not_initialized_structs;
+
 	P4Scope() {
 	}
 

@@ -50,9 +50,19 @@ public:
 		return ret;
 	}
 
-	static IR::Type_Control* gen_ing_ctrl_type() {
+	static IR::Type_Control* gen_ing_ctrl_type(int tf_flag) {
 		IR::ID* ing_name = new IR::ID("ingress");
-		auto param_list = parameterList::gen_ing_params();
+        IR::ParameterList* param_list;
+        if (tf_flag == 0) {
+            param_list = parameterList::gen_ing_params();
+        }
+        else if (tf_flag == 1) {
+            param_list = parameterList::gen_tf_ing_params();
+        }
+        else {
+            BUG("tf_flag should be 0 or 1");
+        }
+            
 		auto params = param_list->parameters;
 
         // add to the scope

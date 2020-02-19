@@ -67,7 +67,15 @@ public:
 			IR::Vector<IR::Expression> exprs;
 			bool if_contains_stack = false;
 			expression::construct_list_expr(type, exprs, &if_contains_stack);
-			if (if_contains_stack == false) {
+            bool is_forbidden = false;
+            if (type->is<IR::Type_Name>()) {
+                auto tp_n = type->to<IR::Type_Name>();
+                if (P4Scope::not_initialized_structs.find(tp_n->path->name.name)
+                        != P4Scope::not_initialized_structs.end()) {
+                    is_forbidden = true;
+                }
+            }
+			if (if_contains_stack==false && is_forbidden==false) {
 				// ret = new IR::Declaration_Variable(*name, type, new IR::ListExpression(exprs));
 				ret = new IR::Declaration_Variable(*name, type, exprs.at(0));
 			}

@@ -39,6 +39,8 @@ public:
 
     static void emitBmv2Top(std::ostream *ostream);
     static void emitBmv2Bottom(std::ostream *ostream);
+    static void emitTFTop(std::ostream *ostream);
+    static void emitTFBottom(std::ostream *ostream);
     //=====================
 	IR::Node* gen();
 	IR::Node* gen_act();

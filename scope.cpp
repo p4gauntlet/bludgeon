@@ -19,6 +19,15 @@ std::map<cstring, IR::P4Control*> P4Scope::decl_ins_ctrls;
 std::map<cstring, IR::P4Action*> P4Scope::decl_actions;
 std::set<cstring> P4Scope::called_tables;
 const IR::Type_Struct* P4Scope::sys_hdr;
+std::set<cstring> P4Scope::not_initialized_structs = {
+    "ingress_intrinsic_metadata_t",
+    "ingress_intrinsic_metadata_from_parser_t",
+    "ingress_intrinsic_metadata_for_deparser_t",
+    "egress_intrinsic_metadata_t",
+    "egress_intrinsic_metadata_from_parser_t",
+    "egress_intrinsic_metadata_for_deparser_t",
+    "egress_intrinsic_metadata_for_output_port_t",
+};
 
 void P4Scope::add_to_scope(IR::Node* n) {
 	auto l_scope = P4Scope::scope.back();

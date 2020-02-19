@@ -99,6 +99,13 @@ public:
 
 		return new IR::Parameter(hdr, hdr_dir, tp);
     }
+
+    static IR::Parameter* gen_param(IR::Direction dir, cstring p_name, cstring t_name) {
+        IR::ID param_name(p_name);
+        IR::ID tp_name(t_name);
+        IR::Type *tp = new IR::Type_Name(new IR::Path(tp_name));
+        return new IR::Parameter(param_name, dir, tp);
+    }
 };
 
 

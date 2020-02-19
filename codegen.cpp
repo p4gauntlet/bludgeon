@@ -144,17 +144,81 @@ void CGenerator::emitBmv2Bottom(std::ostream *ostream) {
     *ostream << "V1Switch(p(), vrfy(), ingress(), egress(), update(), deparser()) main;\n\n";
 }
 
+void CGenerator::emitTFTop(std::ostream *ostream) {
+    *ostream << "#include <core.p4>\n";
+    *ostream << "#include <tna.p4>\n\n";
+}
+
+void CGenerator::emitTFBottom(std::ostream *ostream) {
+    *ostream << "parser SwitchIngressParser(\n"
+            "packet_in pkt,\n"
+            "out Headers hdr,\n"
+            "out Meta ig_md,\n"
+            "out ingress_intrinsic_metadata_t ig_intr_md) {\n"
+        "state start {\n"
+            "pkt.extract(ig_intr_md);\n"
+            "transition select(ig_intr_md.resubmit_flag) {\n"
+                    "1 : parse_resubmit;\n"
+                    "0 : parse_port_metadata;\n"
+            "}\n"
+        "}\n"
+        "state parse_resubmit {\n"
+            "transition reject;\n"
+        "}\n"
+        "state parse_port_metadata {\n"
+            "pkt.advance(PORT_METADATA_SIZE);\n"
+            "transition accept;\n"
+        "}\n"
+    "}\n"
+    "control SwitchIngressDeparser(\n"
+            "packet_out pkt,\n"
+            "inout Headers hdr,\n"
+            "in Meta ig_md,\n"
+            "in ingress_intrinsic_metadata_for_deparser_t ig_dprsr_md) {\n"
+        "apply {\n"
+        "}\n"
+    "}\n";
+    *ostream << "parser SwitchEgressParser(\n"
+            "packet_in pkt,\n"
+            "out Headers hdr,\n"
+            "out Meta eg_md,\n"
+            "out egress_intrinsic_metadata_t eg_intr_md) {\n"
+        "state start {\n"
+            "pkt.extract(eg_intr_md);\n"
+            "transition accept;\n"
+        "}\n"
+    "}\n"
+    "control SwitchEgressDeparser(\n"
+            "packet_out pkt,\n"
+            "inout Headers hdr,\n"
+            "in Meta eg_md,\n"
+            "in egress_intrinsic_metadata_for_deparser_t eg_intr_dprs_md) {\n"
+        "apply {\n"
+        "}\n"
+    "}\n"
+    "control SwitchEgress(\n"
+            "inout Headers hdr,\n"
+            "inout Meta eg_md,\n"
+            "in egress_intrinsic_metadata_t eg_intr_md,\n"
+            "in egress_intrinsic_metadata_from_parser_t eg_intr_md_from_prsr,\n"
+            "inout egress_intrinsic_metadata_for_deparser_t eg_intr_dprs_md,\n"
+            "inout egress_intrinsic_metadata_for_output_port_t eg_intr_oport_md) {\n"
+        "apply {}\n"
+    "}\n";
+
+    *ostream << "Pipeline(SwitchIngressParser(),\n"
+                 "ingress(),\n"
+                 "SwitchIngressDeparser(),\n"
+                 "SwitchEgressParser(),\n"
+                 "SwitchEgress(),\n"
+                 "SwitchEgressDeparser()) pipe;\n\n";
+
+    *ostream << "Switch(pipe) main;\n";
+}
+
 void CGenerator::gen_p4_code() {
 	auto objects = new IR::Vector<IR::Node>();
 
-    if (flag == 0) {
-        CGenerator::emitBmv2Top(ostream);
-    }
-    else if (flag == 1) {
-    }
-    else {
-        BUG("flag must be 0 or 1");
-    }
     objects->push_back(CODEGEN::headerTypeDeclaration::gen_eth());
 	objects->push_back(gen()); // generate hearder or header union
 	objects->push_back(gen());
@@ -162,17 +226,39 @@ void CGenerator::gen_p4_code() {
 	objects->push_back(gen_struct());
 	objects->push_back(CODEGEN::structTypeDeclaration::gen_Headers()); // generate struct Headers
 	objects->push_back(CODEGEN::structTypeDeclaration::gen_Meta()); // generate struct Meta
-	CODEGEN::structTypeDeclaration::gen_Sm(); // generate struct standard_metadata_t
-	// objects->push_back(>gen_ctrldef());
-	objects->push_back(gen_func());
-    // objects->push_back(cg->gen_sys_parser());
-	objects->push_back(CODEGEN::controlDeclaration::gen_ing_ctrl());
+    if (flag == 0) {
+        CGenerator::emitBmv2Top(ostream);
+	    CODEGEN::structTypeDeclaration::gen_Sm(); // generate struct standard_metadata_t
+	    // objects->push_back(>gen_ctrldef());
+	    objects->push_back(gen_func());
+        // objects->push_back(cg->gen_sys_parser());
+	    objects->push_back(CODEGEN::controlDeclaration::gen_ing_ctrl());
+    }
+    else if (flag == 1) {
+        CGenerator::emitTFTop(ostream);
+        CODEGEN::structTypeDeclaration::gen_tf_md_t(); // generate tofino metadatas
+        // 
+        objects->push_back(gen_func());
+        objects->push_back(CODEGEN::controlDeclaration::gen_tf_ing_ctrl());
+    }
+    else {
+        BUG("flag must be 0 or 1");
+    }
 	IR::P4Program *program = new IR::P4Program(*objects);
 
 	// output to the file
     CODEGEN::SubToP4 top4(ostream, false);
 	program->apply(top4);
-    CGenerator::emitBmv2Bottom(ostream);
+    if (flag == 0) {
+        CGenerator::emitBmv2Bottom(ostream);
+    }
+    else if (flag == 1) {
+        CGenerator::emitTFBottom(ostream);
+    }
+    else {
+        BUG("flag must be 0 or 1");
+    }
+
     ostream->flush();
 }
 
