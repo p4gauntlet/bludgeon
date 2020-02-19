@@ -6,52 +6,48 @@
 #include "blockStatement.h"
 
 namespace CODEGEN {
-
-
 class actionDeclaration {
 public:
-	const char* types[0] = {
-	};
+
+    const char *types[0] = {
+    };
 
 
-	IR::ID* name = nullptr;
-	IR::ParameterList* params = nullptr;
-	IR::BlockStatement* blk = nullptr;
+    IR::ID *name              = nullptr;
+    IR::ParameterList *params = nullptr;
+    IR::BlockStatement *blk   = nullptr;
 
-	actionDeclaration() {
-		name = new IR::ID(CODEGEN::randstr(5));
-	}
+    actionDeclaration() {
+        name = new IR::ID(CODEGEN::randstr(5));
+    }
 
-	~actionDeclaration() {
-		delete name;
-		delete params;
-		delete blk;
-	}
+    ~actionDeclaration() {
+        delete name;
+        delete params;
+        delete blk;
+    }
 
-	IR::P4Action* gen() {
+    IR::P4Action* gen() {
         P4Scope::start_local_scope();
-		auto param_gen = new parameterList(false);
-		params = param_gen->gen();
+        auto param_gen = new parameterList(false);
+        params = param_gen->gen();
 
-		std::vector<cstring> tab_names;  // empty
-		auto blk_gen = new blockStatement(tab_names, true);
-		blk = blk_gen->gen();
+        std::vector<cstring> tab_names; // empty
+        auto blk_gen = new blockStatement(tab_names, true);
+        blk = blk_gen->gen();
 
-		auto ret = new IR::P4Action(*name, params, blk);
+        auto ret = new IR::P4Action(*name, params, blk);
 
         P4Scope::end_local_scope();
 
-		P4Scope::add_to_scope(ret);
-		// Tao:
-		P4Scope::decl_actions.emplace(name->name, ret);
-		return ret;
-	}
+        P4Scope::add_to_scope(ret);
+
+        // Tao:
+        P4Scope::decl_actions.emplace(name->name, ret);
+        return ret;
+    }
 };
-
-
 } // namespace CODEGEN
 
 
-
-
-#endif
+#endif // ifndef _ACTIONDECLARATION_H_
