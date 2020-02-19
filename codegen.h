@@ -6,8 +6,10 @@
 #include <cstdlib>
 
 #include "ir/ir.h"
+#include "lib/nullstream.h"
 
 #include "scope.h"
+#include "sub_toP4.h"
 
 static const char alphanum[] =
 	// "0123456789"
@@ -20,7 +22,13 @@ namespace CODEGEN {
 
 class CGenerator {
 public:
-	CGenerator() {
+    cstring o_file;
+    std::ostream *ostream = nullptr;
+    int flag = -1;
+
+	CGenerator(char *filename, int flag) :
+        o_file(filename), flag(flag) {
+	    ostream = openFile(o_file, false);
 		P4Scope::start_local_scope();
 	}
 
@@ -29,7 +37,9 @@ public:
 	}
 
 
-
+    static void emitBmv2Top(std::ostream *ostream);
+    static void emitBmv2Bottom(std::ostream *ostream);
+    //=====================
 	IR::Node* gen();
 	IR::Node* gen_act();
 	IR::Node* gen_struct();
@@ -40,6 +50,9 @@ public:
     IR::Node* gen_tab();
 	IR::Node* gen_func();
     IR::Node* gen_sys_parser();
+
+
+    void gen_p4_code();
 };
 
 

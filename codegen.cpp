@@ -125,5 +125,56 @@ IR::Node* CGenerator::gen_sys_parser() {
     return p_gen->gen_sys_p();
 }
 
+void CGenerator::emitBmv2Top(std::ostream *ostream) {
+	*ostream << "#include <core.p4>\n";
+	*ostream << "#include <v1model.p4>\n\n";
+}
+
+void CGenerator::emitBmv2Bottom(std::ostream *ostream) {
+    *ostream << "parser p(packet_in b, out Headers h, inout Meta m, inout standard_metadata_t sm) {\n"
+        "state start {"
+        "transition accept;}}\n\n";
+
+    *ostream << "control vrfy(inout Headers h, inout Meta m) { apply {} }\n\n";
+    *ostream << "control update(inout Headers h, inout Meta m) { apply {} }\n\n";
+    *ostream << "control egress(inout Headers h, inout Meta m, inout standard_metadata_t sm) { apply {} }\n\n";
+    *ostream << "control deparser(packet_out b, in Headers h) { apply {} }\n\n";
+    // *ostream << "control ingress(inout Headers h, inout Meta m, inout standard_metadata_t sm) { apply {} }\n\n";
+
+    *ostream << "V1Switch(p(), vrfy(), ingress(), egress(), update(), deparser()) main;\n\n";
+}
+
+void CGenerator::gen_p4_code() {
+	auto objects = new IR::Vector<IR::Node>();
+
+    if (flag == 0) {
+        CGenerator::emitBmv2Top(ostream);
+    }
+    else if (flag == 1) {
+    }
+    else {
+        BUG("flag must be 0 or 1");
+    }
+    objects->push_back(CODEGEN::headerTypeDeclaration::gen_eth());
+	objects->push_back(gen()); // generate hearder or header union
+	objects->push_back(gen());
+	objects->push_back(gen_struct()); // generate struct
+	objects->push_back(gen_struct());
+	objects->push_back(CODEGEN::structTypeDeclaration::gen_Headers()); // generate struct Headers
+	objects->push_back(CODEGEN::structTypeDeclaration::gen_Meta()); // generate struct Meta
+	CODEGEN::structTypeDeclaration::gen_Sm(); // generate struct standard_metadata_t
+	// objects->push_back(>gen_ctrldef());
+	objects->push_back(gen_func());
+    // objects->push_back(cg->gen_sys_parser());
+	objects->push_back(CODEGEN::controlDeclaration::gen_ing_ctrl());
+	IR::P4Program *program = new IR::P4Program(*objects);
+
+	// output to the file
+    CODEGEN::SubToP4 top4(ostream, false);
+	program->apply(top4);
+    CGenerator::emitBmv2Bottom(ostream);
+    ostream->flush();
+}
+
 
 } // namespace CODEGEN
