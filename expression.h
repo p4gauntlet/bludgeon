@@ -78,6 +78,7 @@ public:
 	// construct more complex operations on cond and op
 	static IR::Expression* construct_cond_expr();
 	static IR::Expression* construct_op_expr();
+    static IR::Expression* construct_func_call_expr();
 
     // Tao: may be for variable initialization
 	static void construct_list_expr(const IR::Type *tp, 

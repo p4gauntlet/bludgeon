@@ -552,8 +552,8 @@ IR::Expression * expression::construct_op_expr() {
     IR::Expression *expr1, *expr2;
     bool is_const_expr = false;
 
-    expr1 = get_op_expr(true);
-    expr2 = get_op_expr(true);
+    expr1 = rand()%5==0?construct_func_call_expr():get_op_expr(true);
+    expr2 = rand()%5==0?construct_func_call_expr():get_op_expr(true);
 
     if ((expr1 == nullptr) || (expr2 == nullptr)) {
         return nullptr;
@@ -952,4 +952,27 @@ void expression::construct_list_expr(const IR::Type             *tp,
         exprs.push_back(expr);
     }
 }
+
+IR::Expression* expression::construct_func_call_expr() {
+
+    IR::Expression *ret = nullptr;
+	std::vector<const IR::Type*> param_tps;
+	auto funcs = P4Scope::get_func_decls();
+	if (funcs.size() != 0) {
+		auto func = funcs.at(rand()%funcs.size());
+		for (auto param_tp : func->type->parameters->parameters) {
+			param_tps.push_back(param_tp->type);
+		}
+		auto args = expression::construct_params(param_tps);
+		// std::cout << param_tps.size() << " " << args->size() << std::endl;
+		if (param_tps.size() != args->size()) {
+			return nullptr;
+		}
+		ret = new IR::MethodCallExpression(new IR::PathExpression(new IR::Path(func->name)), args);
+		mp_expr_2_type[ret] = func->type->returnType;
+	}
+
+    return ret;
+}
+
 } // namespace CODEGEN
