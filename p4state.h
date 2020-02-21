@@ -46,9 +46,9 @@ public:
     IR::IndexedVector<IR::ParserState> gen_states() {
         IR::IndexedVector<IR::ParserState> ret;
         ret.push_back(gen_start_state());
-        for (auto name : states) {
-            ret.push_back(gen_state(name));
-        }
+        // for (auto name : states) {
+        //     ret.push_back(gen_state(name));
+        // }
         return ret;
     }
 
@@ -170,8 +170,9 @@ public:
                 auto hdr_field_tp = P4Scope::get_type_by_name(sf_type->to<IR::Type_Name>()->path->name.name);
                 if (hdr_field_tp->is<IR::Type_HeaderUnion>()) {
                     auto hdru_tp = hdr_field_tp->to<IR::Type_HeaderUnion>();
-                    auto arr_ind = new IR::ArrayIndex(mem, new IR::Constant(0));
-                    gen_hdr_union_extract(components, hdru_tp, arr_ind, pkt_call);
+                    auto sf = hdru_tp->fields.at(0);
+                    auto hdr_mem = new IR::Member(mem, sf->name);
+                    components.push_back(gen_hdr_extract(pkt_call, hdr_mem));
                 }
                 else {
                     components.push_back(gen_hdr_extract(pkt_call, mem));
@@ -184,7 +185,8 @@ public:
 
 
         // transition part
-        transition = new IR::PathExpression(new IR::Path(IR::ID("state_0")));
+        // transition = new IR::PathExpression(new IR::Path(IR::ID("state_0")));
+        transition = new IR::PathExpression(new IR::Path(IR::ID("accept")));
 
         auto ret = new IR::ParserState(IR::ID("start"), components, transition);
         P4Scope::add_to_scope(ret);
