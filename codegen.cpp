@@ -131,9 +131,9 @@ void CGenerator::emitBmv2Top(std::ostream *ostream) {
 }
 
 void CGenerator::emitBmv2Bottom(std::ostream *ostream) {
-    *ostream << "parser p(packet_in b, out Headers h, inout Meta m, inout standard_metadata_t sm) {\n"
-        "state start {"
-        "transition accept;}}\n\n";
+    // *ostream << "parser p(packet_in b, out Headers h, inout Meta m, inout standard_metadata_t sm) {\n"
+    //     "state start {"
+    //     "transition accept;}}\n\n";
 
     *ostream << "control vrfy(inout Headers h, inout Meta m) { apply {} }\n\n";
     *ostream << "control update(inout Headers h, inout Meta m) { apply {} }\n\n";
@@ -231,7 +231,7 @@ void CGenerator::gen_p4_code() {
 	    CODEGEN::structTypeDeclaration::gen_Sm(); // generate struct standard_metadata_t
 	    // objects->push_back(>gen_ctrldef());
 	    objects->push_back(gen_func());
-        // objects->push_back(cg->gen_sys_parser());
+        objects->push_back(gen_sys_parser());
 	    objects->push_back(CODEGEN::controlDeclaration::gen_ing_ctrl());
     }
     else if (flag == 1) {
