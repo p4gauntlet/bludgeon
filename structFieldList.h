@@ -77,6 +77,7 @@ public:
 
 		IR::ID* name;
 		IR::Type* tp;
+        /*
 		name = new IR::ID("ingress_port");
 		tp = new IR::Type_Bits(9, false);
 		fields.push_back(new IR::StructField(*name, tp));
@@ -117,7 +118,7 @@ public:
 		name = new IR::ID("priority");
 		tp = new IR::Type_Bits(3, false);
 		fields.push_back(new IR::StructField(*name, tp));
-
+        */
 
 		return fields;
 	}

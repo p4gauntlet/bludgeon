@@ -138,7 +138,7 @@ void CGenerator::emitBmv2Bottom(std::ostream *ostream) {
     *ostream << "control vrfy(inout Headers h, inout Meta m) { apply {} }\n\n";
     *ostream << "control update(inout Headers h, inout Meta m) { apply {} }\n\n";
     *ostream << "control egress(inout Headers h, inout Meta m, inout standard_metadata_t sm) { apply {} }\n\n";
-    *ostream << "control deparser(packet_out b, in Headers h) { apply {} }\n\n";
+    *ostream << "control deparser(packet_out b, in Headers h) { apply { b.emit(h); } }\n\n";
     // *ostream << "control ingress(inout Headers h, inout Meta m, inout standard_metadata_t sm) { apply {} }\n\n";
 
     *ostream << "V1Switch(p(), vrfy(), ingress(), egress(), update(), deparser()) main;\n\n";
