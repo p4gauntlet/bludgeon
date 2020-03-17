@@ -18,8 +18,8 @@ public:
 	const char* types[5] = {
 		"baseType",
 		"typeName",
-		"specializedType", // not 
-		"headerStackType", 
+		"specializedType", // not
+		"headerStackType",
 		"tupleType" // not
 	};
 
@@ -27,7 +27,7 @@ public:
 	std::vector<int> type;
 	cstring for_type;
 
-	typeRef(bool if_rand, std::vector<int> &type, cstring for_type) : 
+	typeRef(bool if_rand, std::vector<int> &type, cstring for_type) :
 		if_random(if_rand),
 		type(type),
 		for_type(for_type) {
@@ -42,7 +42,7 @@ public:
 			if (if_random == false) {
 				t = type.at(rand()%type.size());
 			} else {
-				t = rand()%3;
+				t = rand()%2;
 			}
 			switch (t) {
 				case 0: {

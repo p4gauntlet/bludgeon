@@ -52,7 +52,7 @@ public:
 			auto tp_bits = type->to<IR::Type_Bits>();
 			auto size = tp_bits->size>=SIZE_BIT_FOR_INITIALIZATION?SIZE_BIT_FOR_INITIALIZATION:tp_bits->size;
 			auto rand_num = rand()%(1<<size);
-			ret = new IR::Declaration_Variable(*name, type, 
+			ret = new IR::Declaration_Variable(*name, type,
 					new IR::Constant(tp_bits, rand_num));
 		}
 		else if (type->is<IR::Type_Boolean>()) {

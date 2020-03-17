@@ -21,9 +21,11 @@ void blockStatement::initialization() {
 }
 
 void blockStatement::gen_sth(bool if_in_func = false) {
-    std::vector<int> percent = { 15, 15, 15, 15, 15, 15, 15, 15, 0, 0 };
+    std::vector<int> percent = { 15, 15, 15, 15, 15, 15, 15, 15, 0, 5 };
+
     // randomize the total number of statements
     int max_statements = rand() % NUM_STAT;
+
     // put tab_name .apply() after some initializations
     for (int num_stat = 0; num_stat < max_statements; num_stat++) {
         switch (CODEGEN::randind(percent, 10)) {

@@ -5,7 +5,7 @@
 
 namespace CODEGEN {
 
-IR::IndexedVector<IR::StructField> get_sfs (std::vector<cstring> &fields, 
+IR::IndexedVector<IR::StructField> get_sfs (std::vector<cstring> &fields,
         std::vector<int> &bit_size, size_t vec_size) {
 
     IR::IndexedVector<IR::StructField> ret_fields;

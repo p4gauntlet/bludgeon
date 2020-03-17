@@ -10,117 +10,121 @@
 #include "structFieldList.h"
 
 
-
 namespace CODEGEN {
-
-
 class structTypeDeclaration {
 public:
-	const char* types[0] = {
-	};
+
+    const char *types[0] = {
+    };
 
 
-	structTypeDeclaration() {
-	}
+    structTypeDeclaration() {}
 
-	static IR::Type_Struct* gen() {
-		IR::ID *name;
-		name = new IR::ID(CODEGEN::randstr(6));
-		auto sfl = new structFieldList(STRUCT, name->name);
-		IR::IndexedVector< IR::StructField > fields = sfl->gen(rand()%5+1);
+    static IR::Type_Struct* gen() {
+        IR::ID *name;
 
-		auto ret = new IR::Type_Struct(*name, fields);
+        name = new IR::ID(CODEGEN::randstr(6));
+        auto sfl = new structFieldList(STRUCT,
+                                       name->name);
+        IR::IndexedVector<IR::StructField> fields = sfl->gen(rand() % 5 + 1);
 
-		P4Scope::add_to_scope(ret);
+        auto ret = new IR::Type_Struct(*name, fields);
 
-		return ret;
-	}
+        P4Scope::add_to_scope(ret);
 
+        return ret;
+    }
 
     static IR::Type_Struct* gen_Headers() {
         IR::ID *name = new IR::ID("Headers");
-		auto sfl = new structFieldList(STRUCT_HEADERS, name->name);
-		IR::IndexedVector< IR::StructField > fields = sfl->gen(rand()%5+1);
+        auto    sfl  = new structFieldList(
+            STRUCT_HEADERS,
+            name->name);
+        IR::IndexedVector<IR::StructField> fields = sfl->gen(rand() % 5 + 1);
+
         // Tao: hard code for ethernet_t eth_hdr;
-        auto eth_sf = new IR::StructField(IR::ID(ETH_HDR), new IR::Type_Name(new IR::Path(IR::ID(ETH_HEADER_T))));
+        auto eth_sf =
+            new IR::StructField(IR::ID(ETH_HDR),
+                                new IR::Type_Name(
+                                    new IR::Path(IR::ID(ETH_HEADER_T))));
+
         fields.insert(fields.begin(), eth_sf);
 
-		auto ret = new IR::Type_Struct(*name, fields);
+        auto ret = new IR::Type_Struct(*name, fields);
 
         P4Scope::sys_hdr = ret;
-		P4Scope::add_to_scope(ret);
+        P4Scope::add_to_scope(ret);
 
-		return ret;
+        return ret;
     }
 
     static IR::Type_Struct* gen_Meta() {
         IR::ID *name = new IR::ID("Meta");
-		auto sfl = new structFieldList(STRUCT, name->name);
-		IR::IndexedVector< IR::StructField > fields = sfl->gen(rand()%5+1);
+        auto    sfl  = new structFieldList(STRUCT, name->name);
 
-		auto ret = new IR::Type_Struct(*name, fields);
+        // Do not emit meta fields for now, no need
+        // TODO: Design a way to emit these that plays nicely with all targets
+        // IR::IndexedVector< IR::StructField > fields = sfl->gen(rand()%5+1);
+        IR::IndexedVector<IR::StructField> fields;
 
-		P4Scope::add_to_scope(ret);
+        auto ret = new IR::Type_Struct(*name, fields);
 
-		return ret;
+        P4Scope::add_to_scope(ret);
+
+        return ret;
     }
 
-	static IR::Type_Struct* gen_Sm() {
-		IR::ID *name = new IR::ID("standard_metadata_t");
-		auto fields = structFieldList::gen_sm();
+    static IR::Type_Struct* gen_Sm() {
+        IR::ID *name   = new IR::ID("standard_metadata_t");
+        auto    fields = structFieldList::gen_sm();
 
-		auto ret = new IR::Type_Struct(*name, fields);
+        auto ret = new IR::Type_Struct(*name, fields);
 
-		P4Scope::add_to_scope(ret);
+        P4Scope::add_to_scope(ret);
 
-		return ret;
-	}
+        return ret;
+    }
 
     static void gen_tf_md_t() {
         IR::ID *name;
         IR::IndexedVector<IR::StructField> fields;
         IR::Type_Struct *ret;
 
-        name = new IR::ID("ingress_intrinsic_metadata_t");
+        name   = new IR::ID("ingress_intrinsic_metadata_t");
         fields = structFieldList::gen_tf_ing_md_t();
-        ret = new IR::Type_Struct(*name, fields);
+        ret    = new IR::Type_Struct(*name, fields);
         P4Scope::add_to_scope(ret);
-        name = new IR::ID("ingress_intrinsic_metadata_for_tm_t");
+        name   = new IR::ID("ingress_intrinsic_metadata_for_tm_t");
         fields = structFieldList::gen_tf_ing_md_for_tm_t();
-        ret = new IR::Type_Struct(*name, fields);
+        ret    = new IR::Type_Struct(*name, fields);
         P4Scope::add_to_scope(ret);
-        name = new IR::ID("ingress_intrinsic_metadata_from_parser_t");
+        name   = new IR::ID("ingress_intrinsic_metadata_from_parser_t");
         fields = structFieldList::gen_tf_ing_intr_md_from_prsr();
-        ret = new IR::Type_Struct(*name, fields);
+        ret    = new IR::Type_Struct(*name, fields);
         P4Scope::add_to_scope(ret);
-        name = new IR::ID("ingress_intrinsic_metadata_for_deparser_t");
+        name   = new IR::ID("ingress_intrinsic_metadata_for_deparser_t");
         fields = structFieldList::gen_tf_ing_intr_md_for_deprsr();
-        ret = new IR::Type_Struct(*name, fields);
+        ret    = new IR::Type_Struct(*name, fields);
         P4Scope::add_to_scope(ret);
-        name = new IR::ID("egress_intrinsic_metadata_t");
+        name   = new IR::ID("egress_intrinsic_metadata_t");
         fields = structFieldList::gen_tf_eg_intr_md_t();
-        ret = new IR::Type_Struct(*name, fields);
+        ret    = new IR::Type_Struct(*name, fields);
         P4Scope::add_to_scope(ret);
-        name = new IR::ID("egress_intrinsic_metadata_from_parser_t");
+        name   = new IR::ID("egress_intrinsic_metadata_from_parser_t");
         fields = structFieldList::gen_tf_eg_intr_md_from_prsr();
-        ret = new IR::Type_Struct(*name, fields);
+        ret    = new IR::Type_Struct(*name, fields);
         P4Scope::add_to_scope(ret);
-        name = new IR::ID("egress_intrinsic_metadata_for_deparser_t");
+        name   = new IR::ID("egress_intrinsic_metadata_for_deparser_t");
         fields = structFieldList::gen_tf_eg_intr_md_for_deprsr();
-        ret = new IR::Type_Struct(*name, fields);
+        ret    = new IR::Type_Struct(*name, fields);
         P4Scope::add_to_scope(ret);
-        name = new IR::ID("egress_intrinsic_metadata_for_output_port_t");
+        name   = new IR::ID("egress_intrinsic_metadata_for_output_port_t");
         fields = structFieldList::gen_tf_eg_intr_md_for_output_port();
-        ret = new IR::Type_Struct(*name, fields);
+        ret    = new IR::Type_Struct(*name, fields);
         P4Scope::add_to_scope(ret);
     }
-
 };
-
-
 } // namespace CODEGEN
 
 
-
-
-#endif
+#endif // ifndef _STRUCTTYPEDECLARATION_H_
