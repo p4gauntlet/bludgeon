@@ -51,7 +51,7 @@ public:
     IR::Node  * gen_actlist();
     IR::Node  * gen_tab();
     IR::Node  * gen_func();
-    IR::Node  * gen_sys_parser();
+    IR::Node  * gen_sys_parser(bool);
 
 
     void        gen_p4_code();

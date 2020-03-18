@@ -132,10 +132,12 @@ IR::Node * CGenerator::gen_func() {
     return func_gen->gen();
 }
 
-IR::Node * CGenerator::gen_sys_parser() {
+IR::Node * CGenerator::gen_sys_parser(bool use_tofino=false) {
     auto p_gen = new p4Parser();
-
-    return p_gen->gen_sys_p();
+    if (use_tofino)
+        return p_gen->gen_tofino_p();
+    else
+        return p_gen->gen_sys_p();
 }
 
 void CGenerator::emitBmv2Top(std::ostream *ostream) {
@@ -160,47 +162,12 @@ void CGenerator::emitBmv2Bottom(std::ostream *ostream) {
 void CGenerator::emitTFTop(std::ostream *ostream) {
     *ostream << "#include <core.p4>\n";
     *ostream << "#include <tna.p4>\n\n";
+    *ostream << "struct ingress_metadata_t {}\n"
+                "struct egress_metadata_t {}\n\n";
 }
 
 void CGenerator::emitTFBottom(std::ostream *ostream) {
     *ostream << "\n"
-                "struct ingress_metadata_t {}\n"
-                "struct egress_metadata_t {}\n"
-                "// ---------------------------------------------------------------------------\n"
-                "// Ingress parser\n"
-                "// ---------------------------------------------------------------------------\n"
-                "parser SwitchIngressParser(\n"
-                "        packet_in pkt,\n"
-                "        out Headers hdr,\n"
-                "        out ingress_metadata_t ig_md,\n"
-                "        out ingress_intrinsic_metadata_t ig_intr_md) {\n"
-                "\n"
-                "\n"
-                "    state start {\n"
-                "        pkt.extract(ig_intr_md);\n"
-                "        transition select(ig_intr_md.resubmit_flag) {\n"
-                "            1 : parse_resubmit;\n"
-                "            0 : parse_port_metadata;\n"
-                "        }\n"
-                "    }\n"
-                "\n"
-                "    state parse_resubmit {\n"
-                "        transition reject;\n"
-                "    }\n"
-                "\n"
-                "    state parse_port_metadata {\n"
-                "        pkt.advance(PORT_METADATA_SIZE);\n"
-                "        transition parse_ethernet;\n"
-                "    }\n"
-                "\n"
-                "    state parse_ethernet {\n"
-                "        pkt.extract(hdr.eth_hdr);\n"
-                "        transition accept;\n"
-                "    }\n"
-                "\n"
-                "\n"
-                "}\n"
-                "\n"
                 "// ---------------------------------------------------------------------------\n"
                 "// Ingress Deparser\n"
                 "// ---------------------------------------------------------------------------\n"
@@ -295,7 +262,7 @@ void CGenerator::gen_p4_code() {
         // generate tofino metadatas
         CODEGEN::structTypeDeclaration::gen_tf_md_t();
 
-        // objects->push_back(gen_func());
+        objects->push_back(gen_sys_parser(true));
         objects->push_back(CODEGEN::controlDeclaration::gen_tf_ing_ctrl());
     }
     else {

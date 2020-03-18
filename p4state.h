@@ -40,17 +40,7 @@ public:
         };
     }
 
-    ~p4State() {
-    }
-
-    IR::IndexedVector<IR::ParserState> gen_states() {
-        IR::IndexedVector<IR::ParserState> ret;
-        ret.push_back(gen_start_state());
-        // for (auto name : states) {
-        //     ret.push_back(gen_state(name));
-        // }
-        return ret;
-    }
+    ~p4State() {  }
 
     IR::MethodCallStatement* gen_methodcall_stat(cstring field_name) {
         auto pkt_call = new IR::Member(new IR::PathExpression(new IR::Path(IR::ID("pkt"))),
@@ -60,7 +50,7 @@ public:
 
         auto field_type = hdr_fields_types[field_name];
 
-        auto mem = new IR::Member(new IR::PathExpression(new IR::Path(IR::ID("hdr"))), 
+        auto mem = new IR::Member(new IR::PathExpression(new IR::Path(IR::ID("hdr"))),
                                             IR::ID(field_name));
 
         if (field_type->is<IR::Type_Stack>()) {
@@ -68,7 +58,7 @@ public:
             auto tp_stack = field_type->to<IR::Type_Stack>();
             auto size = tp_stack->size->to<IR::Constant>()->value;
             auto arr_index = new IR::ArrayIndex(mem, new IR::Constant(rand()%size));
-    
+
             if (tp_stack->elementType->is<IR::Type_Name>()) {
                 auto tp_name = tp_stack->elementType->to<IR::Type_Name>();
                 auto real_tp = P4Scope::get_type_by_name(tp_name->path->name.name);
@@ -118,7 +108,7 @@ public:
         return new IR::MethodCallStatement(mce);
     }
 
-    inline IR::MethodCallStatement* gen_hdr_extract(IR::Member *pkt_call, IR::Member *mem) {
+    inline IR::MethodCallStatement *gen_hdr_extract(IR::Member *pkt_call, IR::Expression *mem) {
         IR::Vector<IR::Argument> *args = new IR::Vector<IR::Argument>();
         IR::Argument *arg = new IR::Argument(mem);
         args->push_back(arg);
@@ -126,7 +116,7 @@ public:
         return new IR::MethodCallStatement(mce);
     }
 
-    inline void gen_hdr_union_extract(IR::IndexedVector<IR::StatOrDecl> &components, 
+    inline void gen_hdr_union_extract(IR::IndexedVector<IR::StatOrDecl> &components,
             const IR::Type_HeaderUnion *hdru, IR::ArrayIndex *arr_ind, IR::Member *pkt_call) {
         auto sf = hdru->fields.at(0);
         // for (auto sf : hdru->fields) {
@@ -136,7 +126,15 @@ public:
         // }
     }
 
-    IR::ParserState * gen_start_state() {
+    IR::ParserState *gen_start_state() {
+        IR::IndexedVector<IR::StatOrDecl> components;
+        IR::Expression *transition = new IR::PathExpression(new IR::Path(IR::ID("parse_hdrs")));
+        auto ret = new IR::ParserState(IR::ID("start"), components, transition);
+        P4Scope::add_to_scope(ret);
+        return ret;
+    }
+
+    IR::ParserState *gen_hdr_states() {
         IR::Expression* transition;
         IR::IndexedVector<IR::StatOrDecl> components;
 
@@ -188,7 +186,7 @@ public:
         // transition = new IR::PathExpression(new IR::Path(IR::ID("state_0")));
         transition = new IR::PathExpression(new IR::Path(IR::ID("accept")));
 
-        auto ret = new IR::ParserState(IR::ID("start"), components, transition);
+        auto ret = new IR::ParserState(IR::ID("parse_hdrs"), components, transition);
         P4Scope::add_to_scope(ret);
         return ret;
     }
@@ -264,7 +262,7 @@ public:
 
                 for (int i=0; i<rand()%3+1; i++) {
                     IR::Expression *keyset;
-                    IR::Vector<IR::Expression> args; 
+                    IR::Vector<IR::Expression> args;
                     for (size_t i=0; i<types.size(); i++) {
                         auto tp = types.at(i)->to<IR::Type_Bits>();
                         int size = tp->size>4?4:tp->size;
