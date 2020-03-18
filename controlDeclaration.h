@@ -221,15 +221,16 @@ public:
         IR::Type_Control *type_ctrl = controlTypeDeclaration::gen_ing_ctrl_type(
             1);
 
-        // IR::ParameterList* constructor_params;
         IR::IndexedVector<IR::Declaration> local_decls;
 
         auto blk_stat = controlDeclaration::gen_ctrl_components(local_decls);
         // hardcode the output port to be zero
-        auto output_port = new IR::PathExpression(new IR::Path("ig_tm_md.ucast_egress_port"));
+        auto output_port = new IR::PathExpression("ig_tm_md.ucast_egress_port");
         auto output_port_val = new IR::Constant(int_literal::gen(), 0);
         auto assign = new IR::AssignmentStatement(output_port, output_port_val);
-        blk_stat->push_back(assign);
+        // some hack to insert the expression at the beginning
+        auto it = blk_stat->components.begin();
+        blk_stat->components.insert(it, assign);
         // end of scope
         P4Scope::end_local_scope();
 

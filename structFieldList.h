@@ -78,8 +78,8 @@ public:
     static IR::IndexedVector<IR::StructField>gen_sm() {
         IR::IndexedVector<IR::StructField> fields;
 
-        IR::ID   *name;
-        IR::Type *tp;
+        // IR::ID   *name;
+        // IR::Type *tp;
 
         /*
            name = new IR::ID("ingress_port");

@@ -259,6 +259,7 @@ void CGenerator::gen_p4_code() {
     else if (flag == 1) {
         CGenerator::emitTFTop(ostream);
 
+        // objects->push_back(gen_func());
         // generate tofino metadatas
         CODEGEN::structTypeDeclaration::gen_tf_md_t();
 
