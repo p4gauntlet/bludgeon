@@ -24,7 +24,7 @@ void blockStatement::gen_sth(bool if_in_func = false) {
     std::vector<int> percent = { 15, 15, 15, 15, 15, 15, 15, 15, 0, 5 };
 
     // randomize the total number of statements
-    int max_statements = rand() % NUM_STAT;
+    int max_statements = MIN_STAT + (rand() % (MAX_STAT - MIN_STAT + 1));
 
     // put tab_name .apply() after some initializations
     for (int num_stat = 0; num_stat < max_statements; num_stat++) {
