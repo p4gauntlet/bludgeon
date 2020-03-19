@@ -17,21 +17,21 @@
 
 
 namespace CODEGEN {
-IR::Node * CGenerator::gen() {
+IR::Node *CGenerator::gen() {
     IR::Node *n = nullptr;
 
     while (1) {
         switch (rand() % 1) {
             case 0: {
-                n = headerTypeDeclaration::gen();
-                break;
-            }
+                   n = headerTypeDeclaration::gen();
+                   break;
+               }
             case 1: {
-                if (P4Scope::get_num_type_header() > 0) {
-                    n = headerUnionDeclaration::gen();
-                }
-                break;
-            }
+                   if (P4Scope::get_num_type_header() > 0) {
+                       n = headerUnionDeclaration::gen();
+                   }
+                   break;
+               }
         }
 
         if (n != nullptr) {
@@ -42,7 +42,8 @@ IR::Node * CGenerator::gen() {
     return n;
 }
 
-IR::Node * CGenerator::gen_act() {
+
+IR::Node *CGenerator::gen_act() {
     IR::Node *n = nullptr;
 
     while (1) {
@@ -57,7 +58,8 @@ IR::Node * CGenerator::gen_act() {
     return n;
 }
 
-IR::Node * CGenerator::gen_struct() {
+
+IR::Node *CGenerator::gen_struct() {
     IR::Node *n = nullptr;
 
     while (1) {
@@ -70,7 +72,8 @@ IR::Node * CGenerator::gen_struct() {
     return n;
 }
 
-IR::Node * CGenerator::gen_t_enum() {
+
+IR::Node *CGenerator::gen_t_enum() {
     IR::Node *n = nullptr;
 
     while (1) {
@@ -86,7 +89,8 @@ IR::Node * CGenerator::gen_t_enum() {
     return n;
 }
 
-IR::Node * CGenerator::gen_tpdef() {
+
+IR::Node *CGenerator::gen_tpdef() {
     IR::Node *n = nullptr;
 
     while (1) {
@@ -100,7 +104,8 @@ IR::Node * CGenerator::gen_tpdef() {
     return n;
 }
 
-IR::Node * CGenerator::gen_ctrldef() {
+
+IR::Node *CGenerator::gen_ctrldef() {
     IR::Node *n = nullptr;
 
     while (1) {
@@ -114,39 +119,46 @@ IR::Node * CGenerator::gen_ctrldef() {
     return n;
 }
 
-IR::Node * CGenerator::gen_actlist() {
+
+IR::Node *CGenerator::gen_actlist() {
     auto names = P4Scope::get_name_nodir_p4acts();
 
     return nullptr;
 }
 
-IR::Node * CGenerator::gen_tab() {
+
+IR::Node *CGenerator::gen_tab() {
     auto tab_gen = new tableDeclaration();
 
     return tab_gen->gen();
 }
 
-IR::Node * CGenerator::gen_func() {
+
+IR::Node *CGenerator::gen_func() {
     auto func_gen = new functionDeclaration();
 
     return func_gen->gen();
 }
 
-IR::Node * CGenerator::gen_sys_parser(bool use_tofino=false) {
+
+IR::Node *CGenerator::gen_sys_parser(bool use_tofino = false) {
     auto p_gen = new p4Parser();
-    if (use_tofino)
+
+    if (use_tofino) {
         return p_gen->gen_tofino_p();
-    else
+    } else{
         return p_gen->gen_sys_p();
+    }
 }
+
 
 void CGenerator::emitBmv2Top(std::ostream *ostream) {
     *ostream << "#include <core.p4>\n";
     *ostream << "#include <v1model.p4>\n\n";
 }
 
-void CGenerator::emitBmv2Bottom(std::ostream *ostream) {
 
+void CGenerator::emitBmv2Bottom(std::ostream *ostream) {
     *ostream << "control vrfy(inout Headers h, inout Meta m) { apply {} }\n\n";
     *ostream <<
         "control update(inout Headers h, inout Meta m) { apply {} }\n\n";
@@ -159,12 +171,23 @@ void CGenerator::emitBmv2Bottom(std::ostream *ostream) {
         "V1Switch(p(), vrfy(), ingress(), egress(), update(), deparser()) main;\n\n";
 }
 
+
 void CGenerator::emitTFTop(std::ostream *ostream) {
     *ostream << "#include <core.p4>\n";
     *ostream << "#include <tna.p4>\n\n";
     *ostream << "struct ingress_metadata_t {}\n"
                 "struct egress_metadata_t {}\n\n";
+    // filter these structures from initialization
+    P4Scope::not_initialized_structs.insert(
+        "ingress_intrinsic_metadata_t");
+    P4Scope::not_initialized_structs.insert(
+        "ingress_intrinsic_metadata_from_parser_t");
+    P4Scope::not_initialized_structs.insert(
+        "ingress_intrinsic_metadata_for_deparser_t");
+    P4Scope::not_initialized_structs.insert(
+        "ingress_intrinsic_metadata_for_tm_t");
 }
+
 
 void CGenerator::emitTFBottom(std::ostream *ostream) {
     *ostream << "\n"
@@ -225,6 +248,7 @@ void CGenerator::emitTFBottom(std::ostream *ostream) {
                 "";
 }
 
+
 void CGenerator::gen_p4_code() {
     auto objects = new IR::Vector<IR::Node>();
 
@@ -255,8 +279,7 @@ void CGenerator::gen_p4_code() {
         objects->push_back(gen_func());
         objects->push_back(gen_sys_parser());
         objects->push_back(CODEGEN::controlDeclaration::gen_ing_ctrl());
-    }
-    else if (flag == 1) {
+    } else if (flag == 1) {
         CGenerator::emitTFTop(ostream);
 
         // objects->push_back(gen_func());
@@ -265,8 +288,7 @@ void CGenerator::gen_p4_code() {
 
         objects->push_back(gen_sys_parser(true));
         objects->push_back(CODEGEN::controlDeclaration::gen_tf_ing_ctrl());
-    }
-    else {
+    } else {
         BUG("flag must be 0 or 1");
     }
     IR::P4Program *program = new IR::P4Program(*objects);
@@ -277,11 +299,9 @@ void CGenerator::gen_p4_code() {
 
     if (flag == 0) {
         CGenerator::emitBmv2Bottom(ostream);
-    }
-    else if (flag == 1) {
+    } else if (flag == 1) {
         CGenerator::emitTFBottom(ostream);
-    }
-    else {
+    } else {
         BUG("flag must be 0 or 1");
     }
 

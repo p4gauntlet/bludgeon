@@ -3,28 +3,21 @@
 
 #include "ir/ir.h"
 
-#include "expression.h"
-#include "statement.h"
-
 namespace CODEGEN {
-
-
 class conditionalStatement {
 public:
-	const char* types[0] = {
-	};
+    const char *types[0] = {
+    };
 
-	conditionalStatement() {
-	}
-	~conditionalStatement() {
-	}
+    conditionalStatement() {
+    }
 
-	static IR::IfStatement* gen_if_stat(bool if_in_func=false);
+    ~conditionalStatement() {
+    }
+
+    static IR::IfStatement *gen_if_stat(bool if_in_func = false);
 };
-
-
 } // namespace CODEGEN
-
 
 
 

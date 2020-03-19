@@ -24,7 +24,7 @@ public:
 
     cstring o_file;
     std::ostream *ostream = nullptr;
-    int flag              = -1;
+    int flag = -1;
 
     CGenerator(char *filename, int flag) :
         o_file(filename), flag(flag) {
@@ -42,19 +42,19 @@ public:
     static void emitTFBottom(std::ostream *ostream);
 
     // =====================
-    IR::Node  * gen();
-    IR::Node  * gen_act();
-    IR::Node  * gen_struct();
-    IR::Node  * gen_t_enum();
-    IR::Node  * gen_tpdef();
-    IR::Node  * gen_ctrldef();
-    IR::Node  * gen_actlist();
-    IR::Node  * gen_tab();
-    IR::Node  * gen_func();
-    IR::Node  * gen_sys_parser(bool);
+    IR::Node *gen();
+    IR::Node *gen_act();
+    IR::Node *gen_struct();
+    IR::Node *gen_t_enum();
+    IR::Node *gen_tpdef();
+    IR::Node *gen_ctrldef();
+    IR::Node *gen_actlist();
+    IR::Node *gen_tab();
+    IR::Node *gen_func();
+    IR::Node *gen_sys_parser(bool);
 
 
-    void        gen_p4_code();
+    void gen_p4_code();
 };
 } // namespace CODEGEN
 

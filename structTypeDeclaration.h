@@ -20,12 +20,11 @@ public:
 
     structTypeDeclaration() {}
 
-    static IR::Type_Struct* gen() {
+    static IR::Type_Struct *gen() {
         IR::ID *name;
 
         name = new IR::ID(CODEGEN::randstr(6));
-        auto sfl = new structFieldList(STRUCT,
-                                       name->name);
+        auto sfl = new structFieldList(STRUCT, name->name);
         IR::IndexedVector<IR::StructField> fields = sfl->gen(rand() % 5 + 1);
 
         auto ret = new IR::Type_Struct(*name, fields);
@@ -35,18 +34,15 @@ public:
         return ret;
     }
 
-    static IR::Type_Struct* gen_Headers() {
+    static IR::Type_Struct *gen_Headers() {
         IR::ID *name = new IR::ID("Headers");
-        auto    sfl  = new structFieldList(
-            STRUCT_HEADERS,
-            name->name);
+        auto   sfl   = new structFieldList(STRUCT_HEADERS, name->name);
         IR::IndexedVector<IR::StructField> fields = sfl->gen(rand() % 5 + 1);
 
         // Tao: hard code for ethernet_t eth_hdr;
         auto eth_sf =
-            new IR::StructField(IR::ID(ETH_HDR),
-                                new IR::Type_Name(
-                                    new IR::Path(IR::ID(ETH_HEADER_T))));
+            new IR::StructField(IR::ID(ETH_HDR), new IR::Type_Name(
+                                    new IR::Path(ETH_HEADER_T)));
 
         fields.insert(fields.begin(), eth_sf);
 
@@ -58,12 +54,12 @@ public:
         return ret;
     }
 
-    static IR::Type_Struct* gen_Meta() {
+    static IR::Type_Struct *gen_Meta() {
         IR::ID *name = new IR::ID("Meta");
-        auto    sfl  = new structFieldList(STRUCT, name->name);
 
         // Do not emit meta fields for now, no need
-        // TODO: Design a way to emit these that plays nicely with all targets
+        // FIXME: Design a way to emit these that plays nicely with all targets
+        // auto   sfl   = new structFieldList(STRUCT, name->name);
         // IR::IndexedVector< IR::StructField > fields = sfl->gen(rand()%5+1);
         IR::IndexedVector<IR::StructField> fields;
 
@@ -74,9 +70,9 @@ public:
         return ret;
     }
 
-    static IR::Type_Struct* gen_Sm() {
-        IR::ID *name   = new IR::ID("standard_metadata_t");
-        auto    fields = structFieldList::gen_sm();
+    static IR::Type_Struct *gen_Sm() {
+        IR::ID *name  = new IR::ID("standard_metadata_t");
+        auto   fields = structFieldList::gen_sm();
 
         auto ret = new IR::Type_Struct(*name, fields);
 
@@ -87,40 +83,39 @@ public:
 
     static void gen_tf_md_t() {
         IR::ID *name;
-        IR::IndexedVector<IR::StructField> fields;
+        // IR::IndexedVector<IR::StructField> fields;
         IR::Type_Struct *ret;
 
-        name   = new IR::ID("ingress_intrinsic_metadata_t");
-        fields = structFieldList::gen_tf_ing_md_t();
-        ret    = new IR::Type_Struct(*name, fields);
+        name = new IR::ID("ingress_intrinsic_metadata_t");
+        ret  = new IR::Type_Struct(*name, structFieldList::gen_tf_ing_md_t());
         P4Scope::add_to_scope(ret);
-        name   = new IR::ID("ingress_intrinsic_metadata_for_tm_t");
-        fields = structFieldList::gen_tf_ing_md_for_tm_t();
-        ret    = new IR::Type_Struct(*name, fields);
+        name = new IR::ID("ingress_intrinsic_metadata_for_tm_t");
+        ret  = new IR::Type_Struct(*name,
+                                   structFieldList::gen_tf_ing_md_for_tm_t());
         P4Scope::add_to_scope(ret);
-        name   = new IR::ID("ingress_intrinsic_metadata_from_parser_t");
-        fields = structFieldList::gen_tf_ing_intr_md_from_prsr();
-        ret    = new IR::Type_Struct(*name, fields);
+        name = new IR::ID("ingress_intrinsic_metadata_from_parser_t");
+        ret  = new IR::Type_Struct(*name,
+                                   structFieldList::gen_tf_ing_intr_md_from_prsr());
         P4Scope::add_to_scope(ret);
-        name   = new IR::ID("ingress_intrinsic_metadata_for_deparser_t");
-        fields = structFieldList::gen_tf_ing_intr_md_for_deprsr();
-        ret    = new IR::Type_Struct(*name, fields);
+        name = new IR::ID("ingress_intrinsic_metadata_for_deparser_t");
+        ret  = new IR::Type_Struct(*name,
+                                   structFieldList::gen_tf_ing_intr_md_for_deprsr());
         P4Scope::add_to_scope(ret);
-        name   = new IR::ID("egress_intrinsic_metadata_t");
-        fields = structFieldList::gen_tf_eg_intr_md_t();
-        ret    = new IR::Type_Struct(*name, fields);
+        name = new IR::ID("egress_intrinsic_metadata_t");
+        ret  =
+            new IR::Type_Struct(*name, structFieldList::gen_tf_eg_intr_md_t());
         P4Scope::add_to_scope(ret);
-        name   = new IR::ID("egress_intrinsic_metadata_from_parser_t");
-        fields = structFieldList::gen_tf_eg_intr_md_from_prsr();
-        ret    = new IR::Type_Struct(*name, fields);
+        name = new IR::ID("egress_intrinsic_metadata_from_parser_t");
+        ret  = new IR::Type_Struct(*name,
+                                   structFieldList::gen_tf_eg_intr_md_from_prsr());
         P4Scope::add_to_scope(ret);
-        name   = new IR::ID("egress_intrinsic_metadata_for_deparser_t");
-        fields = structFieldList::gen_tf_eg_intr_md_for_deprsr();
-        ret    = new IR::Type_Struct(*name, fields);
+        name = new IR::ID("egress_intrinsic_metadata_for_deparser_t");
+        ret  = new IR::Type_Struct(*name,
+                                   structFieldList::gen_tf_eg_intr_md_for_deprsr());
         P4Scope::add_to_scope(ret);
-        name   = new IR::ID("egress_intrinsic_metadata_for_output_port_t");
-        fields = structFieldList::gen_tf_eg_intr_md_for_output_port();
-        ret    = new IR::Type_Struct(*name, fields);
+        name = new IR::ID("egress_intrinsic_metadata_for_output_port_t");
+        ret  = new IR::Type_Struct(*name,
+                                   structFieldList::gen_tf_eg_intr_md_for_output_port());
         P4Scope::add_to_scope(ret);
     }
 };

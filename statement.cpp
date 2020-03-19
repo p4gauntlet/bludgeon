@@ -1,43 +1,105 @@
-
-
-
 #include "statement.h"
 
+
+#include "assignmentOrMethodCallStatement.h"
+#include "conditionalStatement.h"
+#include "blockStatement.h"
+#include "exitStatement.h"
+#include "returnStatement.h"
+#include "switchStatement.h"
+
+
 namespace CODEGEN {
+IR::Statement *statement::gen_rnd(bool if_in_func   = false,
+                                  bool if_in_ifstat = false) {
+    std::vector<int> percent = { 15, 15, 15, 15, 15, 15, 15, 15, 2, 2, 5 };
+    IR::Statement *stmt      = nullptr;
 
-IR::Statement* statement::gen_stat(bool if_in_ifstat, bool if_in_func) {
-	IR::Statement* stat = nullptr;
-	int num_trails = 100;
-	while (num_trails--) {
-		switch (rand()%5) {
-			case 0: stat = assignmentOrMethodCallStatement::gen_assignstat(); break;
-			case 1: stat = assignmentOrMethodCallStatement::gen_compound_ass(); break;
-			case 2: stat = conditionalStatement::gen_if_stat(if_in_func); break;
-			case 3: {
-				std::vector<cstring> tab_names; // empty here
-				auto blk_stat = new blockStatement(tab_names, false, if_in_ifstat);
+    switch (CODEGEN::randind(percent, 11)) {
+        case 0: {
+                std::vector<cstring> tab_names = P4Scope::get_tab_names();
+                if (tab_names.size() > 0) {
+                    IR::Vector<IR::Argument> *args =
+                        new IR::Vector<IR::Argument>();
+                    auto tab_name = tab_names.at(
+                        rand() % tab_names.size());
+
+                    if (P4Scope::called_tables.find(tab_name) ==
+                        P4Scope::called_tables.end()) {
+                        auto mem =
+                            new IR::Member(new IR::PathExpression(tab_name),
+                                           IR::ID("apply"));
+                        auto mce = new IR::MethodCallExpression(mem, args);
+                        stmt = new IR::MethodCallStatement(mce);
+                        P4Scope::called_tables.insert(tab_name);
+                    }
+                }
+                break;
+            }
+        case 1: {
+                switchStatement *switch_stat_gen = new switchStatement();
+                stmt = switch_stat_gen->gen();
+                break;
+            }
+        case 2: {
+                stmt = assignmentOrMethodCallStatement::gen_assignstat();
+                break;
+            }
+        case 3: {
+                if (if_in_ifstat == false) {
+                    stmt = assignmentOrMethodCallStatement::gen_func_ass();
+                }
+                break;
+            }
+        case 4: {
+                stmt = assignmentOrMethodCallStatement::gen_compound_ass();
+                break;
+            }
+        case 5: {
+                /*
+                 * Tao: note here, may be a lot recursions,
+                 *      so add some randomness here
+                 */
+                if (rand() % 4 == 0) {
+                    stmt = conditionalStatement::gen_if_stat(if_in_func);
+                }
+                break;
+            }
+        case 6: {
+                // Tao: generate action method call statement
+                stmt =
+                    assignmentOrMethodCallStatement::gen_act_methodcall_stat();
+                break;
+            }
+        case 7: {
+                // Tao: gen ctrl method call statement
+                if (if_in_ifstat == false) {
+                    stmt =
+                        assignmentOrMethodCallStatement::gen_methodcall_stat();
+                }
+                break;
+            }
+        case 8: {
+                stmt = returnStatement::gen_ret_stat();
+                break;
+            }
+        case 9: {
+                if ((if_in_func == false) && (if_in_ifstat == false)) {
+                    stmt = exitStatement::gen();
+                }
+                break;
+            }
+        case 10: {
+                std::vector<cstring> tab_names;
+                auto blk_stat = new blockStatement(tab_names, false,
+                                                   if_in_ifstat);
                 if (if_in_func == true) {
-                    stat = blk_stat->gen_func_blk(if_in_ifstat);
+                    stmt = blk_stat->gen_func_blk(if_in_ifstat);
+                } else {
+                    stmt = blk_stat->gen();
                 }
-                else {
-				    stat = blk_stat->gen();
-                }
-				break;
-			}
-			case 4: {
-				if (if_in_ifstat == false)
-					stat = assignmentOrMethodCallStatement::gen_methodcall_stat();
-				break;
-			}
-			// case 5: stat = exitStatement::gen(); break;
-			// case 6: stat = returnStatement::gen_ret_stat(); break;
-		}
-		if (stat != nullptr) {
-			break;
-		}
-	}
-	return stat;
+            }
+    }
+    return stmt;
 }
-
 } // namespace CODEGEN
-

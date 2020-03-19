@@ -4,25 +4,20 @@
 #include "ir/ir.h"
 
 namespace CODEGEN {
-
-
 class statementOrDeclaration {
 public:
-	const char* types[4] = {
-		"variableDeclaration",
-		"constantDeclaration",
-		"statement",
-		"instantiation"
-	};
+    const char *types[4] = {
+        "variableDeclaration",
+        "constantDeclaration",
+        "statement",
+        "instantiation"
+    };
+    statementOrDeclaration() {}
+    ~statementOrDeclaration() {}
 
-	statementOrDeclaration() {
-	}
-
+    static IR::StatOrDecl *gen_rnd(bool, bool);
 };
-
-
 } // namespace CODEGEN
-
 
 
 
