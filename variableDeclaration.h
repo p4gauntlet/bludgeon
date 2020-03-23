@@ -40,8 +40,8 @@ public:
     }
 
     IR::Declaration_Variable *gen() {
-        std::vector<int> types     = {};
-        typeRef          *type_ref = new typeRef(true, types, STRUCT_LIKE);
+        std::vector<int> types = {};
+        typeRef *type_ref      = new typeRef(true, types, STRUCT_LIKE);
 
         type = type_ref->gen();
 

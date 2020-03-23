@@ -11,7 +11,7 @@ void blockStatement::gen_sth(bool if_in_func = false) {
     int max_statements = MIN_STAT + (rand() % (MAX_STAT - MIN_STAT + 1));
 
     // put tab_name .apply() after some initializations
-    for (int num_stat = 0; num_stat < max_statements; num_stat++) {
+    for (int num_stat = 0; num_stat <= max_statements; num_stat++) {
         IR::StatOrDecl *stmt = statementOrDeclaration::gen_rnd(
             if_in_func, if_in_ifs);
         if (stmt != nullptr) {

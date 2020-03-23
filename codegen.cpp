@@ -23,15 +23,15 @@ IR::Node *CGenerator::gen() {
     while (1) {
         switch (rand() % 1) {
             case 0: {
-                   n = headerTypeDeclaration::gen();
-                   break;
-               }
+                    n = headerTypeDeclaration::gen();
+                    break;
+                }
             case 1: {
-                   if (P4Scope::get_num_type_header() > 0) {
-                       n = headerUnionDeclaration::gen();
-                   }
-                   break;
-               }
+                    if (P4Scope::get_num_type_header() > 0) {
+                        n = headerUnionDeclaration::gen();
+                    }
+                    break;
+                }
         }
 
         if (n != nullptr) {
@@ -104,20 +104,6 @@ IR::Node *CGenerator::gen_tpdef() {
     return n;
 }
 
-
-IR::Node *CGenerator::gen_ctrldef() {
-    IR::Node *n = nullptr;
-
-    while (1) {
-        auto ctrldef = new controlDeclaration();
-        n = ctrldef->gen();
-
-        if (n != nullptr) {
-            break;
-        }
-    }
-    return n;
-}
 
 
 IR::Node *CGenerator::gen_actlist() {
@@ -275,7 +261,6 @@ void CGenerator::gen_p4_code() {
         // generate struct  standard_metadata_t
         CODEGEN::structTypeDeclaration::gen_Sm();
 
-        // objects->push_back(>gen_ctrldef());
         objects->push_back(gen_func());
         objects->push_back(gen_sys_parser());
         objects->push_back(CODEGEN::controlDeclaration::gen_ing_ctrl());
