@@ -30,7 +30,6 @@ public:
     static const IR::Type *ret_type;
     static std::vector<IR::P4Control *> p4_ctrls;
     static std::map<cstring, IR::P4Control *> decl_ins_ctrls;
-    static std::map<cstring, IR::P4Action *> decl_actions;
     static std::set<cstring> called_tables;
     static const IR::Type_Struct *sys_hdr;
 
@@ -112,6 +111,7 @@ public:
     static std::map<cstring, std::vector<const IR::Type *> > get_action_def();
     static std::vector<const IR::Function *> get_func_decls();
     static std::vector<const IR::P4Table *> get_tab_decls();
+    static std::vector<const IR::P4Action *> get_action_decls();
     static std::vector<cstring> get_tab_names();
 
     // template to get all declarations

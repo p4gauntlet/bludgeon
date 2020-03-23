@@ -42,8 +42,6 @@ public:
 
         P4Scope::add_to_scope(ret);
 
-        // Tao:
-        P4Scope::decl_actions.emplace(name->name, ret);
         return ret;
     }
 };

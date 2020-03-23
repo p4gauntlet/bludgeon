@@ -12,10 +12,10 @@
 namespace CODEGEN {
 IR::Statement *statement::gen_rnd(bool if_in_func   = false,
                                   bool if_in_ifstat = false) {
-    std::vector<int> percent = { 15, 15, 15, 15, 15, 15, 15, 15, 2, 2, 5 };
+    std::vector<int> percent = { 15, 15, 15, 15, 15, 15, 2, 2, 5 };
     IR::Statement *stmt      = nullptr;
 
-    switch (CODEGEN::randind(percent, 11)) {
+    switch (CODEGEN::randind(percent, 9)) {
         case 0: {
                 std::vector<cstring> tab_names = P4Scope::get_tab_names();
                 if (tab_names.size() > 0) {
@@ -46,16 +46,6 @@ IR::Statement *statement::gen_rnd(bool if_in_func   = false,
                 break;
             }
         case 3: {
-                if (if_in_ifstat == false) {
-                    stmt = assignmentOrMethodCallStatement::gen_func_ass();
-                }
-                break;
-            }
-        case 4: {
-                stmt = assignmentOrMethodCallStatement::gen_compound_ass();
-                break;
-            }
-        case 5: {
                 /*
                  * Tao: note here, may be a lot recursions,
                  *      so add some randomness here
@@ -65,13 +55,13 @@ IR::Statement *statement::gen_rnd(bool if_in_func   = false,
                 }
                 break;
             }
-        case 6: {
+        case 4: {
                 // Tao: generate action method call statement
                 stmt =
                     assignmentOrMethodCallStatement::gen_act_methodcall_stat();
                 break;
             }
-        case 7: {
+        case 5: {
                 // Tao: gen ctrl method call statement
                 if (if_in_ifstat == false) {
                     stmt =
@@ -79,17 +69,17 @@ IR::Statement *statement::gen_rnd(bool if_in_func   = false,
                 }
                 break;
             }
-        case 8: {
+        case 6: {
                 stmt = returnStatement::gen_ret_stat();
                 break;
             }
-        case 9: {
+        case 7: {
                 if ((if_in_func == false) && (if_in_ifstat == false)) {
                     stmt = exitStatement::gen();
                 }
                 break;
             }
-        case 10: {
+        case 8: {
                 std::vector<cstring> tab_names;
                 auto blk_stat = new blockStatement(tab_names, false,
                                                    if_in_ifstat);
