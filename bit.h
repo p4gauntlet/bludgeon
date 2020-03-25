@@ -6,26 +6,26 @@
 
 
 
-
 namespace CODEGEN {
 class bit_literal {
 public:
 
 
-	static constexpr int std_size[5] = {8, 16, 32, 64, 128};
-	bit_literal() {
-	}
+    static constexpr int std_size[5] = { 8, 16, 32, 64, 128 };
+    bit_literal() {
+    }
 
-	// isSigned, true -> int<>, false -> bit<>
-	// Tao: we only use false here
-	static IR::Type_Bits* gen(bool isSigned) {
-		int size = rand()%(sizeof(std_size)/sizeof(int));
-		return new IR::Type_Bits(std_size[size], isSigned);
-	}
+    // isSigned, true -> int<>, false -> bit<>
+    // Tao: we only use false here
+    static IR::Type_Bits *gen(bool isSigned) {
+        int size = rand() % (sizeof(std_size) / sizeof(int));
 
-	static IR::Constant* gen_literal() {
-		return new IR::Constant(rand()%6+1);
-	}
+        return new IR::Type_Bits(std_size[size], isSigned);
+    }
+
+    static IR::Constant *gen_literal() {
+        return new IR::Constant(rand() % 6 + 1);
+    }
 };
 }
 
