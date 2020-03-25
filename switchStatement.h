@@ -9,17 +9,13 @@
 #include "ir/ir.h"
 
 namespace CODEGEN {
-
-
 class switchStatement {
 public:
-	const char* types[0] = {
-	};
-
     IR::Expression *expr = nullptr;
 
-	switchStatement() {
-	}
+    switchStatement() {
+    }
+
     ~switchStatement() {
         if (expr != nullptr) {
             delete expr;
@@ -28,10 +24,7 @@ public:
 
     IR::SwitchStatement *gen();
 };
-
-
 } // namespace CODEGEN
-
 
 
 

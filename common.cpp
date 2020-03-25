@@ -15,35 +15,35 @@
 #include "tableDeclaration.h"
 #include "actionList.h"
 
-const std::vector<cstring> str_keywords = {"if", "else", "key", "actions"};
+const std::vector<cstring> str_keywords = { "if", "else", "key", "actions" };
 
 namespace CODEGEN {
-
 cstring randstr(size_t len) {
-	cstring ret;
-	std::stringstream ss;
-	while (1) {
-		ss.str("");
-		for (size_t i=0; i<len; i++) {
-			ss << alphanum[rand() % (sizeof(alphanum) - 1)];
-		}
-		ret = ss.str();
-		if (std::find(str_keywords.begin(),
-					str_keywords.end(), ret) != str_keywords.end()) {
-			continue;
-		}
+    cstring ret;
+    std::stringstream ss;
 
-		if (P4Scope::used_names.find(ret) == P4Scope::used_names.end()) {
-			P4Scope::used_names.insert(ret);
-			break;
-		}
-	}
+    while (1) {
+        ss.str("");
+        for (size_t i = 0; i < len; i++) {
+            ss << alphanum[rand() % (sizeof(alphanum) - 1)];
+        }
+        ret = ss.str();
+        if (std::find(str_keywords.begin(),
+                      str_keywords.end(), ret) != str_keywords.end()) {
+            continue;
+        }
 
-	return ret;
+        if (P4Scope::used_names.find(ret) == P4Scope::used_names.end()) {
+            P4Scope::used_names.insert(ret);
+            break;
+        }
+    }
 
+    return ret;
 }
 
-int randind(std::vector<int> &percent, size_t n_num) {
+
+int randind(std::vector<int>& percent, size_t n_num) {
     if (percent.size() != n_num) {
         BUG("size of percent is not equal to n_num!");
     }
@@ -53,8 +53,8 @@ int randind(std::vector<int> &percent, size_t n_num) {
         sum += i;
     }
 
-    int rand_num = rand()%sum;
-    int ret = 0;
+    int rand_num = rand() % sum;
+    int ret      = 0;
 
     int ret_sum = 0;
     for (auto i : percent) {
@@ -62,10 +62,9 @@ int randind(std::vector<int> &percent, size_t n_num) {
         if (ret_sum > rand_num) {
             break;
         }
-        ret = ret+1;
+        ret = ret + 1;
     }
 
     return ret;
 }
-
 } // namesapce CODEGEN

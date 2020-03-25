@@ -284,7 +284,7 @@ IR::Expression *expression::get_operand(int            pa_or_var,
     std::vector<cstring> call_backtrace;
 
     if (pa_or_var == 0) {
-        if (if_param_in_inc == true) {
+        if (if_param_in_inc) {
             *tp = pick_lval(P4Scope::name_2_type_param_in,
                             call_backtrace,
                             type,
@@ -856,9 +856,8 @@ IR::Vector<IR::Argument> *expression::construct_params(
     std::vector<const IR::Type *>& v_tp) {
     IR::Vector<IR::Argument> *args = new IR::Vector<IR::Argument>();
 
-    for (auto i = v_tp.begin(); i < v_tp.end(); i++) {
+    for (auto tp : v_tp) {
         IR::Argument *arg       = nullptr;
-        const IR::Type *tp      = *i;
         IR::Expression *expr    = nullptr;
         const IR::Type *expr_tp = nullptr;
         cstring str_expr_tp;
@@ -868,12 +867,8 @@ IR::Vector<IR::Argument> *expression::construct_params(
         while (num_trials--) {
             if (tp->is<IR::Type_Bits>()) {
                 auto tp_b = tp->to<IR::Type_Bits>();
-                expr = get_operand(rand() % 2,
-                                   &expr_tp,
-                                   str_expr_tp,
-                                   rand() % 2,
-                                   false);
-
+                expr = get_operand(rand() % 2, &expr_tp, str_expr_tp,
+                                   rand() % 2, false);
                 if ((expr != nullptr) &&
                     (mp_expr_2_if_inc_in[expr] == false) &&
                     (str_expr_tp == EXPR_TYPE_BITS)) {
@@ -899,12 +894,9 @@ IR::Vector<IR::Argument> *expression::construct_params(
                 }
             }
 
-            if (expr_found == true) {
+            if (expr_found) {
                 break;
             }
-        }
-
-        if (expr_found == true) {
         }
 
         if (arg != nullptr) {

@@ -93,7 +93,7 @@ public:
         // instantiations
 
         // blockstatement
-        auto blk_gen  = new blockStatement(tab_names, true);
+        auto blk_gen  = new blockStatement();
         auto blk_stat = blk_gen->gen();
 
         return blk_stat;

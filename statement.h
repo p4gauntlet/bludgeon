@@ -20,7 +20,7 @@ public:
     statement() {}
     ~statement() {}
 
-    static IR::Statement *gen_rnd(bool if_in_func, bool if_in_ifstat);
+    static IR::Statement *gen_rnd(bool if_in_func);
 };
 } // namespace CODEGEN
 

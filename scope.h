@@ -29,8 +29,8 @@ public:
     static std::set<cstring> types_w_stack;
     static const IR::Type *ret_type;
     static std::vector<IR::P4Control *> p4_ctrls;
+    static std::set<const IR::P4Table *> callable_tables;
     static std::map<cstring, IR::P4Control *> decl_ins_ctrls;
-    static std::set<cstring> called_tables;
     static const IR::Type_Struct *sys_hdr;
 
     static std::set<cstring> not_initialized_structs;
@@ -112,7 +112,7 @@ public:
     static std::vector<const IR::Function *> get_func_decls();
     static std::vector<const IR::P4Table *> get_tab_decls();
     static std::vector<const IR::P4Action *> get_action_decls();
-    static std::vector<cstring> get_tab_names();
+    static std::set<const IR::P4Table *> *get_callable_tables();
 
     // template to get all declarations
     template<typename T>

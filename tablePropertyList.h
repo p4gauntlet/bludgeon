@@ -13,13 +13,6 @@ public:
         "tableProperty"
     };
 
-
-    // Keys
-    // Actions
-    //
-
-
-
     tablePropertyList() {
     }
 

@@ -42,9 +42,8 @@ public:
         tm = new IR::Type_Method(r_tp, params);
 
         P4Scope::ret_type = r_tp;
-        std::vector<cstring> tab_names;
-        auto blk_gen = new blockStatement(tab_names, true);
-        blk = blk_gen->gen_func_blk(false);
+        auto blk_gen = new blockStatement();
+        blk = blk_gen->gen(true);
         P4Scope::ret_type = nullptr;
 
         auto ret = new IR::Function(*name, tm, blk);

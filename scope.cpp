@@ -15,7 +15,7 @@ std::set<cstring> P4Scope::types_w_stack;
 const IR::Type *P4Scope::ret_type = nullptr;
 std::vector<IR::P4Control *> P4Scope::p4_ctrls;
 std::map<cstring, IR::P4Control *> P4Scope::decl_ins_ctrls;
-std::set<cstring> P4Scope::called_tables;
+std::set<const IR::P4Table *> P4Scope::callable_tables;
 const IR::Type_Struct *P4Scope::sys_hdr;
 std::set<cstring> P4Scope::not_initialized_structs = {
     "ingress_intrinsic_metadata_t",
@@ -199,15 +199,8 @@ std::vector<const IR::P4Action *> P4Scope::get_action_decls() {
 }
 
 
-std::vector<cstring> P4Scope::get_tab_names() {
-    std::vector<cstring> tab_names;
-    auto tables = P4Scope::get_tab_decls();
-
-    for (size_t i = 0; i < tables.size(); i++) {
-        auto table = tables.at(i);
-        tab_names.push_back(table->name.name);
-    }
-    return tab_names;
+std::set<const IR::P4Table *> *P4Scope::get_callable_tables() {
+    return &P4Scope::callable_tables;
 }
 
 

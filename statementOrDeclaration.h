@@ -15,7 +15,7 @@ public:
     statementOrDeclaration() {}
     ~statementOrDeclaration() {}
 
-    static IR::StatOrDecl *gen_rnd(bool, bool);
+    static IR::StatOrDecl *gen_rnd(bool if_in_func);
 };
 } // namespace CODEGEN
 

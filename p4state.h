@@ -223,7 +223,7 @@ public:
         }
         // statements
         for (int i = 0; i < 5; i++) {
-            auto ass = assignmentOrMethodCallStatement::gen_assignstat();
+            auto ass = assignmentOrMethodCallStatement::gen_assign(false);
             if (ass != nullptr) {
                 components.push_back(ass);
             }
