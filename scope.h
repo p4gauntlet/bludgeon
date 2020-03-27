@@ -2,6 +2,9 @@
 #define _SCOPE_H_
 
 
+#define SCOPE_PROGRAM 0
+
+
 #include <vector>
 #include <map>
 #include <string>
@@ -34,8 +37,15 @@ public:
     static const IR::Type_Struct *sys_hdr;
 
     static std::set<cstring> not_initialized_structs;
+   
+    // Tao: for refactoring stuff
+    static int scope_indicator; // used for indicate where we are
+    static std::map<cstring, const IR::Type_StructLike *> compound_type; // name for quick search
 
     P4Scope() {
+    }
+
+    ~P4Scope() {
     }
 
     static void start_local_scope() {

@@ -10,6 +10,7 @@
 
 #include "codegen.h"
 #include "scope.h"
+#include "expression.h"
 
 
 namespace CODEGEN {

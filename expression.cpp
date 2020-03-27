@@ -10,6 +10,9 @@ std::vector<IR::Expression *> expression::bit_exprs;
 std::set<IR::Expression *> expression::const_exprs;
 std::set<IR::Expression *> expression::const_width_exprs;
 std::set<IR::Expression *> expression::forbidden_exprs;
+// refactor
+std::map<IR::Type* , expression::var_t > expression::var_simple_field;
+std::map<IR::Type* , expression::var_t > expression::var_compound_field;
 
 const IR::Type *pick_field(std::map<cstring, const IR::Type *>& mp,
                            const IR::Type *tp,
@@ -980,4 +983,117 @@ IR::Expression *expression::construct_func_call_expr() {
 
     return ret;
 }
+
+
+// Tao: refactor
+//
+IR::Expression* construct_var_field(std::vector<cstring> &bt) {
+    IR::Expression* expr;
+    if (bt.size() > 0) {
+        for (size_t i=0; i<bt.size(); i++) {
+            if (i==0) {
+                expr = new IR::PathExpression(new IR::Path(IR::ID(bt.at(i))));
+            }
+            else {
+                int ret = check_if_int(bt.at(i));
+                if (ret == -1) {
+                    // not int, then IR::Member
+                    expr = new IR::Member(expr, IR::ID(bt.at(i)));
+                }
+                else {
+                    // if int, the IR::ArrayIndex
+                    expr = new IR::ArrayIndex(expr,
+                                                new IR::Constant(int_literal::gen(),ret));
+                }
+            }
+        }
+    }
+    else {
+        BUG("backtrace size should be non-zero!");
+    }
+    return expr;
+}
+
+void add_var_field(const IR::Type* tp, std::vector<cstring> &bt, bool is_lval) {
+    if (tp->is<IR::Type_StructLike>()) {
+        auto ts = tp->to<IR::Type_StructLike>();
+        const IR::StructField *sf = nullptr;
+        for (size_t i=0; i<ts->fields.size(); i++) {
+            sf = ts->fields.at(i);
+            bt.push_back(sf->name.name);
+            add_var_field(sf->type, bt, is_lval);
+            bt.pop_back();
+        }
+    }
+    else if (tp->is<IR::Type_Name>()) {
+        auto tn = tp->to<IR::Type_Name>();
+        auto tn_name = tn->path->name.name;
+
+        if (P4Scope::compound_type.find(tn_name)
+                != P4Scope::compound_type.end()) {
+            auto tn_type = P4Scope::compound_type[tn_name];
+            auto expr = construct_var_field(bt);
+            expression::var_compound_field.emplace((IR::Type *)tn_type, std::make_pair(expr, is_lval));
+            std::cout << "add new compound field " << tn_type << "\nexpr: " << expr << std::endl;
+            add_var_field(tn_type, bt, is_lval);
+        }
+    }
+    else if (tp->is<IR::Type_Stack>()) {
+        std::stringstream ss;
+        auto ts = tp->to<IR::Type_Stack>();
+        for (unsigned i=0; i<ts->getSize(); i++) {
+            ss.str("");
+            ss << i;
+            cstring name(ss.str());
+            bt.push_back(name);
+            add_var_field(ts->elementType, bt, is_lval);
+            bt.pop_back();
+        }
+    }
+    else if (tp->is<IR::Type_Bits>()
+            || tp->is<IR::Type_Boolean>()) {
+        IR::Type* key = nullptr;
+        if (tp->is<IR::Type_Bits>()) {
+            auto tb = tp->to<IR::Type_Bits>();
+            key = new IR::Type_Bits(tb->size, tb->isSigned);
+        }
+        else { // type boolean
+            key = new IR::Type_Boolean();
+        }
+        auto expr = construct_var_field(bt);
+        expression::var_simple_field.emplace(key, std::make_pair(expr, is_lval));
+        std::cout << "add new simple field " << key << "\nexpr: "<< expr << std::endl;
+    }
+}
+
+void expression::add_var_fields(IR::ID* name, const IR::Type* tp, bool is_lval) {
+    std::vector<cstring> field_bt; // back trace, like hdr.ethernet.src_addr
+    field_bt.push_back(name->name);
+
+    add_var_field(tp, field_bt, is_lval);
+}
+
+IR::Expression* expression::pick_bit_field(const IR::Type_Bits* tp, bool is_lval) {
+    IR::Expression* expr = nullptr;
+
+    std::vector<IR::Expression *> matched;
+
+    for (auto &i : expression::var_simple_field) {
+        auto key = i.first->to<IR::Type_Bits>();
+        auto val = i.second;
+
+        if (key->size==tp->size && key->isSigned==tp->isSigned
+                && val.second==is_lval) {
+            matched.push_back(val.first); // push back expression
+        }
+    }
+
+    if (matched.size() > 0) {
+        expr = matched.at(rand()%matched.size());
+    }
+
+    return expr;
+}
+
+
 } // namespace CODEGEN

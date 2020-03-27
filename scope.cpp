@@ -26,11 +26,20 @@ std::set<cstring> P4Scope::not_initialized_structs = {
     "egress_intrinsic_metadata_for_deparser_t",
     "egress_intrinsic_metadata_for_output_port_t",
 };
+// refactor
+int P4Scope::scope_indicator = SCOPE_PROGRAM;
+std::map<cstring, const IR::Type_StructLike *> P4Scope::compound_type; // name for quick search
 
 void P4Scope::add_to_scope(IR::Node *n) {
     auto l_scope = P4Scope::scope.back();
 
     l_scope->push_back(n);
+
+    //  if it is Type_StructLike, then add to compound_type
+    if (auto ts = n->to<IR::Type_StructLike>()) {
+        std::cout << ts->name.name << std::endl;
+        P4Scope::compound_type.emplace(ts->name.name, ts);
+    }
 }
 
 

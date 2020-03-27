@@ -4,6 +4,7 @@
 #include "ir/ir.h"
 
 #include "parameter.h"
+#include "expression.h"
 #include "scope.h"
 
 namespace CODEGEN {
@@ -43,6 +44,12 @@ public:
 
             if (param->direction != IR::Direction::In) {
                 P4Scope::add_name_2_type_p(param->name.name, param->type);
+                // refactor
+                expression::add_var_fields(&(param->name), param->type, true);
+            }
+            else {
+                // refactor
+                expression::add_var_fields(&(param->name), param->type, false);
             }
 
             // add params of all directions

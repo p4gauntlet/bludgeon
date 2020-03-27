@@ -87,6 +87,9 @@ public:
             }
         }
 
+        // refactor
+        expression::add_var_fields(name, type, true);
+        // 
         P4Scope::add_to_scope((IR::Node *)ret);
         P4Scope::add_name_2_type_v(name->name, type);
 

@@ -36,6 +36,11 @@ public:
     static std::set<IR::Expression *> const_width_exprs; // hold const exprs
     static std::set<IR::Expression *> forbidden_exprs;   // Tao: dont remember what it is for
 
+    // Tao: for refactoring expr
+    typedef std::pair<IR::Expression*, bool> var_t; // first is expression, second is is_lval
+    static std::map<IR::Type* , var_t> var_simple_field;
+    static std::map<IR::Type* , var_t> var_compound_field;
+
     expression() {
     }
 
@@ -113,6 +118,14 @@ public:
                                      std::vector<const IR::Type *>& types,
                                      size_t                         num);
 
+
+
+    // refactor
+    static void add_var_fields(IR::ID* name, const IR::Type* tp, bool is_lval);
+    static IR::Expression* pick_bit_field(const IR::Type_Bits* tp, bool is_lval);
+
+
+
     static void clear_data_structs() {
         boolean_exprs.clear();
         mp_expr_2_type.clear();
@@ -120,7 +133,14 @@ public:
         const_exprs.clear();
         const_width_exprs.clear();
         forbidden_exprs.clear();
+
+        // refactor
+        var_simple_field.clear();
+        var_compound_field.clear();
     }
+
+
+
 };
 } // namespace CODEGEN
 
