@@ -702,17 +702,17 @@ IR::Expression *expression::get_cond_expr() {
             }
         } else if (type == EXPR_TYPE_BITS) {
             switch (rand() % 6) {
-                case 0: expr = new IR::Equ(expr, bit_literal::gen_literal());
+                case 0: expr = new IR::Equ(expr, bit_literal::gen_int());
                     break;
-                case 1: expr = new IR::Geq(expr, bit_literal::gen_literal());
+                case 1: expr = new IR::Geq(expr, bit_literal::gen_int());
                     break;
-                case 2: expr = new IR::Grt(expr, bit_literal::gen_literal());
+                case 2: expr = new IR::Grt(expr, bit_literal::gen_int());
                     break;
-                case 3: expr = new IR::Leq(expr, bit_literal::gen_literal());
+                case 3: expr = new IR::Leq(expr, bit_literal::gen_int());
                     break;
-                case 4: expr = new IR::Lss(expr, bit_literal::gen_literal());
+                case 4: expr = new IR::Lss(expr, bit_literal::gen_int());
                     break;
-                case 5: expr = new IR::Neq(expr, bit_literal::gen_literal());
+                case 5: expr = new IR::Neq(expr, bit_literal::gen_int());
                     break;
             }
         }

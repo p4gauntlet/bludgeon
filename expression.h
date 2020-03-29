@@ -45,7 +45,7 @@ public:
                 case 0: return bool_literal::gen_literal();
 
                     break;
-                case 1: return bit_literal::gen_literal();
+                case 1: return bit_literal::gen_int();
 
                     break;
                 case 2: return new IR::StringLiteral(CODEGEN::randstr(6));

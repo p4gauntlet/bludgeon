@@ -1,22 +1,27 @@
 #include "expression_2.h"
 
 namespace CODEGEN {
-IR::Expression *construct_bit_expr(const IR::Type_Bits *tb);
+IR::Expression *construct_bit_expr(const IR::Type_Bits *tb,
+                                   bool                require_width = false);
 IR::Expression *construct_boolean_expr();
 IR::Expression *construct_structlike_expr();
 
-IR::Expression *construct_unary_expr(const IR::Type_Bits *tb) {
+IR::Expression *construct_unary_expr(const IR::Type_Bits *tb,
+                                     bool                require_width =
+                                         false) {
     IR::Expression *expr = nullptr;
 
     switch (rand() % 3) {
         case 0: {
                 // pick a negation that matches the type
-                expr = new IR::Neg(construct_bit_expr(tb));
+                expr = new IR::Neg(construct_bit_expr(tb, require_width));
             }
             break;
         case 1: {
                 // pick a complement that matches the type
-                expr = new IR::Cmpl(construct_bit_expr(tb));
+                // width must be known so we cast
+                expr = new IR::Cast(tb, construct_bit_expr(tb));
+                expr = new IR::Cmpl(expr);
             }
             break;
         case 2: {
@@ -31,74 +36,145 @@ IR::Expression *construct_unary_expr(const IR::Type_Bits *tb) {
 
 
 IR::Expression *construct_binary_expr(const IR::Type_Bits *tb) {
-    IR::Expression *expr  = nullptr;
-    IR::Expression *left  = construct_bit_expr(tb);
-    IR::Expression *right = construct_bit_expr(tb);
+    IR::Expression *expr = nullptr;
 
     switch (rand() % 13) {
         case 0: {
+                IR::Expression *left  = construct_bit_expr(tb);
+                IR::Expression *right = construct_bit_expr(tb);
                 // pick a multiplication that matches the type
                 expr = new IR::Mul(left, right);
             }
             break;
         case 1: {
+                IR::Expression *left  = construct_bit_expr(tb);
                 // pick a division that matches the type
+                auto cleft = left->to<IR::Constant>();
+                if (cleft != nullptr) {
+                    if (cleft->value <= 0) {
+                        BUG("%1%: not defined on negative numbers", left);
+                    }
+                }
+                IR::Expression *right = construct_bit_expr(tb);
+                // pick a division that matches the type
+                auto cright = right->to<IR::Constant>();
+                if (cright != nullptr) {
+                    if (cright->value <= 0) {
+                        BUG("%1%: not defined on negative numbers", right);
+                    }
+                }
+
                 expr = new IR::Div(left, right);
             }
             break;
         case 2: {
+                IR::Expression *left  = construct_bit_expr(tb);
+                IR::Expression *right = construct_bit_expr(tb);
                 // pick a modulo that matches the type
+                auto cright = right->to<IR::Constant>();
+                if (cright != nullptr) {
+                    if (cright->value <= 0) {
+                        BUG("%1%: not defined on negative numbers", right);
+                    }
+                }
                 expr = new IR::Mod(left, right);
             }
             break;
         case 3: {
+                IR::Expression *left  = construct_bit_expr(tb);
+                IR::Expression *right = construct_bit_expr(tb);
                 // pick an addition that matches the type
                 expr = new IR::Add(left, right);
             }
             break;
         case 4: {
+                IR::Expression *left  = construct_bit_expr(tb);
+                IR::Expression *right = construct_bit_expr(tb);
                 // pick a subtraction that matches the type
                 expr = new IR::Sub(left, right);
             }
             break;
         case 5: {
+                // width must be known so we cast
+                IR::Expression *left =
+                    new IR::Cast(tb, construct_bit_expr(tb));
+                IR::Expression *right =
+                    new IR::Cast(tb, construct_bit_expr(tb));
                 // pick a saturating addition that matches the type
                 expr = new IR::AddSat(left, right);
             }
             break;
         case 6: {
-                // pick a saturating subtraction that matches the type
+                // width must be known so we cast
+                IR::Expression *left =
+                    new IR::Cast(tb, construct_bit_expr(tb));
+                IR::Expression *right =
+                    new IR::Cast(tb, construct_bit_expr(tb));
+                // pick a saturating addition that matches the type
                 expr = new IR::SubSat(left, right);
             }
             break;
         case 7: {
+                // width must be known so we cast
+                IR::Expression *left =
+                    new IR::Cast(tb, construct_bit_expr(tb));
+                IR::Expression *right = construct_bit_expr(tb);
+                // TODO: Make this more sophisticated
+                // shifts are limited to 8 bits
+                right = new IR::Cast(new IR::Type_Bits(8, false), right);
                 // pick a left-shift that matches the type
                 expr = new IR::Shl(left, right);
             }
             break;
         case 8: {
+                // width must be known so we cast
+                IR::Expression *left =
+                    new IR::Cast(tb, construct_bit_expr(tb));
+                IR::Expression *right = construct_bit_expr(tb);
+                // TODO: Make this more sophisticated,
+                // shifts are limited to 8 bits
+                right = new IR::Cast(new IR::Type_Bits(8, false), right);
                 // pick a right-shift that matches the type
                 expr = new IR::Shr(left, right);
             }
             break;
         case 9: {
+                IR::Expression *left  = construct_bit_expr(tb);
+                IR::Expression *right = construct_bit_expr(tb);
                 // pick an binary And that matches the type
                 expr = new IR::BAnd(left, right);
             }
             break;
         case 10: {
+                IR::Expression *left  = construct_bit_expr(tb);
+                IR::Expression *right = construct_bit_expr(tb);
                 // pick a binary Or and that matches the type
                 expr = new IR::BOr(left, right);
             }
             break;
         case 11: {
+                IR::Expression *left  = construct_bit_expr(tb);
+                IR::Expression *right = construct_bit_expr(tb);
                 // pick an binary Xor that matches the type
                 expr = new IR::BXor(left, right);
             }
             break;
         case 12: {
                 // pick an concatenation that matches the type
-                // ideally the concatenation should sum up to the type we want
+                size_t type_width = tb->width_bits();
+                size_t split      = (rand() % type_width) + 1;
+                // TODO: lazy fallback
+                if (split >= type_width) {
+                    return bit_literal::gen_bit(tb);
+                }
+                auto type_left = new IR::Type_Bits(type_width - split,
+                                                   false);
+                auto type_right       = new IR::Type_Bits(split, false);
+                // width must be known so we cast
+                IR::Expression *left =
+                    new IR::Cast(type_left, construct_bit_expr(tb));
+                IR::Expression *right =
+                    new IR::Cast(type_right, construct_bit_expr(tb));
                 expr = new IR::Concat(left, right);
             }
             break;
@@ -128,40 +204,68 @@ IR::Expression *construct_ternary_expr(const IR::Type_Bits *tb) {
 }
 
 
-IR::Expression *construct_bit_expr(const IR::Type_Bits *tb) {
+IR::Expression *pick_var(const IR::Type_Bits *tb) {
+    cstring type_key     = tb->toString();
+    cstring node_name    = tb->node_type_name();
+    auto avail_bit_types = P4Scope::lval_map[node_name].size();
+
+    if (avail_bit_types > 0) {
+        if (P4Scope::lval_map.find(type_key) != P4Scope::lval_map.end()) {
+            auto candidates = P4Scope::lval_map[node_name][tb->width_bits()];
+            size_t idx      = rand() % candidates.size();
+            return new IR::PathExpression(candidates.at(idx));
+        } else {
+            auto bit_types      = P4Scope::lval_map[node_name];
+            size_t bit_type_idx = rand() % bit_types.size();
+            auto it             = bit_types.begin();
+            std::advance(it, bit_type_idx);
+            size_t idx = rand() % it->second.size();
+            return new IR::Cast(tb, new IR::PathExpression(it->second.at(idx)));
+        }
+    }
+
+    //fallback, just generate a literal
+    return bit_literal::gen_bit(tb);
+}
+
+
+IR::Expression *construct_bit_expr(const IR::Type_Bits *tb,
+                                   bool                require_width) {
     IR::Expression *expr = nullptr;
 
-    switch (rand() % 4) {
+    switch (rand() % 5) {
         case 0: {
                 // pick a variable that matches the type
-                cstring type_key = tb->toString();
-                if (P4Scope::lval_map.find(type_key) !=
-                    P4Scope::lval_map.end()) {
-                    expr = new IR::PathExpression((P4Scope::pick_lval(tb)));
-                } else {
-                    // reroll
-                    expr = bit_literal::gen_bits(tb);
-                }
+                expr = pick_var(tb);
             }
-                break;
+            break;
         case 1: {
-                // pick a literal that matches the type or an int
+                // pick an int literal
                 //  I think gen literal does not work like this
                 // should be different
-                expr = bit_literal::gen_literal();
+                big_int max_size = ((big_int)2) ^ tb->width_bits();
+                expr = bit_literal::gen_int(max_size);
+                if (require_width) {
+                    expr = new IR::Cast(tb, expr);
+                }
             }
             break;
         case 2: {
-                // pick a unary expression that matches the type
-                expr = construct_unary_expr(tb);
+                // pick a bit literal that matches the type
+                expr = bit_literal::gen_bit(tb);
             }
             break;
         case 3: {
+                // pick a unary expression that matches the type
+                expr = construct_unary_expr(tb, require_width);
+            }
+            break;
+        case 4: {
                 // pick a binary expression that matches the type
                 expr = construct_binary_expr(tb);
             }
             break;
-        case 4: {
+        case 5: {
                 // pick a ternary expression that matches the type
                 expr = construct_ternary_expr(tb);
             }
@@ -195,9 +299,10 @@ IR::Expression *construct_boolean_expr() {
     IR::Expression *left;
     IR::Expression *right;
 
-    switch (rand() % 6) {
+    switch (rand() % 5) {
         case 0: {
                 // pick a boolean variable from available the declarations
+                expr = bool_literal::gen_literal();
             }
             break;
         case 1: {
