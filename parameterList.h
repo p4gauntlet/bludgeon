@@ -44,13 +44,8 @@ public:
 
             if (param->direction != IR::Direction::In) {
                 P4Scope::add_name_2_type_p(param->name.name, param->type);
-                // refactor
-                expression::add_var_fields(&(param->name), param->type, true);
             }
-            else {
-                // refactor
-                expression::add_var_fields(&(param->name), param->type, false);
-            }
+            P4Scope::add_lval(param->type, param->name.name);
 
             // add params of all directions
             P4Scope::add_name_2_type_p_in(param->name.name, param->type);

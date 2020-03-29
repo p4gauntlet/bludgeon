@@ -36,11 +36,6 @@ public:
     static std::set<IR::Expression *> const_width_exprs; // hold const exprs
     static std::set<IR::Expression *> forbidden_exprs;   // Tao: dont remember what it is for
 
-    // Tao: for refactoring expr
-    typedef std::pair<IR::Expression*, bool> var_t; // first is expression, second is is_lval
-    static std::map<IR::Type* , var_t> var_simple_field;
-    static std::map<IR::Type* , var_t> var_compound_field;
-
     expression() {
     }
 
@@ -134,9 +129,6 @@ public:
         const_width_exprs.clear();
         forbidden_exprs.clear();
 
-        // refactor
-        var_simple_field.clear();
-        var_compound_field.clear();
     }
 
 

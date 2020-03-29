@@ -28,6 +28,11 @@ public:
     static std::map<cstring, const IR::Type *> name_2_type_const;
     // contains stack
     static std::map<cstring, const IR::Type *> name_2_type_stack;
+
+    static std::map<cstring, std::map<int, std::vector<cstring>>> lval_map;
+
+
+
     // which type has a field whose type is stack
     static std::set<cstring> types_w_stack;
     static const IR::Type *ret_type;
@@ -37,7 +42,7 @@ public:
     static const IR::Type_Struct *sys_hdr;
 
     static std::set<cstring> not_initialized_structs;
-   
+
     // Tao: for refactoring stuff
     static int scope_indicator; // used for indicate where we are
     static std::map<cstring, const IR::Type_StructLike *> compound_type; // name for quick search
@@ -55,6 +60,13 @@ public:
     }
 
     static void end_local_scope();
+
+    static void add_lval(const IR::Type* tp, cstring name);
+    static cstring pick_lval(const IR::Type *tp);
+
+    IR::Expression* pick_bit_field(const IR::Type_Bits* tp, bool is_lval);
+
+
 
     static void add_name_2_type_p(cstring name, const IR::Type *type) {
         if (name_2_type_param.find(name) != name_2_type_param.end()) {

@@ -11,6 +11,9 @@ std::map<cstring, const IR::Type *> P4Scope::name_2_type_param_in;
 std::map<cstring, const IR::Type *> P4Scope::name_2_type_vars;
 std::map<cstring, const IR::Type *> P4Scope::name_2_type_const;
 std::map<cstring, const IR::Type *> P4Scope::name_2_type_stack;
+std::map<cstring, std::map<int, std::vector<cstring> > > P4Scope::lval_map;
+
+
 std::set<cstring> P4Scope::types_w_stack;
 const IR::Type *P4Scope::ret_type = nullptr;
 std::vector<IR::P4Control *> P4Scope::p4_ctrls;
@@ -37,7 +40,6 @@ void P4Scope::add_to_scope(IR::Node *n) {
 
     //  if it is Type_StructLike, then add to compound_type
     if (auto ts = n->to<IR::Type_StructLike>()) {
-        std::cout << ts->name.name << std::endl;
         P4Scope::compound_type.emplace(ts->name.name, ts);
     }
 }
@@ -60,11 +62,66 @@ void P4Scope::end_local_scope() {
 
     delete local_scope;
     scope.pop_back();
-
+    lval_map.clear();
     // clear the expressions
     expression::clear_data_structs();
     // clear the declaration instances
     decl_ins_ctrls.clear();
+}
+
+
+void add_compound_lvals(const IR::Type_StructLike *sl_type, cstring sl_name) {
+    for (auto field : sl_type->fields) {
+        std::stringstream ss;
+        ss.str("");
+        ss << sl_name << "." << field->name.name;
+        cstring field_name(ss.str());
+        P4Scope::add_lval(field->type, field_name);
+    }
+}
+
+
+void P4Scope::add_lval(const IR::Type *tp, cstring name) {
+    if (auto tb = tp->to<IR::Type_Bits>()) {
+        lval_map[tb->node_type_name()][tb->width_bits()].push_back(name);
+    } else if (auto tn = tp->to<IR::Type_Name>()) {
+        auto tn_name = tn->path->name.name;
+        if (P4Scope::compound_type.find(tn_name)
+            != P4Scope::compound_type.end()) {
+            auto tn_type = P4Scope::compound_type[tn_name];
+            //width_bits should work here, do not know why not...
+            lval_map[tn_name][1].push_back(name);
+            add_compound_lvals(tn_type, name);
+        } else {
+            BUG("Type %s does not exist", tn_name);
+        }
+    }  else{
+        BUG("Type %s not yet supported", tp->node_type_name());
+    }
+}
+
+
+cstring P4Scope::pick_lval(const IR::Type *tp) {
+    std::vector<cstring> candidates;
+    if (auto tb = tp->to<IR::Type_Bits>()) {
+        candidates = lval_map[tb->node_type_name()][tb->width_bits()];
+    } else if (auto tn = tp->to<IR::Type_Name>()) {
+        auto tn_name = tn->path->name.name;
+        if (P4Scope::compound_type.find(tn_name)
+            != P4Scope::compound_type.end()) {
+            auto tn_type = P4Scope::compound_type[tn_name];
+            candidates  = lval_map[tn_name][tn_type->width_bits()];
+        } else {
+            BUG("Type %s does not exist", tn_name);
+        }
+    }  else{
+        BUG("Type %s not yet supported", tp->node_type_name());
+    }
+
+    size_t idx      = rand() % candidates.size();
+    cstring lval    = candidates.at(idx);
+
+    return lval;
 }
 
 

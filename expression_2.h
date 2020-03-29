@@ -22,7 +22,6 @@ public:
 
     static IR::Expression *gen_expr(const IR::Type *tp);
     static IR::Expression *gen_input_arg(const IR::Parameter *param);
-    static IR::Expression *pick_lval(const IR::Type *tp);
 
 };
 } // namespace CODEGEN

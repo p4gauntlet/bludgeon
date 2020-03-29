@@ -1,4 +1,5 @@
 #include "assignmentOrMethodCallStatement.h"
+#include "expression_2.h"
 
 namespace CODEGEN {
 IR::AssignmentStatement *assignmentOrMethodCallStatement::gen_assign(
@@ -12,22 +13,20 @@ IR::AssignmentStatement *assignmentOrMethodCallStatement::gen_assign(
     switch (CODEGEN::randind(percent, 2)) {
         case 0:
             left  = expression::get_bit_operand(&l_tp, false);
-            right = expression::construct_op_expr();
-            if ((left != nullptr) && (right != nullptr)) {
-                if (!if_in_parser) {
-                    r_tp = expression::mp_expr_2_type[right];
-                    int l_size = l_tp->to<IR::Type_Bits>()->size;
-                    int r_size = r_tp->to<IR::Type_Bits>()->size;
-                    if (l_size != r_size) {
-                        auto right_cast = new IR::Cast(
-                            new IR::Type_Bits(l_size, false), right);
-                        assignstat = new IR::AssignmentStatement(left,
-                                                                 right_cast);
-                    } else {
-                        assignstat = new IR::AssignmentStatement(left,
-                                                                 right);
-                    }
-                }
+            if (left != nullptr) {
+                right = expression2::gen_expr(l_tp->to<IR::Type_Bits>());
+                // if (!if_in_parser) {
+                //     r_tp = expression::mp_expr_2_type[right];
+                //     int l_size = l_tp->to<IR::Type_Bits>()->size;
+                //     int r_size = r_tp->to<IR::Type_Bits>()->size;
+                //     if (l_size != r_size) {
+                //         auto right_cast = new IR::Cast(
+                //             new IR::Type_Bits(l_size, false), right);
+                //         assignstat = new IR::AssignmentStatement(left,
+                //                                                  right_cast);
+                //     } else
+                assignstat = new IR::AssignmentStatement(left, right);
+                // }
             }
             break;
         case 1:

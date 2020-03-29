@@ -26,6 +26,10 @@ public:
     static IR::Constant *gen_literal() {
         return new IR::Constant(rand() % 6 + 1);
     }
+
+    static IR::Constant *gen_bits(const IR::Type *tb) {
+        return new IR::Constant(tb, rand() % 6 + 1);
+    }
 };
 }
 
