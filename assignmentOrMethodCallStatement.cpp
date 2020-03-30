@@ -10,7 +10,7 @@ IR::AssignmentStatement *assignmentOrMethodCallStatement::gen_assign(
 
     std::vector<int> percent = { 75, 25 };
 
-    switch (CODEGEN::randind(percent, 2)) {
+    switch (randind(percent)) {
         case 0:
             left  = expression::get_bit_operand(&l_tp, false);
             if (left != nullptr) {
@@ -85,7 +85,7 @@ IR::MethodCallStatement *assignmentOrMethodCallStatement::gen_methodcall() {
     IR::MethodCallExpression *mce = nullptr;
     std::vector<int> percent      = { 40, 40, 20 };
 
-    switch (CODEGEN::randind(percent, 3)) {
+    switch (randind(percent)) {
         case 0: {
                 auto actions = P4Scope::get_action_decls();
                 if (actions.size() == 0) {
@@ -155,7 +155,7 @@ IR::MethodCallStatement *assignmentOrMethodCallStatement::gen_methodcall() {
 
 IR::Statement *assignmentOrMethodCallStatement::gen() {
     std::vector<int> percent = { 50, 50 };
-    auto val = CODEGEN::randind(percent, 2);
+    auto val = randind(percent);
 
     if (val == 0) {
         return gen_assign();

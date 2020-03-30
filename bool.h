@@ -15,7 +15,7 @@ public:
     }
 
     static IR::BoolLiteral *gen_literal() {
-        if (rand() % 1 == 0) {
+        if (rand() % 2 == 0) {
             return new IR::BoolLiteral(false);
         } else {
             return new IR::BoolLiteral(true);

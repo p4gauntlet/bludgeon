@@ -11,10 +11,10 @@
 
 namespace CODEGEN {
 IR::Statement *statement::gen_rnd(bool if_in_func = false) {
-    std::vector<int> percent = { 5, 75, 5, 5, 5, 5 };
+    std::vector<int> percent = { 5, 75, 5, 5, 0, 5 };
     IR::Statement *stmt      = nullptr;
 
-    switch (CODEGEN::randind(percent, 6)) {
+    switch (randind(percent)) {
         case 0: {
                 switchStatement *switch_stat_gen = new switchStatement();
                 stmt = switch_stat_gen->gen();
@@ -29,7 +29,7 @@ IR::Statement *statement::gen_rnd(bool if_in_func = false) {
                 break;
             }
         case 3: {
-                stmt = returnStatement::gen_ret_stat();
+                stmt = returnStatement::gen_ret_stat(P4Scope::ret_type);
                 break;
             }
         case 4: {

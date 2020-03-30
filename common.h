@@ -17,7 +17,7 @@ namespace CODEGEN {
 
 cstring randstr(size_t len);
 
-int randind(std::vector<int> &percent, size_t n_num);
+int randind(std::vector<int> &percent);
 
 } // namespace CODEGEN
 
