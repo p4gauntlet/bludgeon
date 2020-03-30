@@ -2,7 +2,7 @@
 #define _SCOPE_H_
 
 
-#define SCOPE_PROGRAM 0
+#define SCOPE_PROGRAM    0
 
 
 #include <vector>
@@ -29,7 +29,9 @@ public:
     // contains stack
     static std::map<cstring, const IR::Type *> name_2_type_stack;
 
-    static std::map<cstring, std::map<int, std::vector<cstring>>> lval_map;
+    static std::map<cstring, std::map<int, std::vector<cstring> > > lval_map;
+    // a subset of the lval map that includes rw values
+    static std::map<cstring, std::map<int, std::vector<cstring> > > lval_map_rw;
 
 
 
@@ -44,7 +46,7 @@ public:
     static std::set<cstring> not_initialized_structs;
 
     // Tao: for refactoring stuff
-    static int scope_indicator; // used for indicate where we are
+    static int scope_indicator;                                          // used for indicate where we are
     static std::map<cstring, const IR::Type_StructLike *> compound_type; // name for quick search
 
     P4Scope() {
@@ -61,10 +63,15 @@ public:
 
     static void end_local_scope();
 
-    static void add_lval(const IR::Type* tp, cstring name);
-    static cstring pick_lval(const IR::Type *tp);
+    static void add_lval(const IR::Type *tp, cstring name,
+                         bool read_only = false);
+    static bool check_lval(const IR::Type *tp,
+                           bool           must_write = false);
+    static cstring pick_lval(const IR::Type *tp,
+                             bool           must_write = false);
+    static IR::Type_Bits *pick_declared_bit_type(bool must_write = false);
 
-    IR::Expression* pick_bit_field(const IR::Type_Bits* tp, bool is_lval);
+    IR::Expression *pick_bit_field(const IR::Type_Bits *tp, bool is_lval);
 
 
 

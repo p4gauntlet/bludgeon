@@ -42,10 +42,13 @@ public:
             // add to the scope
             P4Scope::add_to_scope(param);
 
-            if (param->direction != IR::Direction::In) {
+            // only add values that are not read-only to the modifiable types
+            if (param->direction == IR::Direction::In) {
+                P4Scope::add_lval(param->type, param->name.name, true);
+            } else {
                 P4Scope::add_name_2_type_p(param->name.name, param->type);
+                P4Scope::add_lval(param->type, param->name.name, false);
             }
-            P4Scope::add_lval(param->type, param->name.name);
 
             // add params of all directions
             P4Scope::add_name_2_type_p_in(param->name.name, param->type);

@@ -1,5 +1,6 @@
 #include "assignmentOrMethodCallStatement.h"
 #include "expression_2.h"
+#include "blockStatement.h"
 
 namespace CODEGEN {
 IR::AssignmentStatement *assignmentOrMethodCallStatement::gen_assign() {
@@ -10,13 +11,18 @@ IR::AssignmentStatement *assignmentOrMethodCallStatement::gen_assign() {
     std::vector<int> percent = { 75, 25 };
 
     switch (randind(percent)) {
-        case 0:
-            left = expression::get_bit_operand(&l_tp, false);
-            if (left != nullptr) {
-                right      = expression2::gen_expr(l_tp->to<IR::Type_Bits>());
+        case 0: {
+                auto bit_type = P4Scope::pick_declared_bit_type(true);
+                if (not bit_type) {
+                    WARNING("Could not find suitable bit lval");
+                    return nullptr;
+                }
+                left =
+                    new IR::PathExpression(P4Scope::pick_lval(bit_type, true));
+                right      = expression2::gen_expr(bit_type);
                 assignstat = new IR::AssignmentStatement(left, right);
+                break;
             }
-            break;
         case 1:
             // compund means it is not a simple operator, i.e., bit<128> a is simple, compound may be struct, header
             if (expression::get_two_compound_operands(&left, &right,
@@ -32,58 +38,77 @@ IR::AssignmentStatement *assignmentOrMethodCallStatement::gen_assign() {
 }
 
 
+IR::Statement *gen_methodcall_expression(cstring           method_name,
+                                         IR::ParameterList params) {
+    IR::Vector<IR::Argument> *args = new IR::Vector<IR::Argument>();
+    IR::IndexedVector<IR::StatOrDecl> decls;
+
+    // all this boilerplate should be somewhere else...
+    P4Scope::start_local_scope();
+
+    for (auto par: params) {
+        IR::Argument *arg;
+        if (not expression2::check_input_arg(par)) {
+            auto name = randstr(6);
+            auto expr = expression2::gen_expr(par->type);
+            // all this boilerplate should be somewhere else...
+            auto decl = new IR::Declaration_Variable(name, par->type, expr);
+            P4Scope::add_to_scope(decl);
+            P4Scope::add_lval(par->type, name, false);
+            P4Scope::add_name_2_type_v(name, par->type);
+            decls.push_back(decl);
+        }
+        arg = new IR::Argument(expression2::gen_input_arg(par));
+        args->push_back(arg);
+    }
+    auto path_expr = new IR::PathExpression(method_name);
+    auto mce       = new IR::MethodCallExpression(path_expr, args);
+    auto mcs       = new IR::MethodCallStatement(mce);
+    P4Scope::end_local_scope();
+    if (decls.size() == 0) {
+        return mcs;
+    } else {
+        auto blk_stmt = new IR::BlockStatement(decls);
+        blk_stmt->push_back(mcs);
+        return blk_stmt;
+    }
+}
+
+
 IR::Statement *gen_methodcall() {
     IR::MethodCallExpression *mce = nullptr;
     std::vector<int> percent      = { 40, 40, 20 };
+    bool fallback = false;
 
     switch (randind(percent)) {
         case 0: {
                 auto actions = P4Scope::get_action_decls();
                 if (actions.size() == 0) {
-                    return nullptr;
+                    fallback = true;
+                    break;
                 }
-
-                size_t idx   = rand() % actions.size();
-                auto *p4_fun = actions.at(idx);
-                std::vector<const IR::Type *> params;
-                for (auto par: p4_fun->getParameters()->parameters) {
-                    params.push_back(par->type);
-                }
-                IR::Vector<IR::Argument> *args =
-                    expression::construct_params(params);
-                if (args->size() != params.size()) {
-                    return nullptr;
-                }
-                auto path_expr = new IR::PathExpression(p4_fun->name);
-                mce = new IR::MethodCallExpression(path_expr, args);
-                break;
+                size_t idx  = rand() % actions.size();
+                auto p4_fun = actions.at(idx);
+                auto params = p4_fun->getParameters()->parameters;
+                return gen_methodcall_expression(p4_fun->name, params);
             }
         case 1: {
                 auto funcs = P4Scope::get_func_decls();
                 if (funcs.size() == 0) {
-                    return nullptr;
+                    fallback = true;
+                    break;
                 }
 
-                size_t idx   = rand() % funcs.size();
-                auto *p4_fun = funcs.at(idx);
-                std::vector<const IR::Type *> params;
-                for (auto par: p4_fun->getParameters()->parameters) {
-                    params.push_back(par->type);
-                }
-                IR::Vector<IR::Argument> *args =
-                    expression::construct_params(params);
-                if (args->size() != params.size()) {
-                    return nullptr;
-                }
-                auto path_expr = new IR::PathExpression(p4_fun->name);
-                mce = new IR::MethodCallExpression(path_expr, args);
-                break;
+                size_t idx  = rand() % funcs.size();
+                auto p4_fun = funcs.at(idx);
+                auto params = p4_fun->getParameters()->parameters;
+                return gen_methodcall_expression(p4_fun->name, params);
             }
         case 2: {
                 auto tbl_set = P4Scope::get_callable_tables();
-                // return nullptr if there are no tables left
                 if (tbl_set->size() == 0) {
-                    return nullptr;
+                    fallback = true;
+                    break;
                 }
                 auto idx      = rand() % tbl_set->size();
                 auto tbl_iter = std::begin(*tbl_set);
@@ -96,6 +121,12 @@ IR::Statement *gen_methodcall() {
                 tbl_set->erase(tbl_iter);
                 break;
             }
+    }
+    if (fallback) {
+        // NoAction is a core action we can always call.
+        // mce = new IR::MethodCallExpression(new IR::PathExpression("NoAction"));
+        // TODO: Find a better fallback method...
+        return nullptr;
     }
     if (mce) {
         return new IR::MethodCallStatement(mce);

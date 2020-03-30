@@ -210,7 +210,7 @@ IR::Expression *pick_var(const IR::Type_Bits *tb) {
     auto avail_bit_types = P4Scope::lval_map[node_name].size();
 
     if (avail_bit_types > 0) {
-        if (P4Scope::lval_map.find(type_key) != P4Scope::lval_map.end()) {
+        if (P4Scope::lval_map.count(type_key) != 0) {
             auto candidates = P4Scope::lval_map[node_name][tb->width_bits()];
             size_t idx      = rand() % candidates.size();
             return new IR::PathExpression(candidates.at(idx));
@@ -381,12 +381,20 @@ IR::Expression *expression2::gen_expr(const IR::Type *tp) {
 
 
 IR::Expression *expression2::gen_input_arg(const IR::Parameter *param) {
-    IR::Direction dir = param->direction;
-
-    if (dir == IR::Direction::In) {
+    if (param->direction == IR::Direction::In) {
         return expression2::gen_expr(param->type);
     } else{
-        return new IR::PathExpression(P4Scope::pick_lval(param->type));
+        cstring lval = P4Scope::pick_lval(param->type, true);
+        return new IR::PathExpression(lval);
     }
 }
+
+bool expression2::check_input_arg(const IR::Parameter *param) {
+    if (param->direction == IR::Direction::In) {
+        return P4Scope::check_lval(param->type, false);
+    } else {
+        return P4Scope::check_lval(param->type, true);
+    }
+}
+
 } // namespace CODEGEN

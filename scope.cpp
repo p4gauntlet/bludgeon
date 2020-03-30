@@ -12,6 +12,7 @@ std::map<cstring, const IR::Type *> P4Scope::name_2_type_vars;
 std::map<cstring, const IR::Type *> P4Scope::name_2_type_const;
 std::map<cstring, const IR::Type *> P4Scope::name_2_type_stack;
 std::map<cstring, std::map<int, std::vector<cstring> > > P4Scope::lval_map;
+std::map<cstring, std::map<int, std::vector<cstring> > > P4Scope::lval_map_rw;
 
 
 std::set<cstring> P4Scope::types_w_stack;
@@ -62,6 +63,7 @@ void P4Scope::end_local_scope() {
 
     delete local_scope;
     scope.pop_back();
+    lval_map_rw.clear();
     lval_map.clear();
     // clear the expressions
     expression::clear_data_structs();
@@ -81,48 +83,116 @@ void add_compound_lvals(const IR::Type_StructLike *sl_type, cstring sl_name) {
 }
 
 
-void P4Scope::add_lval(const IR::Type *tp, cstring name) {
+void P4Scope::add_lval(const IR::Type *tp, cstring name, bool read_only) {
+    cstring type_key;
+    int bit_bucket;
+
     if (auto tb = tp->to<IR::Type_Bits>()) {
-        lval_map[tb->node_type_name()][tb->width_bits()].push_back(name);
+        type_key   = tb->node_type_name();
+        bit_bucket = tb->width_bits();
     } else if (auto tn = tp->to<IR::Type_Name>()) {
         auto tn_name = tn->path->name.name;
-        if (P4Scope::compound_type.find(tn_name)
-            != P4Scope::compound_type.end()) {
+        if (P4Scope::compound_type.count(tn_name) != 0) {
             auto tn_type = P4Scope::compound_type[tn_name];
             //width_bits should work here, do not know why not...
-            lval_map[tn_name][1].push_back(name);
+            type_key = tn_name;
+            // does not work for some reason...
+            // bit_bucket = P4Scope::compound_type[tn_name]->width_bits();
+            bit_bucket = 1;
             add_compound_lvals(tn_type, name);
         } else {
             BUG("Type %s does not exist", tn_name);
         }
-    }  else{
+    } else{
         BUG("Type %s not yet supported", tp->node_type_name());
     }
+    if (not read_only) {
+        lval_map_rw[type_key][bit_bucket].push_back(name);
+    }
+    lval_map[type_key][bit_bucket].push_back(name);
 }
 
 
-cstring P4Scope::pick_lval(const IR::Type *tp) {
-    std::vector<cstring> candidates;
+std::vector<cstring> get_candidate_lvals(const IR::Type *tp,
+                                         bool           must_write = true) {
+    cstring type_key;
+    int bit_bucket;
+
     if (auto tb = tp->to<IR::Type_Bits>()) {
-        candidates = lval_map[tb->node_type_name()][tb->width_bits()];
+        type_key   = tb->node_type_name();
+        bit_bucket = tb->width_bits();
     } else if (auto tn = tp->to<IR::Type_Name>()) {
         auto tn_name = tn->path->name.name;
-        if (P4Scope::compound_type.find(tn_name)
-            != P4Scope::compound_type.end()) {
-            auto tn_type = P4Scope::compound_type[tn_name];
-            candidates  = lval_map[tn_name][tn_type->width_bits()];
+        if (P4Scope::compound_type.count(tn_name) != 0) {
+            // bit_bucket = P4Scope::compound_type[tn_name]->width_bits();
+            bit_bucket = 1;
         } else {
-            BUG("Type %s does not exist", tn_name);
+            BUG("Type_name refers to unknown type %s", tn_name);
         }
-    }  else{
+    } else{
         BUG("Type %s not yet supported", tp->node_type_name());
     }
 
-    size_t idx      = rand() % candidates.size();
-    cstring lval    = candidates.at(idx);
+    std::map<cstring, std::map<int, std::vector<cstring> > > lookup_map;
+
+    if (must_write) {
+        lookup_map = P4Scope::lval_map_rw;
+    } else{
+        lookup_map = P4Scope::lval_map;
+    }
+
+    if (lookup_map.count(type_key) == 0) {
+        return {};
+    }
+    auto key_types = lookup_map[type_key];
+    if (key_types.count(bit_bucket) == 0) {
+        return {};
+    }
+
+    return key_types[bit_bucket];
+}
+
+
+bool P4Scope::check_lval(const IR::Type *tp, bool must_write) {
+    std::vector<cstring> candidates = get_candidate_lvals(tp, must_write);
+
+    if (candidates.empty()) {
+        return false;
+    }
+    return true;
+}
+
+
+cstring P4Scope::pick_lval(const IR::Type *tp, bool must_write) {
+    std::vector<cstring> candidates = get_candidate_lvals(tp, must_write);
+
+    if (candidates.empty()) {
+        BUG("Invalid Type Query, %s not found", tp->toString());
+    }
+    size_t idx   = rand() % candidates.size();
+    cstring lval = candidates.at(idx);
 
     return lval;
 }
+
+IR::Type_Bits *P4Scope::pick_declared_bit_type(bool must_write) {
+    std::map<cstring, std::map<int, std::vector<cstring> > > lookup_map;
+
+    if (must_write) {
+        lookup_map = P4Scope::lval_map_rw;
+    } else{
+        lookup_map = P4Scope::lval_map;
+    }
+    cstring bit_key = IR::Type_Bits::static_type_name();
+    if (lookup_map.count(bit_key) == 0) {
+        return nullptr;
+    }
+    auto key_types = lookup_map[bit_key];
+    size_t idx   = rand() % key_types.size();
+    int bit_width = next(key_types.begin(), idx)->first;
+    return new IR::Type_Bits(bit_width, false);
+}
+
 
 
 // Tao: filter is a mess here, sometimes it is filter, sometimes it is indicator
