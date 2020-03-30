@@ -14,8 +14,7 @@ public:
     assignmentOrMethodCallStatement() {
     }
 
-    static IR::AssignmentStatement *gen_assign(bool if_in_parser);
-    static IR::MethodCallStatement *gen_methodcall();
+    static IR::AssignmentStatement *gen_assign();
     static IR::Statement *gen();
 };
 } // namespace CODEGEN

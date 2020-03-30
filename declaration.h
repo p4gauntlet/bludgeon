@@ -4,31 +4,25 @@
 #include "ir/ir.h"
 
 namespace CODEGEN {
-
-
 class declaration {
 public:
-	const char* types[10] = {
-		"constantDeclaration",
-		"externDeclaration",
-		"actionDeclaration",
-		"parserDeclaration",
-		"typeDeclaration",
-		"controlDeclaration",
-		"instantiation",
-		"errorDeclaration",
-		"matchKindDeclaration",
-		"functionDeclaration"
-	};
+    const char *types[10] = {
+        "constantDeclaration",
+        "externDeclaration",
+        "actionDeclaration",
+        "parserDeclaration",
+        "typeDeclaration",
+        "controlDeclaration",
+        "instantiation",
+        "errorDeclaration",
+        "matchKindDeclaration",
+        "functionDeclaration"
+    };
 
-	declaration() {
-	}
-
+    declaration() {
+    }
 };
-
-
 } // namespace CODEGEN
-
 
 
 

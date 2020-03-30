@@ -179,9 +179,11 @@ IR::Expression *construct_ternary_expr(const IR::Type_Bits *tb) {
                 auto new_type_size = rand() % 128 + type_width + 1;
                 auto slice_type    = new IR::Type_Bits(new_type_size, false);
                 auto slice_expr    = construct_bit_expr(slice_type, true);
-                auto margin        = new_type_size - type_width;
-                size_t high        = (rand() % margin) + type_width;
-                size_t low         = high - type_width + 1;
+                // another cast where there shouldn't be...
+                slice_expr = new IR::Cast(slice_type, slice_expr);
+                auto margin = new_type_size - type_width;
+                size_t high = (rand() % margin) + type_width;
+                size_t low  = high - type_width + 1;
                 expr = new IR::Slice(slice_expr, high, low);
                 break;
             }

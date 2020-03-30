@@ -44,16 +44,14 @@ public:
 
     IR::MethodCallStatement *gen_methodcall_stat(cstring field_name) {
         auto pkt_call =
-            new IR::Member(new IR::PathExpression(new IR::Path(IR::ID("pkt"))),
-                           IR::ID("extract"));
+            new IR::Member(new IR::PathExpression("pkt"), "extract");
 
         IR::Vector<IR::Argument> *args = new IR::Vector<IR::Argument>();
 
         auto field_type = hdr_fields_types[field_name];
 
         auto mem =
-            new IR::Member(new IR::PathExpression(new IR::Path(IR::ID("hdr"))),
-                           IR::ID(field_name));
+            new IR::Member(new IR::PathExpression("hdr"), field_name);
 
         if (field_type->is<IR::Type_Stack>()) {
             IR::Argument *arg;
@@ -137,9 +135,8 @@ public:
 
     IR::ParserState *gen_start_state() {
         IR::IndexedVector<IR::StatOrDecl> components;
-        IR::Expression *transition =
-            new IR::PathExpression(new IR::Path(IR::ID("parse_hdrs")));
-        auto ret = new IR::ParserState(IR::ID("start"), components, transition);
+        IR::Expression *transition = new IR::PathExpression("parse_hdrs");
+        auto ret = new IR::ParserState("start", components, transition);
 
         P4Scope::add_to_scope(ret);
         return ret;
@@ -151,16 +148,12 @@ public:
 
         for (size_t i = 0; i < hdr_fields_names.size(); i++) {
             auto pkt_call =
-                new IR::Member(new IR::PathExpression(new IR::Path(IR::ID(
-                                                                       "pkt"))),
-                               IR::ID("extract"));
+                new IR::Member(new IR::PathExpression("pkt"), "extract");
 
             auto sf_name = hdr_fields_names.at(i);
             auto sf_type = hdr_fields_types[sf_name];
             auto mem     =
-                new IR::Member(new IR::PathExpression(new IR::Path(IR::ID(
-                                                                       "hdr"))), IR::ID(
-                                   sf_name));
+                new IR::Member(new IR::PathExpression("hdr"), sf_name);
             if (sf_type->is<IR::Type_Stack>()) {
                 auto sf_tp_s     = sf_type->to<IR::Type_Stack>();
                 auto size        = sf_tp_s->size->to<IR::Constant>()->value;
@@ -169,7 +162,7 @@ public:
                     ele_tp_name->to<IR::Type_Name>()->path->name.name);
                 if (ele_tp->is<IR::Type_Header>()) {
                     for (auto j = 0; j < size; j++) {
-                        auto next_mem = new IR::Member(mem, IR::ID("next"));
+                        auto next_mem = new IR::Member(mem, "next");
                         components.push_back(gen_hdr_extract(pkt_call,
                                                              next_mem));
                     }
@@ -201,10 +194,9 @@ public:
 
         // transition part
         // transition = new IR::PathExpression(new IR::Path(IR::ID("state_0")));
-        transition = new IR::PathExpression(new IR::Path(IR::ID("accept")));
+        transition = new IR::PathExpression("accept");
 
-        auto ret = new IR::ParserState(IR::ID(
-                                           "parse_hdrs"), components,
+        auto ret = new IR::ParserState("parse_hdrs", components,
                                        transition);
         P4Scope::add_to_scope(ret);
         return ret;
@@ -223,7 +215,7 @@ public:
         }
         // statements
         for (int i = 0; i < 5; i++) {
-            auto ass = assignmentOrMethodCallStatement::gen_assign(false);
+            auto ass = assignmentOrMethodCallStatement::gen_assign();
             if (ass != nullptr) {
                 components.push_back(ass);
             }
@@ -246,9 +238,8 @@ public:
                     break;
                 }
             case 2: {
-                    transition =
-                        new IR::PathExpression(states.at(rand() %
-                                                         states.size()));
+                    transition = new IR::PathExpression(
+                        states.at(rand() % states.size()));
                     break;
                 }
             case 3: {
@@ -276,30 +267,22 @@ public:
                             cases.push_back(sw_case);
                         }
                         if (rand() % 2 == 0) {
-                            cases.push_back(new IR::SelectCase(new IR::
-                                                                   DefaultExpression,
-                                                               new IR::
-                                                                   PathExpression(
-                                                                   "accept")));
+                            cases.push_back(
+                                new IR::SelectCase(new IR::DefaultExpression,
+                                                   new IR::PathExpression(
+                                                       "accept")));
                         } else {
-                            cases.push_back(new IR::SelectCase(new IR::
-                                                                   DefaultExpression,
-                                                               new IR::
-                                                                   PathExpression(
-                                                                   "reject")));
+                            cases.push_back(
+                                new IR::SelectCase(new IR::DefaultExpression,
+                                                   new IR::PathExpression(
+                                                       "reject")));
                         }
 
-                        transition = new IR::SelectExpression(new IR::ListExpression(
-                                                                  exprs),
-                                                              cases);
+                        transition = new IR::SelectExpression(
+                            new IR::ListExpression(exprs), cases);
                     } else {
-                        transition =
-                            new IR::PathExpression(new IR::Path(IR::ID(states.at(
-                                                                           rand()
-                                                                           %
-                                                                           states
-                                                                               .
-                                                                               size()))));
+                        transition = new IR::PathExpression(
+                            states.at(rand() % states.size()));
                     }
                     break;
                 }
