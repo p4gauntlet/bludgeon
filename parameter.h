@@ -27,12 +27,14 @@ public:
         if (if_none_dir == false) {
             switch (rand() % 3) {
                 // case 0: dir = IR::Direction::None; break;
-                case 0: dir = IR::Direction::In; break;
-                case 1: dir = IR::Direction::Out; break;
-                case 2: dir = IR::Direction::InOut; break;
+                case 0: dir = IR::Direction::In;
+                    break;
+                case 1: dir = IR::Direction::Out;
+                    break;
+                case 2: dir = IR::Direction::InOut;
+                    break;
             }
-        }
-        else {
+        } else   {
             dir = IR::Direction::None;
         }
     }
@@ -43,7 +45,7 @@ public:
     }
 
     // Tao: the parameter seems can only be int<> bit<> in bmv2 model
-    IR::Parameter* gen() {
+    IR::Parameter *gen() {
         std::vector<int> type = { 1, 2 };
         auto base_type        = new baseType(false, type);
 
@@ -52,7 +54,7 @@ public:
         return new IR::Parameter(*name, dir, tp);
     }
 
-    static IR::Parameter* gen_ing_headers() {
+    static IR::Parameter *gen_ing_headers() {
         IR::ID hdr("h");
         IR::Direction hdr_dir = IR::Direction::InOut;
 
@@ -62,7 +64,7 @@ public:
         return new IR::Parameter(hdr, hdr_dir, tp);
     }
 
-    static IR::Parameter* gen_ing_meta() {
+    static IR::Parameter *gen_ing_meta() {
         IR::ID meta("m");
         IR::Direction meta_dir = IR::Direction::InOut;
 
@@ -72,7 +74,7 @@ public:
         return new IR::Parameter(meta, meta_dir, tp);
     }
 
-    static IR::Parameter* gen_ing_sm() {
+    static IR::Parameter *gen_ing_sm() {
         IR::ID sm("sm");
         IR::Direction sm_dir = IR::Direction::InOut;
 
@@ -82,7 +84,7 @@ public:
         return new IR::Parameter(sm, sm_dir, tp);
     }
 
-    static IR::Parameter* gen_pkt_in() {
+    static IR::Parameter *gen_pkt_in() {
         IR::ID pkt("pkt");
         IR::Direction pkt_dir = IR::Direction::None;
 
@@ -92,7 +94,7 @@ public:
         return new IR::Parameter(pkt, pkt_dir, tp);
     }
 
-    static IR::Parameter* gen_out_header() {
+    static IR::Parameter *gen_out_header() {
         IR::ID hdr("hdr");
         IR::Direction hdr_dir = IR::Direction::Out;
 
@@ -102,7 +104,7 @@ public:
         return new IR::Parameter(hdr, hdr_dir, tp);
     }
 
-    static IR::Parameter* gen_param(IR::Direction dir,
+    static IR::Parameter *gen_param(IR::Direction dir,
                                     cstring       p_name,
                                     cstring       t_name) {
         IR::ID param_name(p_name);

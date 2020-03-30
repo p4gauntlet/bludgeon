@@ -14,32 +14,12 @@ namespace CODEGEN {
 class tableProperty {
 public:
 
-    const char *types[0] = {
-    };
-
-
     tableProperty() {}
 
-    // Tao: note that we always tag the property as not const
-    IR::Property* gen_keys() {
-        IR::ID *name    = new IR::ID(IR::TableProperties::keyPropertyName);
-        auto    key_gen = new keyElementList();
-        auto    keys    = key_gen->gen(rand() % 4);
+    // Tao: note that we always tag the prperty as not const
+    static IR::Property *gen_keys();
+    static IR::Property *gen_act_lists();
 
-        // isConstant --> false
-        return new IR::Property(*name, keys, false);
-    }
-
-    IR::Property* gen_act_lists() {
-        IR::ID *name = new IR::ID(
-            IR::TableProperties::actionsPropertyName);
-        auto actlist_gen = new actionList();
-        auto acts        = actlist_gen->gen(rand() % 4);
-
-        return new IR::Property(*name, acts, false);
-    }
-
-    // TODO: for entries
 };
 } // namespace CODEGEN
 

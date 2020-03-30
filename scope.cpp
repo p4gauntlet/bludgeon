@@ -88,7 +88,7 @@ void P4Scope::add_lval(const IR::Type *tp, cstring name, bool read_only) {
     int bit_bucket;
 
     if (auto tb = tp->to<IR::Type_Bits>()) {
-        type_key   = tb->node_type_name();
+        type_key   = IR::Type_Bits::static_type_name();
         bit_bucket = tb->width_bits();
     } else if (auto tn = tp->to<IR::Type_Name>()) {
         auto tn_name = tn->path->name.name;
@@ -119,7 +119,7 @@ std::vector<cstring> get_candidate_lvals(const IR::Type *tp,
     int bit_bucket;
 
     if (auto tb = tp->to<IR::Type_Bits>()) {
-        type_key   = tb->node_type_name();
+        type_key   =IR::Type_Bits::static_type_name();
         bit_bucket = tb->width_bits();
     } else if (auto tn = tp->to<IR::Type_Name>()) {
         auto tn_name = tn->path->name.name;

@@ -12,16 +12,16 @@ IR::AssignmentStatement *assignmentOrMethodCallStatement::gen_assign() {
 
     switch (randind(percent)) {
         case 0: {
-                auto bit_type = P4Scope::pick_declared_bit_type(true);
+                IR::Type_Bits *bit_type = P4Scope::pick_declared_bit_type(true);
+                // Ideally this should have a fallback option
                 if (not bit_type) {
-                    WARNING("Could not find suitable bit lval");
+                    printf("Could not find writable bit lval for assignment\n");
                     return nullptr;
                 }
-                left =
-                    new IR::PathExpression(P4Scope::pick_lval(bit_type, true));
+                cstring name = P4Scope::pick_lval(bit_type, true);
+                left       = new IR::PathExpression(name);
                 right      = expression2::gen_expr(bit_type);
-                assignstat = new IR::AssignmentStatement(left, right);
-                break;
+                return  new IR::AssignmentStatement(left, right);
             }
         case 1:
             // compund means it is not a simple operator, i.e., bit<128> a is simple, compound may be struct, header
