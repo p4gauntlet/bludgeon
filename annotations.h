@@ -9,38 +9,36 @@
 #include "expression.h"
 
 namespace CODEGEN {
-
 class Annotations {
 public:
-	const char *types[0] = {
-	};
+    const char *types[0] = {
+    };
 
-	IR::Vector< IR::Annotation > annotations;
+    IR::Vector<IR::Annotation> annotations;
 
-	IR::ID* name;
-	IR::Vector< IR::Expression > exprs;
-	// Tao: not neccessary right now
-	// IR::Vector< IR::AnnotationToken > annotat_tokens;
+    IR::ID *name;
+    IR::Vector<IR::Expression> exprs;
+    // Tao: not neccessary right now
+    // IR::Vector< IR::AnnotationToken > annotat_tokens;
 
-	Util::SourceInfo si;
+    Util::SourceInfo si;
 
-	Annotations() {
-		name = new IR::ID(IR::Annotation::nameAnnotation);
-	}
+    Annotations() {
+        name = new IR::ID(IR::Annotation::nameAnnotation);
+    }
 
-	IR::Annotations* gen() {
-		auto expr_gen = new expression(); // StringLiteral expr
-		auto str_literal = expr_gen->gen_literal(2);
-		exprs.push_back(str_literal);
+    IR::Annotations *gen() {
+        auto expr_gen    = new expression();      // StringLiteral expr
+        auto str_literal = expr_gen->gen_literal(2);
 
-		auto annotation = new IR::Annotation(si, *name, exprs);
-		annotations.push_back(annotation);
+        exprs.push_back(str_literal);
 
-		return new IR::Annotations(annotations);
-	}
+        auto annotation = new IR::Annotation(si, *name, exprs);
+        annotations.push_back(annotation);
+
+        return new IR::Annotations(annotations);
+    }
 };
-
-
 } // namespace CODEGEN
 
 

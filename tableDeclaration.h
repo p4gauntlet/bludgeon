@@ -12,20 +12,15 @@ public:
     const char *types[0] = {
     };
 
-    IR::ID *name;
-    IR::TableProperties *tb_properties;
 
 
     tableDeclaration() {
-        name = new IR::ID(CODEGEN::randstr(6));
     }
 
     ~tableDeclaration() {
-        delete name;
-        delete tb_properties;
     }
 
-    IR::P4Table *gen();
+    static IR::P4Table *gen();
 };
 } // namespace CODEGEN
 

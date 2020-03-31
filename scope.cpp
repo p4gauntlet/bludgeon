@@ -34,7 +34,7 @@ std::set<cstring> P4Scope::not_initialized_structs = {
 int P4Scope::scope_indicator = SCOPE_PROGRAM;
 std::map<cstring, const IR::Type_StructLike *> P4Scope::compound_type; // name for quick search
 
-void P4Scope::add_to_scope(IR::Node *n) {
+void P4Scope::add_to_scope(const IR::Node *n) {
     auto l_scope = P4Scope::scope.back();
 
     l_scope->push_back(n);
@@ -92,8 +92,8 @@ void P4Scope::add_lval(const IR::Type *tp, cstring name, bool read_only) {
         bit_bucket = tb->width_bits();
     } else if (auto tn = tp->to<IR::Type_Name>()) {
         auto tn_name = tn->path->name.name;
-        if (P4Scope::compound_type.count(tn_name) != 0) {
-            auto tn_type = P4Scope::compound_type[tn_name];
+        if (compound_type.count(tn_name) != 0) {
+            auto tn_type = compound_type[tn_name];
             //width_bits should work here, do not know why not...
             type_key = tn_name;
             // does not work for some reason...
@@ -113,13 +113,13 @@ void P4Scope::add_lval(const IR::Type *tp, cstring name, bool read_only) {
 }
 
 
-std::vector<cstring> get_candidate_lvals(const IR::Type *tp,
-                                         bool           must_write = true) {
+std::vector<cstring> P4Scope::get_candidate_lvals(const IR::Type *tp,
+                                                  bool           must_write) {
     cstring type_key;
     int bit_bucket;
 
     if (auto tb = tp->to<IR::Type_Bits>()) {
-        type_key   =IR::Type_Bits::static_type_name();
+        type_key   = IR::Type_Bits::static_type_name();
         bit_bucket = tb->width_bits();
     } else if (auto tn = tp->to<IR::Type_Name>()) {
         auto tn_name = tn->path->name.name;
@@ -136,9 +136,9 @@ std::vector<cstring> get_candidate_lvals(const IR::Type *tp,
     std::map<cstring, std::map<int, std::vector<cstring> > > lookup_map;
 
     if (must_write) {
-        lookup_map = P4Scope::lval_map_rw;
+        lookup_map = lval_map_rw;
     } else{
-        lookup_map = P4Scope::lval_map;
+        lookup_map = lval_map;
     }
 
     if (lookup_map.count(type_key) == 0) {
@@ -175,24 +175,26 @@ cstring P4Scope::pick_lval(const IR::Type *tp, bool must_write) {
     return lval;
 }
 
+
 IR::Type_Bits *P4Scope::pick_declared_bit_type(bool must_write) {
     std::map<cstring, std::map<int, std::vector<cstring> > > lookup_map;
 
     if (must_write) {
-        lookup_map = P4Scope::lval_map_rw;
+        lookup_map = lval_map_rw;
     } else{
-        lookup_map = P4Scope::lval_map;
+        lookup_map = lval_map;
     }
+
+
     cstring bit_key = IR::Type_Bits::static_type_name();
     if (lookup_map.count(bit_key) == 0) {
         return nullptr;
     }
     auto key_types = lookup_map[bit_key];
-    size_t idx   = rand() % key_types.size();
-    int bit_width = next(key_types.begin(), idx)->first;
+    size_t idx     = rand() % key_types.size();
+    int bit_width  = next(key_types.begin(), idx)->first;
     return new IR::Type_Bits(bit_width, false);
 }
-
 
 
 // Tao: filter is a mess here, sometimes it is filter, sometimes it is indicator
@@ -321,22 +323,22 @@ std::map<cstring, std::vector<const IR::Type *> > P4Scope::get_action_def() {
 
 
 std::vector<const IR::Function *> P4Scope::get_func_decls() {
-    return P4Scope::get_decls<IR::Function>();
+    return get_decls<IR::Function>();
 }
 
 
 std::vector<const IR::P4Table *> P4Scope::get_tab_decls() {
-    return P4Scope::get_decls<IR::P4Table>();
+    return get_decls<IR::P4Table>();
 }
 
 
 std::vector<const IR::P4Action *> P4Scope::get_action_decls() {
-    return P4Scope::get_decls<IR::P4Action>();
+    return get_decls<IR::P4Action>();
 }
 
 
 std::set<const IR::P4Table *> *P4Scope::get_callable_tables() {
-    return &P4Scope::callable_tables;
+    return &callable_tables;
 }
 
 

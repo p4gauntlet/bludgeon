@@ -210,8 +210,8 @@ public:
 
         // variable decls
         for (int i = 0; i < 5; i++) {
-            auto var_decl = new variableDeclaration();
-            components.push_back(var_decl->gen());
+            auto var_decl = variableDeclaration::gen();
+            components.push_back(var_decl);
         }
         // statements
         for (int i = 0; i < 5; i++) {

@@ -123,7 +123,7 @@ public:
         types_w_stack.insert(name);
     }
 
-    static void add_to_scope(IR::Node *n);
+    static void add_to_scope(const IR::Node *n);
 
 
     static void get_all_type_names(cstring               filter,
@@ -142,7 +142,8 @@ public:
     static std::vector<const IR::P4Table *> get_tab_decls();
     static std::vector<const IR::P4Action *> get_action_decls();
     static std::set<const IR::P4Table *> *get_callable_tables();
-
+    static std::vector<cstring> get_candidate_lvals(const IR::Type *tp,
+                                                    bool           must_write = true);
     // template to get all declarations
     template<typename T>
     static std::vector<const T *> get_decls();

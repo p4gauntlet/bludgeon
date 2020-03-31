@@ -7,7 +7,6 @@ IR::Key *keyElementList::gen(size_t len) {
     for (size_t i = 0; i < len; i++) {
         // TODO: More types than just exact
         IR::KeyElement *key = keyElement::gen("exact");
-        std::cout << "HELLO " << key << "\n";
         if (not key) {
             continue;
         }

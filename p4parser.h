@@ -47,8 +47,8 @@ public:
 
         // generate decls
         for (int i = 0; i < 5; i++) {
-            auto var_decl = new variableDeclaration();
-            parserLocals.push_back(var_decl->gen());
+            auto var_decl = variableDeclaration::gen();
+            parserLocals.push_back(var_decl);
         }
 
         // generate states
@@ -100,8 +100,8 @@ public:
 
         // generate decls
         for (int i = 0; i < 5; i++) {
-            auto var_decl = new variableDeclaration();
-            parserLocals.push_back(var_decl->gen());
+            auto var_decl = variableDeclaration::gen();
+            parserLocals.push_back(var_decl);
         }
 
         // generate states

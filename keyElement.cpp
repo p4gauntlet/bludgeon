@@ -6,9 +6,8 @@ IR::KeyElement *keyElement::gen(cstring match_kind) {
     auto match         = new IR::PathExpression(match_kind);
     auto annotations   = annotat->gen();
     // TODO: how to generate meaningful expr
-    auto bit_type = P4Scope::pick_declared_bit_type(true);
+    auto bit_type = P4Scope::pick_declared_bit_type(false);
 
-    std::cout << "HELLO 231321" << bit_type << "\n";
     // Ideally this should have a fallback option
     if (not bit_type) {
         printf("Could not find key lval for key matches\n");
@@ -18,7 +17,6 @@ IR::KeyElement *keyElement::gen(cstring match_kind) {
     // TODO: Fix
     auto expr = new IR::PathExpression(P4Scope::pick_lval(bit_type, false));
     auto key =new IR::KeyElement(annotations, expr, match);
-    std::cout << "HELLO21412 " << key << "\n";
 
     return key;
 }

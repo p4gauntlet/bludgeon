@@ -13,7 +13,7 @@ public:
     };
 
 
-    IR::ID *name              = nullptr;
+    IR::ID *name = nullptr;
     IR::ParameterList *params = nullptr;
     IR::BlockStatement *blk   = nullptr;
 
@@ -27,7 +27,7 @@ public:
         delete blk;
     }
 
-    IR::P4Action* gen() {
+    IR::P4Action *gen() {
         P4Scope::start_local_scope();
         auto param_gen = new parameterList(false);
         params = param_gen->gen();

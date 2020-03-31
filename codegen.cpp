@@ -105,7 +105,6 @@ IR::Node *CGenerator::gen_tpdef() {
 }
 
 
-
 IR::Node *CGenerator::gen_actlist() {
     auto names = P4Scope::get_name_nodir_p4acts();
 
@@ -238,7 +237,7 @@ void CGenerator::emitTFBottom(std::ostream *ostream) {
 void CGenerator::gen_p4_code() {
     auto objects = new IR::Vector<IR::Node>();
 
-    objects->push_back(CODEGEN::headerTypeDeclaration::gen_eth());
+    objects->push_back(headerTypeDeclaration::gen_eth());
 
     // generate header or header union
     objects->push_back(gen());
@@ -249,37 +248,37 @@ void CGenerator::gen_p4_code() {
     objects->push_back(gen_struct());
 
     // generate struct Headers
-    objects->push_back(CODEGEN::structTypeDeclaration::gen_Headers());
+    objects->push_back(structTypeDeclaration::gen_Headers());
 
     // generate struct Meta
-    objects->push_back(CODEGEN::structTypeDeclaration::gen_Meta());
+    objects->push_back(structTypeDeclaration::gen_Meta());
 
 
     if (flag == 0) {
         CGenerator::emitBmv2Top(ostream);
 
         // generate struct  standard_metadata_t
-        CODEGEN::structTypeDeclaration::gen_Sm();
+        structTypeDeclaration::gen_Sm();
 
         objects->push_back(gen_func());
         objects->push_back(gen_sys_parser());
-        objects->push_back(CODEGEN::controlDeclaration::gen_ing_ctrl());
+        objects->push_back(controlDeclaration::gen_ing_ctrl());
     } else if (flag == 1) {
         CGenerator::emitTFTop(ostream);
 
         // objects->push_back(gen_func());
         // generate tofino metadatas
-        CODEGEN::structTypeDeclaration::gen_tf_md_t();
+        structTypeDeclaration::gen_tf_md_t();
 
         objects->push_back(gen_sys_parser(true));
-        objects->push_back(CODEGEN::controlDeclaration::gen_tf_ing_ctrl());
+        objects->push_back(controlDeclaration::gen_tf_ing_ctrl());
     } else {
         BUG("flag must be 0 or 1");
     }
     IR::P4Program *program = new IR::P4Program(*objects);
 
     // output to the file
-    CODEGEN::SubToP4 top4(ostream, false);
+    SubToP4 top4(ostream, false);
     program->apply(top4);
 
     if (flag == 0) {

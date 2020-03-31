@@ -4,22 +4,16 @@
 #include "ir/ir.h"
 
 namespace CODEGEN {
-
-
 class argumentList {
 public:
-	const char* types[1] = {
-		"nonEmptyArgList"
-	};
+    const char *types[1] = {
+        "nonEmptyArgList"
+    };
 
-	argumentList() {
-	}
-
+    argumentList() {
+    }
 };
-
-
 } // namespace CODEGEN
-
 
 
 
