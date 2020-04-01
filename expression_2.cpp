@@ -213,14 +213,21 @@ IR::Expression *pick_var(const IR::Type_Bits *tb) {
         if (P4Scope::lval_map.count(type_key) != 0) {
             auto candidates = P4Scope::lval_map[node_name][tb->width_bits()];
             size_t idx      = rand() % candidates.size();
-            return new IR::PathExpression(candidates.at(idx));
+            auto lval       = std::begin(candidates);
+            // 'advance' the iterator n times
+            std::advance(lval, idx);
+            return new IR::PathExpression(*lval);
         } else {
             auto bit_types      = P4Scope::lval_map[node_name];
             size_t bit_type_idx = rand() % bit_types.size();
             auto it             = bit_types.begin();
             std::advance(it, bit_type_idx);
+
             size_t idx = rand() % it->second.size();
-            return new IR::Cast(tb, new IR::PathExpression(it->second.at(idx)));
+            auto lval       = std::begin(it->second);
+            // 'advance' the iterator n times
+            std::advance(lval, idx);
+            return new IR::Cast(tb, new IR::PathExpression(*lval));
         }
     }
 
@@ -362,12 +369,12 @@ IR::Expression *construct_structlike_expr() {
 }
 
 
-IR::Expression *expression2::gen_expr(const IR::Type *tp) {
+IR::Expression *expression2::gen_expr(const IR::Type *tp, bool require_width) {
     IR::Expression *expr = nullptr;
 
     // TODO: Add specific restrictions to types later
     if (auto tb = tp->to<IR::Type_Bits>()) {
-        expr = construct_bit_expr(tb);
+        expr = construct_bit_expr(tb, require_width);
     } else if (tp->is<IR::Type_Boolean>()) {
         expr = construct_boolean_expr();
     } else if (tp->is<IR::Type_StructLike>()) {
@@ -389,6 +396,7 @@ IR::Expression *expression2::gen_input_arg(const IR::Parameter *param) {
     }
 }
 
+
 bool expression2::check_input_arg(const IR::Parameter *param) {
     if (param->direction == IR::Direction::In) {
         return P4Scope::check_lval(param->type, false);
@@ -396,5 +404,4 @@ bool expression2::check_input_arg(const IR::Parameter *param) {
         return P4Scope::check_lval(param->type, true);
     }
 }
-
 } // namespace CODEGEN

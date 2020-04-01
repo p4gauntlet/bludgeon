@@ -1,4 +1,7 @@
 #include "tableProperty.h"
+#include "keyElementList.h"
+#include "actionList.h"
+
 
 namespace CODEGEN {
 IR::Property *tableProperty::gen_keys() {
@@ -11,11 +14,9 @@ IR::Property *tableProperty::gen_keys() {
 
 
 IR::Property *tableProperty::gen_act_lists() {
-    IR::ID *name = new IR::ID(
-        IR::TableProperties::actionsPropertyName);
-    auto actlist_gen = new actionList();
-    auto acts        = actlist_gen->gen(rand() % 4);
+    cstring name = IR::TableProperties::actionsPropertyName;
+    auto acts    = actionList::gen(rand() % 4);
 
-    return new IR::Property(*name, acts, false);
+    return new IR::Property(name, acts, false);
 }
 } // namespace CODEGEN

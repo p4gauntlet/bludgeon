@@ -20,10 +20,10 @@ public:
     expression2() {   }
 
 
-    static IR::Expression *gen_expr(const IR::Type *tp);
+    static IR::Expression *gen_expr(const IR::Type *tp,
+                                    bool           require_width = false);
     static IR::Expression *gen_input_arg(const IR::Parameter *param);
     static bool check_input_arg(const IR::Parameter *param);
-
 };
 } // namespace CODEGEN
 

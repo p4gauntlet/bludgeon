@@ -29,21 +29,22 @@ public:
         P4Scope::start_local_scope();
 
         // generate type_parser
-        p_name = new IR::ID("p");
         auto param_list = parameterList::gen_par_params();
         auto params     = param_list->parameters;
 
         // add to the scope
-        for (size_t i = 0; i < params.size(); i++) {
-            auto param = params.at(i);
-            P4Scope::add_to_scope((IR::Node *)param);
-
-            if (param->direction != IR::Direction::In) {
-                P4Scope::add_name_2_type_p(param->name.toString(), param->type);
+        for (auto param : param_list->parameters) {
+            P4Scope::add_to_scope(param);
+            // add to the name_2_type
+            // only add values that are not read-only to the modifiable types
+            if (param->direction == IR::Direction::In) {
+                P4Scope::add_lval(param->type, param->name.name, true);
+            } else {
+                P4Scope::add_name_2_type_p(param->name.name, param->type);
+                P4Scope::add_lval(param->type, param->name.name, false);
             }
         }
-
-        tp_parser = new IR::Type_Parser(*p_name, param_list);
+        tp_parser = new IR::Type_Parser("p", param_list);
 
         // generate decls
         for (int i = 0; i < 5; i++) {
@@ -60,7 +61,7 @@ public:
         P4Scope::end_local_scope();
 
         // add to the whole scope
-        auto p4parser = new IR::P4Parser(*p_name,
+        auto p4parser = new IR::P4Parser("p",
                                          tp_parser,
                                          parserLocals,
                                          states);
@@ -98,11 +99,11 @@ public:
 
         tp_parser = new IR::Type_Parser(*p_name, new IR::ParameterList(params));
 
-        // generate decls
-        for (int i = 0; i < 5; i++) {
-            auto var_decl = variableDeclaration::gen();
-            parserLocals.push_back(var_decl);
-        }
+        // // generate decls
+        // for (int i = 0; i < 5; i++) {
+        //     auto var_decl = variableDeclaration::gen();
+        //     parserLocals.push_back(var_decl);
+        // }
 
         // generate states
         auto p4state = new p4State();

@@ -11,8 +11,8 @@ std::map<cstring, const IR::Type *> P4Scope::name_2_type_param_in;
 std::map<cstring, const IR::Type *> P4Scope::name_2_type_vars;
 std::map<cstring, const IR::Type *> P4Scope::name_2_type_const;
 std::map<cstring, const IR::Type *> P4Scope::name_2_type_stack;
-std::map<cstring, std::map<int, std::vector<cstring> > > P4Scope::lval_map;
-std::map<cstring, std::map<int, std::vector<cstring> > > P4Scope::lval_map_rw;
+std::map<cstring, std::map<int, std::set<cstring> > > P4Scope::lval_map;
+std::map<cstring, std::map<int, std::set<cstring> > > P4Scope::lval_map_rw;
 
 
 std::set<cstring> P4Scope::types_w_stack;
@@ -49,22 +49,24 @@ void P4Scope::add_to_scope(const IR::Node *n) {
 void P4Scope::end_local_scope() {
     IR::Vector<IR::Node> *local_scope = scope.back();
 
-    for (size_t i = 0; i < local_scope->size(); i++) {
-        auto node = local_scope->at(i);
-        if (node->is<IR::Declaration>()) {
-            auto decl = node->to<IR::Declaration>();
+    for (auto node : *local_scope) {
+        if (auto decl = node->to<IR::Declaration>()) {
             name_2_type_param.erase(decl->name.name);
             name_2_type_param_in.erase(decl->name.name);
             name_2_type_vars.erase(decl->name.name);
             name_2_type_const.erase(decl->name.name);
             name_2_type_stack.erase(decl->name.name);
         }
+
+        if (auto decl = node->to<IR::Declaration_Variable>()) {
+            delete_lval(decl->type, decl->name.name);
+        } else if (auto param = node->to<IR::Parameter>()) {
+            delete_lval(param->type, param->name.name);
+        }
     }
 
     delete local_scope;
     scope.pop_back();
-    lval_map_rw.clear();
-    lval_map.clear();
     // clear the expressions
     expression::clear_data_structs();
     // clear the declaration instances
@@ -83,6 +85,63 @@ void add_compound_lvals(const IR::Type_StructLike *sl_type, cstring sl_name) {
 }
 
 
+void delete_compound_lvals(const IR::Type_StructLike *sl_type,
+                           cstring                   sl_name) {
+    for (auto field : sl_type->fields) {
+        std::stringstream ss;
+        ss.str("");
+        ss << sl_name << "." << field->name.name;
+        cstring field_name(ss.str());
+        P4Scope::delete_lval(field->type, field_name);
+    }
+}
+
+
+void P4Scope::delete_lval(const IR::Type *tp, cstring name) {
+    cstring type_key;
+    int bit_bucket;
+
+    if (auto tb = tp->to<IR::Type_Bits>()) {
+        type_key   = IR::Type_Bits::static_type_name();
+        bit_bucket = tb->width_bits();
+    } else if (auto tn = tp->to<IR::Type_Name>()) {
+        auto tn_name = tn->path->name.name;
+        if (tn_name == "packet_in") {
+            return;
+        }
+        if (compound_type.count(tn_name) != 0) {
+            auto tn_type = compound_type[tn_name];
+            //width_bits should work here, do not know why not...
+            type_key = tn_name;
+            // does not work for some reason...
+            // bit_bucket = P4Scope::compound_type[tn_name]->width_bits();
+            bit_bucket = 1;
+            delete_compound_lvals(tn_type, name);
+        } else {
+            printf("Type %s does not exist\n", tn_name);
+            return;
+        }
+    } else{
+        BUG("Type %s not yet supported", tp->node_type_name());
+    }
+    lval_map[type_key][bit_bucket].erase(name);
+
+    if (lval_map[type_key][bit_bucket].size() == 0) {
+        lval_map[type_key].erase(bit_bucket);
+    }
+
+
+    if (lval_map_rw.count(type_key) != 0) {
+        if (lval_map_rw[type_key].count(bit_bucket) != 0) {
+            lval_map_rw[type_key][bit_bucket].erase(name);
+            if (lval_map_rw[type_key][bit_bucket].size() == 0) {
+                lval_map_rw[type_key].erase(bit_bucket);
+            }
+        }
+    }
+}
+
+
 void P4Scope::add_lval(const IR::Type *tp, cstring name, bool read_only) {
     cstring type_key;
     int bit_bucket;
@@ -92,6 +151,9 @@ void P4Scope::add_lval(const IR::Type *tp, cstring name, bool read_only) {
         bit_bucket = tb->width_bits();
     } else if (auto tn = tp->to<IR::Type_Name>()) {
         auto tn_name = tn->path->name.name;
+        if (tn_name == "packet_in") {
+            return;
+        }
         if (compound_type.count(tn_name) != 0) {
             auto tn_type = compound_type[tn_name];
             //width_bits should work here, do not know why not...
@@ -107,14 +169,14 @@ void P4Scope::add_lval(const IR::Type *tp, cstring name, bool read_only) {
         BUG("Type %s not yet supported", tp->node_type_name());
     }
     if (not read_only) {
-        lval_map_rw[type_key][bit_bucket].push_back(name);
+        lval_map_rw[type_key][bit_bucket].insert(name);
     }
-    lval_map[type_key][bit_bucket].push_back(name);
+    lval_map[type_key][bit_bucket].insert(name);
 }
 
 
-std::vector<cstring> P4Scope::get_candidate_lvals(const IR::Type *tp,
-                                                  bool           must_write) {
+std::set<cstring> P4Scope::get_candidate_lvals(const IR::Type *tp,
+                                               bool           must_write) {
     cstring type_key;
     int bit_bucket;
 
@@ -133,7 +195,7 @@ std::vector<cstring> P4Scope::get_candidate_lvals(const IR::Type *tp,
         BUG("Type %s not yet supported", tp->node_type_name());
     }
 
-    std::map<cstring, std::map<int, std::vector<cstring> > > lookup_map;
+    std::map<cstring, std::map<int, std::set<cstring> > > lookup_map;
 
     if (must_write) {
         lookup_map = lval_map_rw;
@@ -154,7 +216,7 @@ std::vector<cstring> P4Scope::get_candidate_lvals(const IR::Type *tp,
 
 
 bool P4Scope::check_lval(const IR::Type *tp, bool must_write) {
-    std::vector<cstring> candidates = get_candidate_lvals(tp, must_write);
+    std::set<cstring> candidates = get_candidate_lvals(tp, must_write);
 
     if (candidates.empty()) {
         return false;
@@ -164,20 +226,22 @@ bool P4Scope::check_lval(const IR::Type *tp, bool must_write) {
 
 
 cstring P4Scope::pick_lval(const IR::Type *tp, bool must_write) {
-    std::vector<cstring> candidates = get_candidate_lvals(tp, must_write);
+    std::set<cstring> candidates = get_candidate_lvals(tp, must_write);
 
     if (candidates.empty()) {
         BUG("Invalid Type Query, %s not found", tp->toString());
     }
-    size_t idx   = rand() % candidates.size();
-    cstring lval = candidates.at(idx);
+    size_t idx = rand() % candidates.size();
+    auto lval  = std::begin(candidates);
+    // 'advance' the iterator n times
+    std::advance(lval, idx);
 
-    return lval;
+    return *lval;
 }
 
 
 IR::Type_Bits *P4Scope::pick_declared_bit_type(bool must_write) {
-    std::map<cstring, std::map<int, std::vector<cstring> > > lookup_map;
+    std::map<cstring, std::map<int, std::set<cstring> > > lookup_map;
 
     if (must_write) {
         lookup_map = lval_map_rw;
@@ -298,26 +362,6 @@ std::vector<const IR::P4Action *> P4Scope::get_p4actions_nodir() {
         }
     }
 
-    return ret;
-}
-
-
-std::map<cstring, std::vector<const IR::Type *> > P4Scope::get_action_def() {
-    std::map<cstring, std::vector<const IR::Type *> > ret;
-    auto p4actions_all = P4Scope::get_decls<IR::P4Action>();
-
-    for (auto i = p4actions_all.begin(); i < p4actions_all.end(); i++) {
-        std::vector<const IR::Type *> pars;
-        const IR::P4Action *p4act = *i;
-        auto act_params           = p4act->parameters->parameters;
-        for (size_t ind = 0; ind < act_params.size(); ind++) {
-            auto param = act_params.at(ind);
-            if (param->direction != IR::Direction::None) {
-                pars.push_back(param->type);
-            }
-        }
-        ret.emplace(p4act->name.name, pars);
-    }
     return ret;
 }
 

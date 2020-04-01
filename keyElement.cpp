@@ -1,5 +1,5 @@
 #include "keyElement.h"
-
+#include "expression_2.h"
 namespace CODEGEN {
 IR::KeyElement *keyElement::gen(cstring match_kind) {
     auto annotat       = new Annotations();
@@ -15,7 +15,7 @@ IR::KeyElement *keyElement::gen(cstring match_kind) {
     }
     // for some reason expression do not work here?
     // TODO: Fix
-    auto expr = new IR::PathExpression(P4Scope::pick_lval(bit_type, false));
+    auto expr = expression2::gen_expr(bit_type, true);
     auto key =new IR::KeyElement(annotations, expr, match);
 
     return key;

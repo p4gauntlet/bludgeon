@@ -6,10 +6,6 @@
 
 #include "codegen.h"
 
-#include "keyElementList.h"
-#include "actionList.h"
-
-
 namespace CODEGEN {
 class tableProperty {
 public:

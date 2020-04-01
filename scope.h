@@ -29,9 +29,9 @@ public:
     // contains stack
     static std::map<cstring, const IR::Type *> name_2_type_stack;
 
-    static std::map<cstring, std::map<int, std::vector<cstring> > > lval_map;
+    static std::map<cstring, std::map<int, std::set<cstring> > > lval_map;
     // a subset of the lval map that includes rw values
-    static std::map<cstring, std::map<int, std::vector<cstring> > > lval_map_rw;
+    static std::map<cstring, std::map<int, std::set<cstring> > > lval_map_rw;
 
 
 
@@ -69,6 +69,8 @@ public:
                            bool           must_write = false);
     static cstring pick_lval(const IR::Type *tp,
                              bool           must_write = false);
+    static void delete_lval(const IR::Type *tp, cstring name);
+
     static IR::Type_Bits *pick_declared_bit_type(bool must_write = false);
 
     IR::Expression *pick_bit_field(const IR::Type_Bits *tp, bool is_lval);
@@ -142,7 +144,7 @@ public:
     static std::vector<const IR::P4Table *> get_tab_decls();
     static std::vector<const IR::P4Action *> get_action_decls();
     static std::set<const IR::P4Table *> *get_callable_tables();
-    static std::vector<cstring> get_candidate_lvals(const IR::Type *tp,
+    static std::set<cstring> get_candidate_lvals(const IR::Type *tp,
                                                     bool           must_write = true);
     // template to get all declarations
     template<typename T>
