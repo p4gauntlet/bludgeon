@@ -19,16 +19,6 @@ public:
 
     static std::vector<IR::Vector<IR::Node> *> scope;
     static std::set<cstring> used_names;
-    // param
-    static std::map<cstring, const IR::Type *> name_2_type_param;
-    // param
-    static std::map<cstring, const IR::Type *> name_2_type_param_in;
-    // variable
-    static std::map<cstring, const IR::Type *> name_2_type_vars;
-    static std::map<cstring, const IR::Type *> name_2_type_const;
-    // contains stack
-    static std::map<cstring, const IR::Type *> name_2_type_stack;
-
     static std::map<cstring, std::map<int, std::set<cstring> > > lval_map;
     // a subset of the lval map that includes rw values
     static std::map<cstring, std::map<int, std::set<cstring> > > lval_map_rw;
@@ -77,46 +67,6 @@ public:
 
 
 
-    static void add_name_2_type_p(cstring name, const IR::Type *type) {
-        if (name_2_type_param.find(name) != name_2_type_param.end()) {
-            BUG("param wrong name, must be different");
-        } else {
-            name_2_type_param.emplace(name, type);
-        }
-    }
-
-    static void add_name_2_type_p_in(cstring name, const IR::Type *type) {
-        if (name_2_type_param_in.find(name) != name_2_type_param_in.end()) {
-            BUG("param wrong name, must be different");
-        } else {
-            name_2_type_param_in.emplace(name, type);
-        }
-    }
-
-    static void add_name_2_type_v(cstring name, const IR::Type *type) {
-        if (name_2_type_vars.find(name) != name_2_type_vars.end()) {
-            BUG("variable wrong name, must be different");
-        } else {
-            name_2_type_vars.emplace(name, type);
-        }
-    }
-
-    static void add_name_2_type_c(cstring name, const IR::Type *type) {
-        if (name_2_type_const.find(name) != name_2_type_const.end()) {
-            BUG("const wrong name, must be different");
-        } else {
-            name_2_type_const.emplace(name, type);
-        }
-    }
-
-    static void add_name_2_type_stack(cstring name, const IR::Type *type) {
-        if (name_2_type_stack.find(name) != name_2_type_stack.end()) {
-            BUG("const wrong name, must be different");
-        } else {
-            name_2_type_stack.emplace(name, type);
-        }
-    }
-
     static bool check_type_name(const cstring& name) {
         return types_w_stack.find(name) != types_w_stack.end();
     }
@@ -145,7 +95,8 @@ public:
     static std::vector<const IR::P4Action *> get_action_decls();
     static std::set<const IR::P4Table *> *get_callable_tables();
     static std::set<cstring> get_candidate_lvals(const IR::Type *tp,
-                                                    bool           must_write = true);
+                                                 bool           must_write = true);
+
     // template to get all declarations
     template<typename T>
     static std::vector<const T *> get_decls();

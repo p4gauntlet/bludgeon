@@ -43,7 +43,6 @@ public:
         // add to the scope
         auto ret = new IR::Declaration_Constant(*name, tp, expr);
         P4Scope::add_to_scope(ret);
-        P4Scope::add_name_2_type_c(name->name, tp);
         return ret;
     }
 };

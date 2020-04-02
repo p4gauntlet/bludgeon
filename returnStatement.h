@@ -4,7 +4,6 @@
 
 #include "scope.h"
 #include "expression.h"
-#include "expression_2.h"
 
 #include "ir/ir.h"
 

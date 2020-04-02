@@ -5,7 +5,6 @@
 
 #include "annotations.h"
 #include "scope.h"
-#include "expression_2.h"
 #include "codegen.h"
 
 namespace CODEGEN {

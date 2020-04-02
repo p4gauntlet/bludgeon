@@ -1,5 +1,5 @@
 #include "keyElement.h"
-#include "expression_2.h"
+#include "expression.h"
 namespace CODEGEN {
 IR::KeyElement *keyElement::gen(cstring match_kind) {
     auto annotat       = new Annotations();
@@ -15,7 +15,7 @@ IR::KeyElement *keyElement::gen(cstring match_kind) {
     }
     // for some reason expression do not work here?
     // TODO: Fix
-    auto expr = expression2::gen_expr(bit_type, true);
+    auto expr = expression::gen_expr(bit_type, true);
     auto key =new IR::KeyElement(annotations, expr, match);
 
     return key;

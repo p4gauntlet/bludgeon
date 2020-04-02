@@ -1,14 +1,13 @@
 #include "assignmentOrMethodCallStatement.h"
-#include "expression_2.h"
+#include "expression.h"
 #include "blockStatement.h"
 
 namespace CODEGEN {
 IR::AssignmentStatement *assignmentOrMethodCallStatement::gen_assign() {
     IR::AssignmentStatement *assignstat = nullptr;
     IR::Expression *left = nullptr, *right = nullptr;
-    const IR::Type *l_tp, *r_tp;
 
-    std::vector<int> percent = { 75, 25 };
+    std::vector<int> percent = { 100, 0 };
 
     switch (randind(percent)) {
         case 0: {
@@ -20,16 +19,11 @@ IR::AssignmentStatement *assignmentOrMethodCallStatement::gen_assign() {
                 }
                 cstring name = P4Scope::pick_lval(bit_type, true);
                 left       = new IR::PathExpression(name);
-                right      = expression2::gen_expr(bit_type);
+                right      = expression::gen_expr(bit_type);
                 return  new IR::AssignmentStatement(left, right);
             }
         case 1:
-            // compund means it is not a simple operator, i.e., bit<128> a is simple, compound may be struct, header
-            if (expression::get_two_compound_operands(&left, &right,
-                                                      &l_tp,
-                                                      &r_tp) == true) {
-                assignstat = new IR::AssignmentStatement(left, right);
-            }
+            // TODO: Compound types
             break;
     }
 
@@ -48,17 +42,16 @@ IR::Statement *gen_methodcall_expression(cstring           method_name,
 
     for (auto par: params) {
         IR::Argument *arg;
-        if (not expression2::check_input_arg(par)) {
+        if (not expression::check_input_arg(par)) {
             auto name = randstr(6);
-            auto expr = expression2::gen_expr(par->type);
+            auto expr = expression::gen_expr(par->type);
             // all this boilerplate should be somewhere else...
             auto decl = new IR::Declaration_Variable(name, par->type, expr);
             P4Scope::add_to_scope(decl);
             P4Scope::add_lval(par->type, name, false);
-            P4Scope::add_name_2_type_v(name, par->type);
             decls.push_back(decl);
         }
-        arg = new IR::Argument(expression2::gen_input_arg(par));
+        arg = new IR::Argument(expression::gen_input_arg(par));
         args->push_back(arg);
     }
     auto path_expr = new IR::PathExpression(method_name);

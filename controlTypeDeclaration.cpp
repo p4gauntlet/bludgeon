@@ -21,7 +21,6 @@ IR::Type_Control *controlTypeDeclaration::gen_ing_ctrl_type(int tf_flag) {
         if (param->direction == IR::Direction::In) {
             P4Scope::add_lval(param->type, param->name.name, true);
         } else {
-            P4Scope::add_name_2_type_p(param->name.name, param->type);
             P4Scope::add_lval(param->type, param->name.name, false);
         }
     }

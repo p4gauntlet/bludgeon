@@ -100,7 +100,6 @@ set (CODEGEN_SRCS
     prefixedNonTypeName.h
     lvalue.h
     expression.h
-    expression_2.h
     p4parser.h
     p4state.h
     declaration.cpp
@@ -188,7 +187,6 @@ set (CODEGEN_SRCS
     prefixedNonTypeName.cpp
     lvalue.cpp
     expression.cpp
-    expression_2.cpp
     p4parser.cpp
     p4state.cpp
     sub_toP4.h

@@ -1,16 +1,9 @@
 #include "scope.h"
 
-#include "expression.h"
-
 
 namespace CODEGEN {
 std::vector<IR::Vector<IR::Node> *> P4Scope::scope;
 std::set<cstring> P4Scope::used_names;
-std::map<cstring, const IR::Type *> P4Scope::name_2_type_param;
-std::map<cstring, const IR::Type *> P4Scope::name_2_type_param_in;
-std::map<cstring, const IR::Type *> P4Scope::name_2_type_vars;
-std::map<cstring, const IR::Type *> P4Scope::name_2_type_const;
-std::map<cstring, const IR::Type *> P4Scope::name_2_type_stack;
 std::map<cstring, std::map<int, std::set<cstring> > > P4Scope::lval_map;
 std::map<cstring, std::map<int, std::set<cstring> > > P4Scope::lval_map_rw;
 
@@ -50,13 +43,6 @@ void P4Scope::end_local_scope() {
     IR::Vector<IR::Node> *local_scope = scope.back();
 
     for (auto node : *local_scope) {
-        if (auto decl = node->to<IR::Declaration>()) {
-            name_2_type_param.erase(decl->name.name);
-            name_2_type_param_in.erase(decl->name.name);
-            name_2_type_vars.erase(decl->name.name);
-            name_2_type_const.erase(decl->name.name);
-            name_2_type_stack.erase(decl->name.name);
-        }
 
         if (auto decl = node->to<IR::Declaration_Variable>()) {
             delete_lval(decl->type, decl->name.name);
@@ -67,8 +53,6 @@ void P4Scope::end_local_scope() {
 
     delete local_scope;
     scope.pop_back();
-    // clear the expressions
-    expression::clear_data_structs();
     // clear the declaration instances
     decl_ins_ctrls.clear();
 }

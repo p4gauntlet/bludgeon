@@ -228,7 +228,7 @@ public:
         IR::Vector<IR::SelectCase> cases;
         std::vector<const IR::Type *> types;
 
-        switch (rand() % 4) {
+        switch (rand() % 3) {
             case 0: {
                     transition = new IR::PathExpression("accept");
                     break;
@@ -244,9 +244,10 @@ public:
                 }
             case 3: {
                     size_t num       = rand() % 3 + 1;
-                    auto get_le_flag = expression::get_list_expressions(exprs,
-                                                                        types,
-                                                                        num);
+                    auto get_le_flag = false;
+                    // auto get_le_flag = expression::get_list_expressions(exprs,
+                                                                        // types,
+                                                                        // num);
                     if (get_le_flag == true) {
                         for (int i = 0; i < rand() % 3 + 1; i++) {
                             IR::Expression *keyset;

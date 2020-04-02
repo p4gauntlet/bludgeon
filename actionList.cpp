@@ -1,5 +1,5 @@
 #include "actionList.h"
-#include "expression_2.h"
+#include "expression.h"
 
 namespace CODEGEN {
 IR::MethodCallExpression *gen_actioncall_expression(
@@ -11,11 +11,11 @@ IR::MethodCallExpression *gen_actioncall_expression(
     bool can_call = true;
 
     for (auto par: params) {
-        if (not expression2::check_input_arg(par)) {
+        if (not expression::check_input_arg(par)) {
             can_call = false;
         } else {
             IR::Argument *arg;
-            arg = new IR::Argument(expression2::gen_input_arg(par));
+            arg = new IR::Argument(expression::gen_input_arg(par));
             args->push_back(arg);
         }
     }

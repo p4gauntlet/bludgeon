@@ -40,7 +40,6 @@ public:
             if (param->direction == IR::Direction::In) {
                 P4Scope::add_lval(param->type, param->name.name, true);
             } else {
-                P4Scope::add_name_2_type_p(param->name.name, param->type);
                 P4Scope::add_lval(param->type, param->name.name, false);
             }
         }
@@ -93,7 +92,6 @@ public:
             P4Scope::add_to_scope((IR::Node *)param);
 
             if (param->direction != IR::Direction::In) {
-                P4Scope::add_name_2_type_p(param->name.toString(), param->type);
             }
         }
 
