@@ -32,7 +32,7 @@ public:
 
         exprs.push_back(str_literal);
 
-        auto annotation = new IR::Annotation(si, *name, exprs);
+        auto annotation = new IR::Annotation(si, *name, exprs, false);
         annotations.push_back(annotation);
 
         return new IR::Annotations(annotations);
