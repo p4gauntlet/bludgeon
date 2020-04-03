@@ -19,6 +19,9 @@ IR::Constant *bit_literal::gen_int(big_int max_size) {
 
 
 IR::Constant *bit_literal::gen_bit(const IR::Type *tb) {
-    return new IR::Constant(tb, rand() % 6 + 1);
+    big_int max_size = ((big_int)1U << tb->width_bits()) - 1;
+    big_int random_size = rand() % max_size;
+
+    return new IR::Constant(tb, random_size);
 }
 }

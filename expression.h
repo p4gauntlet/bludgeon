@@ -13,6 +13,13 @@
 
 
 namespace CODEGEN {
+
+struct Requirements {
+   bool require_scalar;
+   bool no_methodcalls;
+   Requirements() : require_scalar(false), no_methodcalls{false} {};
+};
+
 class expression {
 public:
 
@@ -23,7 +30,6 @@ public:
                                     bool           require_width = false);
     static IR::Expression *gen_input_arg(const IR::Parameter *param);
     static bool check_input_arg(const IR::Parameter *param);
-    static IR::Expression *gen_literal(int tp_literal);
 
 };
 } // namespace CODEGEN

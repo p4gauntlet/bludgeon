@@ -19,16 +19,21 @@ IR::Declaration_Variable *variableDeclaration::gen() {
         auto expr = expression::gen_expr(type);
         ret = new IR::Declaration_Variable(name, type, expr);
     } else if (type->is<IR::Type_Name>()) {
+        // TODO FIX TYPE NAME
         IR::Vector<IR::Expression> exprs;
         bool is_forbidden = false;
         auto type_name = type->to<IR::Type_Name>()->path->name.name;
         if (P4Scope::not_initialized_structs.count(type_name) != 0) {
             is_forbidden = true;
         }
-        // TODO FIX TYPE NAME
-        ret = new IR::Declaration_Variable(name, type);
-    }
-    else {
+        if (not is_forbidden) {
+            auto expr = expression::gen_expr(type);
+            ret = new IR::Declaration_Variable(name, type, expr);
+        } else {
+            ret = new IR::Declaration_Variable(name, type);
+        }
+
+    } else {
         BUG("Type %s not supported!", type->node_type_name());
     }
 

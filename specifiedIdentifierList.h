@@ -25,7 +25,7 @@ public:
 
         for (size_t i = 0; i < len; i++) {
             IR::ID *name       = new IR::ID(CODEGEN::randstr(2));
-            IR::Expression *ex = expression::gen_literal(1);
+            IR::Expression *ex = bit_literal::gen_int();
 
             if (members_name.find(name->name) != members_name.end()) {
                 delete name;

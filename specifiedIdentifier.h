@@ -7,47 +7,42 @@
 #include "expression.h"
 
 namespace CODEGEN {
-
-
 class specifiedIdentifier {
 public:
-	const char* types[0] = {
-	};
+    const char *types[0] = {
+    };
 
-	std::set<cstring> members_name;
+    std::set<cstring> members_name;
 
-	specifiedIdentifier() {
-	}
+    specifiedIdentifier() {
+    }
 
-	// TODO: Tao: better expr generation
-	IR::IndexedVector< IR::SerEnumMember > gen(size_t len) {
-		IR::IndexedVector< IR::SerEnumMember > members;
+    // TODO: Tao: better expr generation
+    IR::IndexedVector<IR::SerEnumMember> gen(size_t len) {
+        IR::IndexedVector<IR::SerEnumMember> members;
 
 
-		for (size_t i=0; i<len; i++) {
-			IR::ID* name = new IR::ID(CODEGEN::randstr(2));
-			auto expr = new expression(); // for bit literal
-			IR::Expression* ex = expr->gen_literal(1);
+        for (size_t i = 0; i < len; i++) {
+            IR::ID *name       = new IR::ID(CODEGEN::randstr(2));
+            auto expr          = new expression();    // for bit literal
+            IR::Expression *ex = bit_literal::gen_int();
 
-			if (members_name.find(name->name) != members_name.end()) {
-				delete name;
-				delete expr;
-				delete ex;
-				continue;
-			}
+            if (members_name.find(name->name) != members_name.end()) {
+                delete name;
+                delete expr;
+                delete ex;
+                continue;
+            }
 
-			auto member = new IR::SerEnumMember(*name, ex);
+            auto member = new IR::SerEnumMember(*name, ex);
 
-			members.push_back(member);
-		}
+            members.push_back(member);
+        }
 
-		return members;
-	}
+        return members;
+    }
 };
-
-
 } // namespace CODEGEN
-
 
 
 

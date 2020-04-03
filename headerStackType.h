@@ -31,7 +31,7 @@ public:
 
     IR::Type *gen() {
         IR::Type *tp      = type_name->gen();
-        IR::Expression *e = expression::gen_literal(1);
+        IR::Expression *e = bit_literal::gen_int();
 
         if ((tp == nullptr) || (e == nullptr)) {
             return nullptr;

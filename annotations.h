@@ -28,7 +28,7 @@ public:
     }
 
     IR::Annotations *gen() {
-        auto str_literal = expression::gen_literal(2);
+        auto str_literal = new IR::StringLiteral(CODEGEN::randstr(6));
 
         exprs.push_back(str_literal);
 

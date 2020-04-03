@@ -110,11 +110,12 @@ void P4Scope::delete_lval(const IR::Type *tp, cstring name) {
     }
     lval_map[type_key][bit_bucket].erase(name);
 
+    // delete values in the normal map
     if (lval_map[type_key][bit_bucket].size() == 0) {
         lval_map[type_key].erase(bit_bucket);
     }
 
-
+    // delete values in the rw map
     if (lval_map_rw.count(type_key) != 0) {
         if (lval_map_rw[type_key].count(bit_bucket) != 0) {
             lval_map_rw[type_key][bit_bucket].erase(name);
@@ -122,6 +123,13 @@ void P4Scope::delete_lval(const IR::Type *tp, cstring name) {
                 lval_map_rw[type_key].erase(bit_bucket);
             }
         }
+    }
+    // delete empty type entries
+    if (lval_map[type_key].size() == 0) {
+        lval_map.erase(type_key);
+    }
+    if (lval_map_rw[type_key].size() == 0) {
+        lval_map_rw.erase(type_key);
     }
 }
 
