@@ -2,9 +2,6 @@
 #define _SCOPE_H_
 
 
-#define SCOPE_PROGRAM    0
-
-
 #include <vector>
 #include <map>
 #include <string>
@@ -16,7 +13,6 @@
 namespace CODEGEN {
 class P4Scope {
 public:
-
     static std::vector<IR::Vector<IR::Node> *> scope;
     static std::set<cstring> used_names;
     // a map of usable lvalues
@@ -33,7 +29,6 @@ public:
 
     static std::set<cstring> not_initialized_structs;
 
-    static std::map<cstring, const IR::Type_StructLike *> compound_type;
 
     P4Scope() {}
 
@@ -65,12 +60,9 @@ public:
         types_w_stack.insert(name);
     }
 
-
-
     static void get_all_type_names(cstring               filter,
                                    std::vector<cstring>& type_names);
-    static int get_num_type_header();
-    static IR::Type *get_type_by_name(cstring name);
+    static const IR::Type_Declaration *get_type_by_name(cstring name);
 
     // template to get all declarations
     // C++ is so shit... templates must be inlined to be generally usable.
@@ -78,19 +70,15 @@ public:
     static inline std::vector<const T *> get_decls() {
         std::vector<const T *> ret;
 
-        for (auto i = scope.begin(); i < scope.end(); i++) {
-            for (size_t j = 0; j < (*i)->size(); j++) {
-                auto obj = (*i)->at(j);
-
-                if (obj->is<T>()) {
-                    const T *tmp_obj = obj->to<T>();
+        for (auto sub_scope : scope) {
+            for (auto node : *sub_scope) {
+                if (const T *tmp_obj = node->to<T>()) {
                     ret.push_back(tmp_obj);
                 }
             }
         }
         return ret;
     }
-
 
     static std::map<cstring, std::vector<const IR::Type *> > get_action_def();
     static std::set<const IR::P4Table *> *get_callable_tables();

@@ -299,8 +299,8 @@ IR::Expression *construct_ternary_expr(const IR::Type_Bits *tb,
                 auto new_type_size = rand() % 128 + type_width + 1;
                 auto slice_type    = new IR::Type_Bits(new_type_size, false);
                 auto slice_expr    = construct_bit_expr(slice_type, req, prop);
-                 if (prop->width_unknown) {
-                    slice_expr = new IR::Cast(slice_type, slice_expr);
+                if (prop->width_unknown) {
+                    slice_expr          = new IR::Cast(slice_type, slice_expr);
                     prop->width_unknown = false;
                 }
                 auto margin = new_type_size - type_width;
@@ -313,16 +313,16 @@ IR::Expression *construct_ternary_expr(const IR::Type_Bits *tb,
                 // pick a mux that matches the type
                 IR::Expression *cond = construct_boolean_expr(req, prop);
                 IR::Expression *left = construct_bit_expr(tb, req, prop);
-                 if (prop->width_unknown) {
+                if (prop->width_unknown) {
                     left = new IR::Cast(tb, left);
                     prop->width_unknown = false;
                 }
                 IR::Expression *right = construct_bit_expr(tb, req, prop);
-                 if (prop->width_unknown) {
+                if (prop->width_unknown) {
                     right = new IR::Cast(tb, right);
                     prop->width_unknown = false;
                 }
-                expr  = new IR::Mux(tb, cond, left, right);
+                expr = new IR::Mux(tb, cond, left, right);
             }
             break;
     }
@@ -496,23 +496,26 @@ IR::ListExpression *gen_struct_list(const IR::Type_Name *tn,
     IR::Vector<IR::Expression> components;
     cstring tn_name = tn->path->name.name;
 
-    if (P4Scope::compound_type.count(tn_name) != 0) {
-        auto tn_type = P4Scope::compound_type[tn_name];
-        if (not tn_type) {
-            BUG("gen_struct_list: Requested Type %s not found", tn_name);
-        }
-        for (auto sf : tn_type->fields) {
-            IR::Expression *expr;
-            if (auto field_tb = sf->type->to<IR::Type_Bits>()) {
-                expr = construct_bit_expr(field_tb, req, prop);
-            } else if (auto field_tn = sf->type->to<IR::Type_Name>()) {
-                expr = gen_struct_list(field_tn, req, prop);
-            } else{
-                BUG("gen_struct_list: Type %s not yet supported",
-                    sf->type->node_type_name());
+    if (auto td = P4Scope::get_type_by_name(tn_name)) {
+        if (auto tn_type = td->to<IR::Type_StructLike>()) {
+            for (auto sf : tn_type->fields) {
+                IR::Expression *expr;
+                if (auto field_tb = sf->type->to<IR::Type_Bits>()) {
+                    expr = construct_bit_expr(field_tb, req, prop);
+                } else if (auto field_tn = sf->type->to<IR::Type_Name>()) {
+                    expr = gen_struct_list(field_tn, req, prop);
+                } else{
+                    BUG("gen_struct_list: Type %s not yet supported",
+                        sf->type->node_type_name());
+                }
+                components.push_back(expr);
             }
-            components.push_back(expr);
+        } else{
+            BUG("gen_struct_list: Requested Type %s not a struct-like type",
+                tn_name);
         }
+    } else{
+        BUG("gen_struct_list: Requested Type %s not found", tn_name);
     }
     return new IR::ListExpression(components);
 }

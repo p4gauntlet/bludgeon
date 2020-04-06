@@ -22,18 +22,12 @@ std::set<cstring> P4Scope::not_initialized_structs = {
     "egress_intrinsic_metadata_for_deparser_t",
     "egress_intrinsic_metadata_for_output_port_t",
 };
-// refactor
-std::map<cstring, const IR::Type_StructLike *> P4Scope::compound_type; // name for quick search
 
 void P4Scope::add_to_scope(const IR::Node *n) {
     auto l_scope = P4Scope::scope.back();
 
     l_scope->push_back(n);
 
-    //  if it is Type_StructLike, then add to compound_type
-    if (auto ts = n->to<IR::Type_StructLike>()) {
-        P4Scope::compound_type.emplace(ts->name.name, ts);
-    }
     if (auto dv = n->to<IR::Declaration_Variable>()) {
         add_lval(dv->type, dv->name.name);
     }
@@ -98,16 +92,19 @@ void P4Scope::delete_lval(const IR::Type *tp, cstring name) {
         if (tn_name == "packet_in") {
             return;
         }
-        if (compound_type.count(tn_name) != 0) {
-            auto tn_type = compound_type[tn_name];
-            //width_bits should work here, do not know why not...
-            type_key = tn_name;
-            // does not work for some reason...
-            // bit_bucket = P4Scope::compound_type[tn_name]->width_bits();
-            bit_bucket = 1;
-            delete_compound_lvals(tn_type, name);
+        if (auto td = get_type_by_name(tn_name)) {
+            if (auto tn_type = td->to<IR::Type_StructLike>()) {
+                // width_bits should work here, do not know why not...
+                type_key = tn_name;
+                // does not work for some reason...
+                // bit_bucket = P4Scope::compound_type[tn_name]->width_bits();
+                bit_bucket = 1;
+                delete_compound_lvals(tn_type, name);
+            } else {
+                BUG("Type %s not yet supported", td->node_type_name());
+            }
         } else {
-            printf("Type %s does not exist\n", tn_name);
+            printf("Type %s does not exist!\n", tn_name);
             return;
         }
     } else{
@@ -151,14 +148,17 @@ void P4Scope::add_lval(const IR::Type *tp, cstring name, bool read_only) {
         if (tn_name == "packet_in") {
             return;
         }
-        if (compound_type.count(tn_name) != 0) {
-            auto tn_type = compound_type[tn_name];
-            //width_bits should work here, do not know why not...
-            type_key = tn_name;
-            // does not work for some reason...
-            // bit_bucket = P4Scope::compound_type[tn_name]->width_bits();
-            bit_bucket = 1;
-            add_compound_lvals(tn_type, name);
+        if (auto td = get_type_by_name(tn_name)) {
+            if (auto tn_type = td->to<IR::Type_StructLike>()) {
+                // width_bits should work here, do not know why not...
+                type_key = tn_name;
+                // does not work for some reason...
+                // bit_bucket = P4Scope::compound_type[tn_name]->width_bits();
+                bit_bucket = 1;
+                add_compound_lvals(tn_type, name);
+            } else {
+                BUG("Type %s not yet supported", td->node_type_name());
+            }
         } else {
             BUG("Type %s does not exist", tn_name);
         }
@@ -182,8 +182,8 @@ std::set<cstring> P4Scope::get_candidate_lvals(const IR::Type *tp,
         bit_bucket = tb->width_bits();
     } else if (auto tn = tp->to<IR::Type_Name>()) {
         auto tn_name = tn->path->name.name;
-        if (P4Scope::compound_type.count(tn_name) != 0) {
-            // bit_bucket = P4Scope::compound_type[tn_name]->width_bits();
+        if (auto td = get_type_by_name(tn_name)) {
+            // bit_bucket = td->width_bits();
             bit_bucket = 1;
         } else {
             BUG("Type_name refers to unknown type %s", tn_name);
@@ -321,35 +321,17 @@ void P4Scope::get_all_type_names(cstring               filter,
     }
 }
 
+
 std::set<const IR::P4Table *> *P4Scope::get_callable_tables() {
     return &callable_tables;
 }
 
-
-
-int P4Scope::get_num_type_header() {
-    int ret = 0;
-
-    for (auto i = scope.begin(); i < scope.end(); i++) {
-        for (size_t j = 0; j < (*i)->size(); j++) {
-            auto obj = (*i)->at(j);
-            if (obj->is<IR::Type_Header>()) {
-                ret = ret + 1;
-            }
-        }
-    }
-    return ret;
-}
-
-
-IR::Type *P4Scope::get_type_by_name(cstring name) {
-    for (auto i = scope.begin(); i < scope.end(); i++) {
-        for (size_t j = 0; j < (*i)->size(); j++) {
-            auto obj = (*i)->at(j);
-            if (obj->is<IR::Type_Declaration>()) {
-                auto decl = obj->to<IR::Type_Declaration>();
+const IR::Type_Declaration *P4Scope::get_type_by_name(cstring name) {
+    for (auto sub_scope : scope) {
+        for (auto node : *sub_scope) {
+            if (auto decl = node->to<IR::Type_Declaration>()) {
                 if (decl->name.name == name) {
-                    return (IR::Type *)decl;
+                    return decl;
                 }
             }
         }

@@ -27,7 +27,8 @@ IR::Node *CGenerator::gen() {
                     break;
                 }
             case 1: {
-                    if (P4Scope::get_num_type_header() > 0) {
+                    auto hdrs = P4Scope::get_decls<IR::Type_Header>();
+                    if (hdrs.size() > 0) {
                         n = headerUnionDeclaration::gen();
                     }
                     break;
@@ -258,7 +259,7 @@ void CGenerator::gen_p4_code() {
     } else if (flag == 1) {
         CGenerator::emitTFTop(ostream);
 
-        // objects->push_back(gen_func());
+        //objects->push_back(gen_func());
         // generate tofino metadatas
         structTypeDeclaration::gen_tf_md_t();
 

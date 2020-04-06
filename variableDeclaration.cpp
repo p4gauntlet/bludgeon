@@ -19,7 +19,6 @@ IR::Declaration_Variable *variableDeclaration::gen() {
         auto expr = expression::gen_expr(type);
         ret = new IR::Declaration_Variable(name, type, expr);
     } else if (type->is<IR::Type_Name>()) {
-        // TODO FIX TYPE NAME
         IR::Vector<IR::Expression> exprs;
         bool is_forbidden = false;
         auto type_name = type->to<IR::Type_Name>()->path->name.name;
