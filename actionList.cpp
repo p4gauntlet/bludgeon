@@ -30,7 +30,7 @@ IR::MethodCallExpression *gen_actioncall_expression(
 
 IR::ActionList *actionList::gen(size_t len) {
     IR::IndexedVector<IR::ActionListElement> act_list;
-    auto p4_actions = P4Scope::get_action_decls();
+    auto p4_actions = P4Scope::get_decls<IR::P4Action>();
     std::set<cstring> act_names;
 
     if (p4_actions.size() == 0) {

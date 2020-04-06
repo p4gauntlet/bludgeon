@@ -39,7 +39,6 @@ IR::Declaration_Variable *variableDeclaration::gen() {
 
 
     P4Scope::add_to_scope(ret);
-    P4Scope::add_lval(type, name, false);
 
     return ret;
 }

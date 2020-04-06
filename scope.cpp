@@ -11,7 +11,6 @@ std::map<cstring, std::map<int, std::set<cstring> > > P4Scope::lval_map_rw;
 std::set<cstring> P4Scope::types_w_stack;
 const IR::Type *P4Scope::ret_type = nullptr;
 std::vector<IR::P4Control *> P4Scope::p4_ctrls;
-std::map<cstring, IR::P4Control *> P4Scope::decl_ins_ctrls;
 std::set<const IR::P4Table *> P4Scope::callable_tables;
 const IR::Type_Struct *P4Scope::sys_hdr;
 std::set<cstring> P4Scope::not_initialized_structs = {
@@ -24,7 +23,6 @@ std::set<cstring> P4Scope::not_initialized_structs = {
     "egress_intrinsic_metadata_for_output_port_t",
 };
 // refactor
-int P4Scope::scope_indicator = SCOPE_PROGRAM;
 std::map<cstring, const IR::Type_StructLike *> P4Scope::compound_type; // name for quick search
 
 void P4Scope::add_to_scope(const IR::Node *n) {
@@ -36,6 +34,16 @@ void P4Scope::add_to_scope(const IR::Node *n) {
     if (auto ts = n->to<IR::Type_StructLike>()) {
         P4Scope::compound_type.emplace(ts->name.name, ts);
     }
+    if (auto dv = n->to<IR::Declaration_Variable>()) {
+        add_lval(dv->type, dv->name.name);
+    }
+}
+
+
+void P4Scope::start_local_scope() {
+    IR::Vector<IR::Node> *local_scope = new IR::Vector<IR::Node>();
+
+    scope.push_back(local_scope);
 }
 
 
@@ -43,7 +51,6 @@ void P4Scope::end_local_scope() {
     IR::Vector<IR::Node> *local_scope = scope.back();
 
     for (auto node : *local_scope) {
-
         if (auto decl = node->to<IR::Declaration_Variable>()) {
             delete_lval(decl->type, decl->name.name);
         } else if (auto param = node->to<IR::Parameter>()) {
@@ -53,8 +60,6 @@ void P4Scope::end_local_scope() {
 
     delete local_scope;
     scope.pop_back();
-    // clear the declaration instances
-    decl_ins_ctrls.clear();
 }
 
 
@@ -316,84 +321,10 @@ void P4Scope::get_all_type_names(cstring               filter,
     }
 }
 
-
-std::vector<cstring> P4Scope::get_name_nodir_p4acts() {
-    std::vector<cstring> ret;
-
-    std::vector<const IR::P4Action *> nodir_p4acts;
-
-    nodir_p4acts = get_p4actions_nodir();
-
-    for (auto i = nodir_p4acts.begin(); i < nodir_p4acts.end(); i++) {
-        ret.push_back((*i)->name.name);
-    }
-
-    return ret;
-}
-
-
-std::vector<const IR::P4Action *> P4Scope::get_p4actions_nodir() {
-    std::vector<const IR::P4Action *> ret;
-    auto p4actions_all = P4Scope::get_decls<IR::P4Action>();
-
-    for (auto i = p4actions_all.begin(); i < p4actions_all.end(); i++) {
-        const IR::P4Action *p4act = *i;
-        auto act_params           = p4act->parameters->parameters;
-        bool is_p4c_nodir         = true;
-
-        for (size_t ind = 0; ind < act_params.size(); ind++) {
-            auto param = act_params.at(ind);
-            if (param->direction != IR::Direction::None) {
-                is_p4c_nodir = false;
-                break;
-            }
-        }
-
-        if (is_p4c_nodir == true) {
-            ret.push_back(p4act);
-        }
-    }
-
-    return ret;
-}
-
-
-std::vector<const IR::Function *> P4Scope::get_func_decls() {
-    return get_decls<IR::Function>();
-}
-
-
-std::vector<const IR::P4Table *> P4Scope::get_tab_decls() {
-    return get_decls<IR::P4Table>();
-}
-
-
-std::vector<const IR::P4Action *> P4Scope::get_action_decls() {
-    return get_decls<IR::P4Action>();
-}
-
-
 std::set<const IR::P4Table *> *P4Scope::get_callable_tables() {
     return &callable_tables;
 }
 
-
-template<typename T>
-std::vector<const T *> P4Scope::get_decls() {
-    std::vector<const T *> ret;
-
-    for (auto i = scope.begin(); i < scope.end(); i++) {
-        for (size_t j = 0; j < (*i)->size(); j++) {
-            auto obj = (*i)->at(j);
-
-            if (obj->is<T>()) {
-                const T *tmp_obj = obj->to<T>();
-                ret.push_back(tmp_obj);
-            }
-        }
-    }
-    return ret;
-}
 
 
 int P4Scope::get_num_type_header() {
@@ -425,13 +356,4 @@ IR::Type *P4Scope::get_type_by_name(cstring name) {
     }
     return nullptr;
 }
-
-
-void P4Scope::print_scope() {
-    // for (auto i = scope.begin(); i<scope.end(); i++) {
-    //  for (size_t j=0; j< (*i)->size(); j++) {
-    //      std::cout << (*i)->at(j) << std::endl;
-    //  }
-    // }
-}
-} // namespace CODEGE
+}  // namespace CODEGEN

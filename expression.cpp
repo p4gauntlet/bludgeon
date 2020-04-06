@@ -1,8 +1,7 @@
 #include "expression.h"
 
 namespace CODEGEN {
-
-#define MAX_DEPTH 3
+#define MAX_DEPTH    3
 
 struct Properties
 {
@@ -27,7 +26,7 @@ IR::MethodCallExpression *gen_functioncall_expression(
 
     bool can_call = true;
 
-    for (auto par: params) {
+    for (auto par : params) {
         if (not expression::check_input_arg(par)) {
             can_call = false;
         } else {
@@ -48,7 +47,8 @@ IR::MethodCallExpression *gen_functioncall_expression(
 IR::Expression *construct_unary_expr(const IR::Type_Bits *tb,
                                      Requirements        *req,
                                      Properties          *prop) {
-    IR::Expression *expr     = nullptr;
+    IR::Expression *expr = nullptr;
+
     if (prop->depth > MAX_DEPTH) {
         return bit_literal::gen_bit(tb);
     }
@@ -80,7 +80,7 @@ IR::Expression *construct_unary_expr(const IR::Type_Bits *tb,
             }
             break;
         case 3: {
-                auto p4_functions = P4Scope::get_func_decls();
+                auto p4_functions = P4Scope::get_decls<IR::Function>();
                 if (p4_functions.size() == 0) {
                     expr = bit_literal::gen_bit(tb);
                     break;
@@ -112,6 +112,7 @@ IR::Expression *construct_binary_expr(const IR::Type_Bits *tb,
                                       Requirements        *req,
                                       Properties          *prop) {
     IR::Expression *expr = nullptr;
+
     if (prop->depth > MAX_DEPTH) {
         return bit_literal::gen_bit(tb);
     }
@@ -255,14 +256,21 @@ IR::Expression *construct_binary_expr(const IR::Type_Bits *tb,
                 if (split >= type_width) {
                     return bit_literal::gen_bit(tb);
                 }
-                auto type_left = new IR::Type_Bits(type_width - split,
-                                                   false);
-                auto type_right = new IR::Type_Bits(split, false);
+                auto tl = new IR::Type_Bits(type_width - split,
+                                            false);
+                auto tr = new IR::Type_Bits(split, false);
                 // width must be known so we cast
-                IR::Expression *left =
-                    new IR::Cast(type_left, construct_bit_expr(tb, req, prop));
-                IR::Expression *right =
-                    new IR::Cast(type_right, construct_bit_expr(tb, req, prop));
+                // width must be known so we cast
+                IR::Expression *left = construct_bit_expr(tl, req, prop);
+                if (prop->width_unknown) {
+                    left = new IR::Cast(tl, left);
+                    prop->width_unknown = false;
+                }
+                IR::Expression *right = construct_bit_expr(tr, req, prop);
+                if (prop->width_unknown) {
+                    right = new IR::Cast(tr, right);
+                    prop->width_unknown = false;
+                }
                 expr = new IR::Concat(tb, left, right);
             }
             break;
@@ -274,7 +282,8 @@ IR::Expression *construct_binary_expr(const IR::Type_Bits *tb,
 IR::Expression *construct_ternary_expr(const IR::Type_Bits *tb,
                                        Requirements        *req,
                                        Properties          *prop) {
-    IR::Expression *expr     = nullptr;
+    IR::Expression *expr = nullptr;
+
     if (prop->depth > MAX_DEPTH) {
         return bit_literal::gen_bit(tb);
     }
@@ -290,8 +299,10 @@ IR::Expression *construct_ternary_expr(const IR::Type_Bits *tb,
                 auto new_type_size = rand() % 128 + type_width + 1;
                 auto slice_type    = new IR::Type_Bits(new_type_size, false);
                 auto slice_expr    = construct_bit_expr(slice_type, req, prop);
-                // another cast where there shouldn't be...
-                slice_expr = new IR::Cast(slice_type, slice_expr);
+                 if (prop->width_unknown) {
+                    slice_expr = new IR::Cast(slice_type, slice_expr);
+                    prop->width_unknown = false;
+                }
                 auto margin = new_type_size - type_width;
                 size_t high = (rand() % margin) + type_width;
                 size_t low  = high - type_width + 1;
@@ -302,11 +313,15 @@ IR::Expression *construct_ternary_expr(const IR::Type_Bits *tb,
                 // pick a mux that matches the type
                 IR::Expression *cond = construct_boolean_expr(req, prop);
                 IR::Expression *left = construct_bit_expr(tb, req, prop);
-                //Type Inference for Mux does not quite work so we cast...
-                left = new IR::Cast(tb, left);
+                 if (prop->width_unknown) {
+                    left = new IR::Cast(tb, left);
+                    prop->width_unknown = false;
+                }
                 IR::Expression *right = construct_bit_expr(tb, req, prop);
-                // insert cast here too....
-                right = new IR::Cast(tb, right);
+                 if (prop->width_unknown) {
+                    right = new IR::Cast(tb, right);
+                    prop->width_unknown = false;
+                }
                 expr  = new IR::Mux(tb, cond, left, right);
             }
             break;
@@ -367,7 +382,7 @@ IR::Expression *construct_bit_expr(const IR::Type_Bits *tb, Requirements *req,
                 if (req->require_scalar) {
                     expr = bit_literal::gen_bit(tb);
                 } else {
-                    big_int max_size = ((big_int) 1U << tb->width_bits()) - 1;
+                    big_int max_size = ((big_int)1U << tb->width_bits()) - 1;
                     expr = bit_literal::gen_int(max_size);
                     prop->width_unknown = true;
                 }
@@ -575,4 +590,4 @@ bool expression::check_input_arg(const IR::Parameter *param) {
         return P4Scope::check_lval(param->type, true);
     }
 }
-} // namespace CODEGEN
+}  // namespace CODEGEN

@@ -18,9 +18,9 @@ IR::AssignmentStatement *assignmentOrMethodCallStatement::gen_assign() {
                     return nullptr;
                 }
                 cstring name = P4Scope::pick_lval(bit_type, true);
-                left       = new IR::PathExpression(name);
-                right      = expression::gen_expr(bit_type);
-                return  new IR::AssignmentStatement(left, right);
+                left  = new IR::PathExpression(name);
+                right = expression::gen_expr(bit_type);
+                return new IR::AssignmentStatement(left, right);
             }
         case 1:
             // TODO: Compound types
@@ -40,7 +40,7 @@ IR::Statement *gen_methodcall_expression(cstring           method_name,
     // all this boilerplate should be somewhere else...
     P4Scope::start_local_scope();
 
-    for (auto par: params) {
+    for (auto par : params) {
         IR::Argument *arg;
         if (not expression::check_input_arg(par)) {
             auto name = randstr(6);
@@ -48,7 +48,6 @@ IR::Statement *gen_methodcall_expression(cstring           method_name,
             // all this boilerplate should be somewhere else...
             auto decl = new IR::Declaration_Variable(name, par->type, expr);
             P4Scope::add_to_scope(decl);
-            P4Scope::add_lval(par->type, name, false);
             decls.push_back(decl);
         }
         arg = new IR::Argument(expression::gen_input_arg(par));
@@ -75,7 +74,7 @@ IR::Statement *gen_methodcall() {
 
     switch (randind(percent)) {
         case 0: {
-                auto actions = P4Scope::get_action_decls();
+                auto actions = P4Scope::get_decls<IR::P4Action>();
                 if (actions.size() == 0) {
                     fallback = true;
                     break;
@@ -86,7 +85,7 @@ IR::Statement *gen_methodcall() {
                 return gen_methodcall_expression(p4_fun->name, params);
             }
         case 1: {
-                auto funcs = P4Scope::get_func_decls();
+                auto funcs = P4Scope::get_decls<IR::Function>();
                 if (funcs.size() == 0) {
                     fallback = true;
                     break;
@@ -130,7 +129,7 @@ IR::Statement *gen_methodcall() {
 
 
 IR::Statement *assignmentOrMethodCallStatement::gen() {
-    std::vector<int> percent = { 50, 50 };
+    std::vector<int> percent = { 75, 25 };
     auto val = randind(percent);
 
     if (val == 0) {
@@ -139,4 +138,4 @@ IR::Statement *assignmentOrMethodCallStatement::gen() {
         return gen_methodcall();
     }
 }
-} // namespace CODEGEN
+}  // namespace CODEGEN

@@ -46,10 +46,10 @@ public:
         tp_parser = new IR::Type_Parser("p", param_list);
 
         // generate decls
-        for (int i = 0; i < 5; i++) {
+/*        for (int i = 0; i < 5; i++) {
             auto var_decl = variableDeclaration::gen();
             parserLocals.push_back(var_decl);
-        }
+        }*/
 
         // generate states
         auto p4state = new p4State();

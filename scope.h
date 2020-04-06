@@ -19,38 +19,28 @@ public:
 
     static std::vector<IR::Vector<IR::Node> *> scope;
     static std::set<cstring> used_names;
+    // a map of usable lvalues
     static std::map<cstring, std::map<int, std::set<cstring> > > lval_map;
     // a subset of the lval map that includes rw values
     static std::map<cstring, std::map<int, std::set<cstring> > > lval_map_rw;
-
-
 
     // which type has a field whose type is stack
     static std::set<cstring> types_w_stack;
     static const IR::Type *ret_type;
     static std::vector<IR::P4Control *> p4_ctrls;
     static std::set<const IR::P4Table *> callable_tables;
-    static std::map<cstring, IR::P4Control *> decl_ins_ctrls;
     static const IR::Type_Struct *sys_hdr;
 
     static std::set<cstring> not_initialized_structs;
 
-    // Tao: for refactoring stuff
-    static int scope_indicator;                                          // used for indicate where we are
-    static std::map<cstring, const IR::Type_StructLike *> compound_type; // name for quick search
+    static std::map<cstring, const IR::Type_StructLike *> compound_type;
 
-    P4Scope() {
-    }
+    P4Scope() {}
 
-    ~P4Scope() {
-    }
+    ~P4Scope() { }
 
-    static void start_local_scope() {
-        IR::Vector<IR::Node> *local_scope = new IR::Vector<IR::Node>();
-
-        scope.push_back(local_scope);
-    }
-
+    static void add_to_scope(const IR::Node *n);
+    static void start_local_scope();
     static void end_local_scope();
 
     static void add_lval(const IR::Type *tp, cstring name,
@@ -75,7 +65,6 @@ public:
         types_w_stack.insert(name);
     }
 
-    static void add_to_scope(const IR::Node *n);
 
 
     static void get_all_type_names(cstring               filter,
@@ -83,30 +72,31 @@ public:
     static int get_num_type_header();
     static IR::Type *get_type_by_name(cstring name);
 
-    // get all the names of all p4actions w/o dir params
-    static std::vector<cstring> get_name_nodir_p4acts();
+    // template to get all declarations
+    // C++ is so shit... templates must be inlined to be generally usable.
+    template<typename T>
+    static inline std::vector<const T *> get_decls() {
+        std::vector<const T *> ret;
 
-    // get all p4actions w/o dir params
-    static std::vector<const IR::P4Action *> get_p4actions_nodir();
+        for (auto i = scope.begin(); i < scope.end(); i++) {
+            for (size_t j = 0; j < (*i)->size(); j++) {
+                auto obj = (*i)->at(j);
+
+                if (obj->is<T>()) {
+                    const T *tmp_obj = obj->to<T>();
+                    ret.push_back(tmp_obj);
+                }
+            }
+        }
+        return ret;
+    }
+
 
     static std::map<cstring, std::vector<const IR::Type *> > get_action_def();
-    static std::vector<const IR::Function *> get_func_decls();
-    static std::vector<const IR::P4Table *> get_tab_decls();
-    static std::vector<const IR::P4Action *> get_action_decls();
     static std::set<const IR::P4Table *> *get_callable_tables();
     static std::set<cstring> get_candidate_lvals(const IR::Type *tp,
                                                  bool           must_write = true);
-
-    // template to get all declarations
-    template<typename T>
-    static std::vector<const T *> get_decls();
-
-
-    static void pr_test();
-    static void print_scope();
 };
-} // namespace CODEGEN
+}  // namespace CODEGEN
 
-
-
-#endif // _SCOPE_H_
+#endif  // _SCOPE_H_

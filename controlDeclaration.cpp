@@ -114,15 +114,11 @@ IR::Declaration_Instance *controlDeclaration::gen_decl_instance() {
     if (size == 0) {
         return nullptr;
     }
-    IR::Declaration_Instance *decl_ins = nullptr;
     IR::Vector<IR::Argument> *args     = new IR::Vector<IR::Argument>();
     IR::P4Control *p4ctrl = P4Scope::p4_ctrls.at(rand() % size);
     IR::Type *tp          = new IR::Type_Name(p4ctrl->name);
 
-    cstring name = randstr(6);
-    decl_ins = new IR::Declaration_Instance(name, tp, args);
-    P4Scope::decl_ins_ctrls.emplace(name, p4ctrl);
 
-    return decl_ins;
+    return new IR::Declaration_Instance(randstr(6), tp, args);;
 }
 } // namespace CODEGEN

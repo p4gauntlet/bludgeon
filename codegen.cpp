@@ -104,14 +104,6 @@ IR::Node *CGenerator::gen_tpdef() {
     return n;
 }
 
-
-IR::Node *CGenerator::gen_actlist() {
-    auto names = P4Scope::get_name_nodir_p4acts();
-
-    return nullptr;
-}
-
-
 IR::Node *CGenerator::gen_tab() {
     auto tab_gen = new tableDeclaration();
 

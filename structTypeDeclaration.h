@@ -5,7 +5,6 @@
 
 #include "common.h"
 #include "scope.h"
-
 #include "annotations.h"
 #include "structFieldList.h"
 
@@ -21,13 +20,11 @@ public:
     structTypeDeclaration() {}
 
     static IR::Type_Struct *gen() {
-        IR::ID *name;
-
-        name = new IR::ID(CODEGEN::randstr(6));
-        auto sfl = new structFieldList(STRUCT, name->name);
+        cstring name = randstr(6);
+        auto sfl = new structFieldList(STRUCT, name);
         IR::IndexedVector<IR::StructField> fields = sfl->gen(rand() % 5 + 1);
 
-        auto ret = new IR::Type_Struct(*name, fields);
+        auto ret = new IR::Type_Struct(name, fields);
 
         P4Scope::add_to_scope(ret);
 
@@ -35,18 +32,16 @@ public:
     }
 
     static IR::Type_Struct *gen_Headers() {
-        IR::ID *name = new IR::ID("Headers");
-        auto   sfl   = new structFieldList(STRUCT_HEADERS, name->name);
+        auto   sfl   = new structFieldList(STRUCT_HEADERS, "Headers");
         IR::IndexedVector<IR::StructField> fields = sfl->gen(rand() % 5 + 1);
 
         // Tao: hard code for ethernet_t eth_hdr;
         auto eth_sf =
-            new IR::StructField(IR::ID(ETH_HDR), new IR::Type_Name(
-                                    new IR::Path(ETH_HEADER_T)));
+            new IR::StructField(ETH_HDR, new IR::Type_Name(ETH_HEADER_T));
 
         fields.insert(fields.begin(), eth_sf);
 
-        auto ret = new IR::Type_Struct(*name, fields);
+        auto ret = new IR::Type_Struct("Headers", fields);
 
         P4Scope::sys_hdr = ret;
         P4Scope::add_to_scope(ret);
@@ -119,7 +114,7 @@ public:
         P4Scope::add_to_scope(ret);
     }
 };
-} // namespace CODEGEN
+}  // namespace CODEGEN
 
 
-#endif // ifndef _STRUCTTYPEDECLARATION_H_
+#endif  // ifndef _STRUCTTYPEDECLARATION_H_
