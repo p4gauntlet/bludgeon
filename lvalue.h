@@ -8,22 +8,13 @@
 
 namespace CODEGEN {
 
-
 class lvalue {
-public:
-	const char* types[1] = {
-		"prefixedNonTypeName"
-	};
+  public:
+    const char *types[1] = {"prefixedNonTypeName"};
 
-	lvalue() {
-	}
-
+    lvalue() {}
 };
 
-
 } // namespace CODEGEN
-
-
-
 
 #endif

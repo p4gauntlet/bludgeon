@@ -1,12 +1,10 @@
 #include "scope.h"
 
-
 namespace CODEGEN {
 std::vector<IR::Vector<IR::Node> *> P4Scope::scope;
 std::set<cstring> P4Scope::used_names;
-std::map<cstring, std::map<int, std::set<cstring> > > P4Scope::lval_map;
-std::map<cstring, std::map<int, std::set<cstring> > > P4Scope::lval_map_rw;
-
+std::map<cstring, std::map<int, std::set<cstring>>> P4Scope::lval_map;
+std::map<cstring, std::map<int, std::set<cstring>>> P4Scope::lval_map_rw;
 
 std::set<cstring> P4Scope::types_w_stack;
 const IR::Type *P4Scope::ret_type = nullptr;
@@ -33,13 +31,11 @@ void P4Scope::add_to_scope(const IR::Node *n) {
     }
 }
 
-
 void P4Scope::start_local_scope() {
     IR::Vector<IR::Node> *local_scope = new IR::Vector<IR::Node>();
 
     scope.push_back(local_scope);
 }
-
 
 void P4Scope::end_local_scope() {
     IR::Vector<IR::Node> *local_scope = scope.back();
@@ -56,7 +52,6 @@ void P4Scope::end_local_scope() {
     scope.pop_back();
 }
 
-
 void add_compound_lvals(const IR::Type_StructLike *sl_type, cstring sl_name) {
     for (auto field : sl_type->fields) {
         std::stringstream ss;
@@ -67,9 +62,8 @@ void add_compound_lvals(const IR::Type_StructLike *sl_type, cstring sl_name) {
     }
 }
 
-
 void delete_compound_lvals(const IR::Type_StructLike *sl_type,
-                           cstring                   sl_name) {
+                           cstring sl_name) {
     for (auto field : sl_type->fields) {
         std::stringstream ss;
         ss.str("");
@@ -79,13 +73,12 @@ void delete_compound_lvals(const IR::Type_StructLike *sl_type,
     }
 }
 
-
 void P4Scope::delete_lval(const IR::Type *tp, cstring name) {
     cstring type_key;
     int bit_bucket;
 
     if (auto tb = tp->to<IR::Type_Bits>()) {
-        type_key   = IR::Type_Bits::static_type_name();
+        type_key = IR::Type_Bits::static_type_name();
         bit_bucket = tb->width_bits();
     } else if (auto tn = tp->to<IR::Type_Name>()) {
         auto tn_name = tn->path->name.name;
@@ -107,7 +100,7 @@ void P4Scope::delete_lval(const IR::Type *tp, cstring name) {
             printf("Type %s does not exist!\n", tn_name);
             return;
         }
-    } else{
+    } else {
         BUG("Type %s not yet supported", tp->node_type_name());
     }
     lval_map[type_key][bit_bucket].erase(name);
@@ -135,13 +128,12 @@ void P4Scope::delete_lval(const IR::Type *tp, cstring name) {
     }
 }
 
-
 void P4Scope::add_lval(const IR::Type *tp, cstring name, bool read_only) {
     cstring type_key;
     int bit_bucket;
 
     if (auto tb = tp->to<IR::Type_Bits>()) {
-        type_key   = IR::Type_Bits::static_type_name();
+        type_key = IR::Type_Bits::static_type_name();
         bit_bucket = tb->width_bits();
     } else if (auto tn = tp->to<IR::Type_Name>()) {
         auto tn_name = tn->path->name.name;
@@ -162,7 +154,7 @@ void P4Scope::add_lval(const IR::Type *tp, cstring name, bool read_only) {
         } else {
             BUG("Type %s does not exist", tn_name);
         }
-    } else{
+    } else {
         BUG("Type %s not yet supported", tp->node_type_name());
     }
     if (not read_only) {
@@ -171,14 +163,13 @@ void P4Scope::add_lval(const IR::Type *tp, cstring name, bool read_only) {
     lval_map[type_key][bit_bucket].insert(name);
 }
 
-
 std::set<cstring> P4Scope::get_candidate_lvals(const IR::Type *tp,
-                                               bool           must_write) {
+                                               bool must_write) {
     cstring type_key;
     int bit_bucket;
 
     if (auto tb = tp->to<IR::Type_Bits>()) {
-        type_key   = IR::Type_Bits::static_type_name();
+        type_key = IR::Type_Bits::static_type_name();
         bit_bucket = tb->width_bits();
     } else if (auto tn = tp->to<IR::Type_Name>()) {
         auto tn_name = tn->path->name.name;
@@ -188,15 +179,15 @@ std::set<cstring> P4Scope::get_candidate_lvals(const IR::Type *tp,
         } else {
             BUG("Type_name refers to unknown type %s", tn_name);
         }
-    } else{
+    } else {
         BUG("Type %s not yet supported", tp->node_type_name());
     }
 
-    std::map<cstring, std::map<int, std::set<cstring> > > lookup_map;
+    std::map<cstring, std::map<int, std::set<cstring>>> lookup_map;
 
     if (must_write) {
         lookup_map = lval_map_rw;
-    } else{
+    } else {
         lookup_map = lval_map;
     }
 
@@ -211,7 +202,6 @@ std::set<cstring> P4Scope::get_candidate_lvals(const IR::Type *tp,
     return key_types[bit_bucket];
 }
 
-
 bool P4Scope::check_lval(const IR::Type *tp, bool must_write) {
     std::set<cstring> candidates = get_candidate_lvals(tp, must_write);
 
@@ -221,7 +211,6 @@ bool P4Scope::check_lval(const IR::Type *tp, bool must_write) {
     return true;
 }
 
-
 cstring P4Scope::pick_lval(const IR::Type *tp, bool must_write) {
     std::set<cstring> candidates = get_candidate_lvals(tp, must_write);
 
@@ -229,38 +218,35 @@ cstring P4Scope::pick_lval(const IR::Type *tp, bool must_write) {
         BUG("Invalid Type Query, %s not found", tp->toString());
     }
     size_t idx = rand() % candidates.size();
-    auto lval  = std::begin(candidates);
+    auto lval = std::begin(candidates);
     // 'advance' the iterator n times
     std::advance(lval, idx);
 
     return *lval;
 }
 
-
 IR::Type_Bits *P4Scope::pick_declared_bit_type(bool must_write) {
-    std::map<cstring, std::map<int, std::set<cstring> > > lookup_map;
+    std::map<cstring, std::map<int, std::set<cstring>>> lookup_map;
 
     if (must_write) {
         lookup_map = lval_map_rw;
-    } else{
+    } else {
         lookup_map = lval_map;
     }
-
 
     cstring bit_key = IR::Type_Bits::static_type_name();
     if (lookup_map.count(bit_key) == 0) {
         return nullptr;
     }
     auto key_types = lookup_map[bit_key];
-    size_t idx     = rand() % key_types.size();
-    int bit_width  = next(key_types.begin(), idx)->first;
+    size_t idx = rand() % key_types.size();
+    int bit_width = next(key_types.begin(), idx)->first;
     return new IR::Type_Bits(bit_width, false);
 }
 
-
 // Tao: filter is a mess here, sometimes it is filter, sometimes it is indicator
-void P4Scope::get_all_type_names(cstring               filter,
-                                 std::vector<cstring>& type_names) {
+void P4Scope::get_all_type_names(cstring filter,
+                                 std::vector<cstring> &type_names) {
     for (auto i = scope.begin(); i < scope.end(); i++) {
         for (size_t j = 0; j < (*i)->size(); j++) {
             auto obj = (*i)->at(j);
@@ -272,22 +258,20 @@ void P4Scope::get_all_type_names(cstring               filter,
                     auto tmp_obj = obj->to<IR::Type_Declaration>();
                     type_names.push_back(tmp_obj->name.name);
                 }
-            } else if (filter == HEADER_UNION) {           // we only want header def
+            } else if (filter == HEADER_UNION) { // we only want header def
                 if (obj->is<IR::Type_Header>()) {
                     auto tmp_obj = obj->to<IR::Type_Declaration>();
                     type_names.push_back(tmp_obj->name.name);
                 }
-            } else if ((filter == STRUCT) ||
-                       (filter == STRUCT_HEADERS)) {
-                if (!obj->is<IR::Type_Struct>() &&
-                    !obj->is<IR::Type_Enum>() &&
+            } else if ((filter == STRUCT) || (filter == STRUCT_HEADERS)) {
+                if (!obj->is<IR::Type_Struct>() && !obj->is<IR::Type_Enum>() &&
                     !obj->is<IR::Type_SerEnum>() &&
                     obj->is<IR::Type_Declaration>()) {
                     if (obj->is<IR::Type_Typedef>()) {
-                        auto tpdef_obj  = obj->to<IR::Type_Typedef>();
+                        auto tpdef_obj = obj->to<IR::Type_Typedef>();
                         auto tpdef_name = tpdef_obj->type->to<IR::Type_Name>();
-                        auto tpdef_type = get_type_by_name(
-                            tpdef_name->path->name.name);
+                        auto tpdef_type =
+                            get_type_by_name(tpdef_name->path->name.name);
                         if (!(tpdef_type->is<IR::Type_Header>() ||
                               tpdef_type->is<IR::Type_HeaderUnion>())) {
                             continue;
@@ -321,7 +305,6 @@ void P4Scope::get_all_type_names(cstring               filter,
     }
 }
 
-
 std::set<const IR::P4Table *> *P4Scope::get_callable_tables() {
     return &callable_tables;
 }
@@ -338,4 +321,4 @@ const IR::Type_Declaration *P4Scope::get_type_by_name(cstring name) {
     }
     return nullptr;
 }
-}  // namespace CODEGEN
+} // namespace CODEGEN

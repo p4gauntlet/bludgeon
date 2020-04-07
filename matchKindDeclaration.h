@@ -5,22 +5,13 @@
 
 namespace CODEGEN {
 
-
 class matchKindDeclaration {
-public:
-	const char* types[1] = {
-		"MATCH_KIND"
-	};
+  public:
+    const char *types[1] = {"MATCH_KIND"};
 
-	matchKindDeclaration() {
-	}
-
+    matchKindDeclaration() {}
 };
 
-
 } // namespace CODEGEN
-
-
-
 
 #endif

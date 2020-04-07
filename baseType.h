@@ -7,35 +7,30 @@
 #include "bool.h"
 #include "int.h"
 
-
 namespace CODEGEN {
 class baseType {
-public:
+  public:
     const char *types[10] = {
         "BOOL",
-        "ERROR",         // not
+        "ERROR", // not
         "INT",
         "BIT",
         "BIT <INTEGER>",
         "INT <INTEGER>",
-        "VARBIT <INTEGER>",         // not
-        "BIT < (expression) >",     // not
-        "INT < (expression) >",     // not
-        "VARBIT < (expression) >"   // not
+        "VARBIT <INTEGER>",       // not
+        "BIT < (expression) >",   // not
+        "INT < (expression) >",   // not
+        "VARBIT < (expression) >" // not
     };
 
     bool if_random;
     std::vector<int> type;
 
-
-    baseType(bool if_rand, std::vector<int>& type) :
-        if_random(if_rand), type(type) {
-    }
+    baseType(bool if_rand, std::vector<int> &type)
+        : if_random(if_rand), type(type) {}
 
     IR::Type *gen();
 };
 } // namespace CODEGEN
-
-
 
 #endif

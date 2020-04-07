@@ -5,21 +5,13 @@
 
 namespace CODEGEN {
 
-
 class specializedType {
-public:
-	const char* types[0] = {
-	};
+  public:
+    const char *types[0] = {};
 
-	specializedType() {
-	}
-
+    specializedType() {}
 };
 
-
 } // namespace CODEGEN
-
-
-
 
 #endif
