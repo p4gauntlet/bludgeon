@@ -50,16 +50,17 @@ public:
 				type = type_ref->gen();
 			} else {
 				std::vector<cstring> names;
-				P4Scope::get_all_type_names(STRUCT_LIKE, names);
+                auto all_sl_type = P4Scope::get_structlike_decls();
+                for (auto &sl_type : all_sl_type) {
+                    if ((sl_type->name.name != "standard_metadata_t") &&
+                        (sl_type->name.name != "Meta") &&
+                        (sl_type->name.name != "Headers")) {
+                        names.push_back(sl_type->name.name);
+                    }
+                }
 				auto name = names.at(rand()%names.size());
 				type = new IR::Type_Name(new IR::Path(IR::ID(name)));
-				auto type = P4Scope::get_type_by_name(name);
-				if (type->is<IR::Type_Struct>()) {
-				}
-				else if (type->is<IR::Type_Header>()) {
-				}
-				else if (type->is<IR::Type_HeaderUnion>()) {
-				}
+                // Tao: maybe need to maintain other data structs
 			}
 
 			if (type != nullptr) {

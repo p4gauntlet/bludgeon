@@ -122,6 +122,7 @@ public:
     static std::vector<const IR::Function *> get_func_decls();
     static std::vector<const IR::P4Table *> get_tab_decls();
     static std::vector<const IR::P4Action *> get_action_decls();
+    static std::vector<const IR::Type_StructLike*> get_structlike_decls();
     static std::set<const IR::P4Table *> *get_callable_tables();
 
     // template to get all declarations

@@ -207,6 +207,10 @@ std::vector<const IR::P4Action *> P4Scope::get_action_decls() {
     return P4Scope::get_decls<IR::P4Action>();
 }
 
+std::vector<const IR::Type_StructLike*> P4Scope::get_structlike_decls() {
+    return P4Scope::get_decls<IR::Type_StructLike>();
+}
+
 
 std::set<const IR::P4Table *> *P4Scope::get_callable_tables() {
     return &P4Scope::callable_tables;
