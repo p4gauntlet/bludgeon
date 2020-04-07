@@ -5,21 +5,13 @@
 
 namespace CODEGEN {
 
-
 class statOrDeclList {
-public:
-	const char* types[0] = {
-	};
+  public:
+    const char *types[0] = {};
 
-	statOrDeclList() {
-	}
-
+    statOrDeclList() {}
 };
 
-
 } // namespace CODEGEN
-
-
-
 
 #endif

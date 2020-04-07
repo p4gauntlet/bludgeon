@@ -1,25 +1,20 @@
 #ifndef _ACTIONDECLARATION_H_
 #define _ACTIONDECLARATION_H_
 
+#include "blockStatement.h"
 #include "ir/ir.h"
 #include "parameterList.h"
-#include "blockStatement.h"
 
 namespace CODEGEN {
 class actionDeclaration {
-public:
-
-    const char *types[0] = {
-    };
-
+  public:
+    const char *types[0] = {};
 
     IR::ID *name = nullptr;
     IR::ParameterList *params = nullptr;
-    IR::BlockStatement *blk   = nullptr;
+    IR::BlockStatement *blk = nullptr;
 
-    actionDeclaration() {
-        name = new IR::ID(CODEGEN::randstr(5));
-    }
+    actionDeclaration() { name = new IR::ID(CODEGEN::randstr(5)); }
 
     ~actionDeclaration() {
         delete name;
@@ -45,6 +40,5 @@ public:
     }
 };
 } // namespace CODEGEN
-
 
 #endif // ifndef _ACTIONDECLARATION_H_

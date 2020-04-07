@@ -5,17 +5,15 @@
 
 namespace CODEGEN {
 class statement {
-public:
-    const char *types[8] = {
-        "assignmentOrMethodCallStatement",
-        "directApplication",
-        "conditionalStatement",
-        "emptyStatement",
-        "blockStatement",
-        "exitStatement",
-        "returnStatement",
-        "switchStatement"
-    };
+  public:
+    const char *types[8] = {"assignmentOrMethodCallStatement",
+                            "directApplication",
+                            "conditionalStatement",
+                            "emptyStatement",
+                            "blockStatement",
+                            "exitStatement",
+                            "returnStatement",
+                            "switchStatement"};
 
     statement() {}
     ~statement() {}
@@ -23,7 +21,5 @@ public:
     static IR::Statement *gen_rnd(bool if_in_func);
 };
 } // namespace CODEGEN
-
-
 
 #endif

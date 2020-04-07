@@ -5,22 +5,13 @@
 
 namespace CODEGEN {
 
-
 class expressionList {
-public:
-	const char* types[1] = {
-		"expression"
-	};
+  public:
+    const char *types[1] = {"expression"};
 
-	expressionList() {
-	}
-
+    expressionList() {}
 };
 
-
 } // namespace CODEGEN
-
-
-
 
 #endif

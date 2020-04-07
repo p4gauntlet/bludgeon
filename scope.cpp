@@ -219,7 +219,7 @@ cstring P4Scope::pick_lval(const IR::Type *tp, bool must_write) {
     }
     size_t idx = rand() % candidates.size();
     auto lval = std::begin(candidates);
-    // 'advance' the iterator n times
+    // 'advance' the iterator idx times
     std::advance(lval, idx);
 
     return *lval;

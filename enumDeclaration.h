@@ -12,66 +12,54 @@
 
 namespace CODEGEN {
 
-
 class enumDeclaration {
-public:
-	const char* types[0] = {
-	};
+  public:
+    const char *types[0] = {};
 
-	int type;
-	IR::ID* name = nullptr;
-	IR::Type_Bits* tp = nullptr;
-	
-	enumDeclaration(int type) :
-		type(type) {
-		name = new IR::ID(CODEGEN::randstr(2));
-	}
-	~enumDeclaration() {
-		delete name;
-		if (tp != nullptr) {
-			delete tp;
-		}
-	}
+    int type;
+    IR::ID *name = nullptr;
+    IR::Type_Bits *tp = nullptr;
 
-	IR::Type_Enum* gen_enum() {
-		auto identifier_l = new identifierList();
-		auto decl_ids = identifier_l->gen(3);
+    enumDeclaration(int type) : type(type) {
+        name = new IR::ID(CODEGEN::randstr(2));
+    }
+    ~enumDeclaration() {
+        delete name;
+        if (tp != nullptr) {
+            delete tp;
+        }
+    }
 
-		auto ret = new IR::Type_Enum(*name, decl_ids);
+    IR::Type_Enum *gen_enum() {
+        auto identifier_l = new identifierList();
+        auto decl_ids = identifier_l->gen(3);
 
-		P4Scope::add_to_scope(ret);
-		return ret;
-	}
+        auto ret = new IR::Type_Enum(*name, decl_ids);
 
-	IR::Type_SerEnum* gen_ser_enum() {
-		auto spec_l = new specifiedIdentifierList();
-		auto members = spec_l->gen(3);
-		tp = bit_literal::gen(false);
+        P4Scope::add_to_scope(ret);
+        return ret;
+    }
 
-		auto ret = new IR::Type_SerEnum(*name, tp, members);
+    IR::Type_SerEnum *gen_ser_enum() {
+        auto spec_l = new specifiedIdentifierList();
+        auto members = spec_l->gen(3);
+        tp = bit_literal::gen(false);
 
+        auto ret = new IR::Type_SerEnum(*name, tp, members);
 
-		P4Scope::add_to_scope(ret);
-		return ret;
-	}
+        P4Scope::add_to_scope(ret);
+        return ret;
+    }
 
-
-	IR::Type* gen() {
-		if (type == 0) {
-			return gen_enum();
-		} else {
-			return gen_ser_enum();
-		}
-	}
-
-
-	
+    IR::Type *gen() {
+        if (type == 0) {
+            return gen_enum();
+        } else {
+            return gen_ser_enum();
+        }
+    }
 };
 
-
 } // namespace CODEGEN
-
-
-
 
 #endif

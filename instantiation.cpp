@@ -1,10 +1,5 @@
 
 
-
 #include "instantiation.h"
 
-namespace CODEGEN {
-
-
-} // namespace CODEGEN
-
+namespace CODEGEN {} // namespace CODEGEN

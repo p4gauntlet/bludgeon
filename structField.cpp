@@ -1,10 +1,5 @@
 
 
-
 #include "structField.h"
 
-namespace CODEGEN {
-
-
-} // namespace CODEGEN
-
+namespace CODEGEN {} // namespace CODEGEN

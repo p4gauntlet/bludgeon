@@ -5,35 +5,23 @@
 
 #include "headerTypeDeclaration.h"
 
-
 namespace CODEGEN {
 
-
 class derivedTypeDeclaration {
-public:
-	const char* types[4] = {
-		"headerTypeDeclaration",
-		"headerUnionDeclaration",
-		"structTypeDeclaration",
-		"enumDeclaration"
-	};
+  public:
+    const char *types[4] = {"headerTypeDeclaration", "headerUnionDeclaration",
+                            "structTypeDeclaration", "enumDeclaration"};
 
-	derivedTypeDeclaration() {
-	}
+    derivedTypeDeclaration() {}
 
-	static IR::Type* gen() {
-		switch (rand()%1) {
-			case 0: return headerTypeDeclaration::gen();
-		}
-	}
-
-
+    static IR::Type *gen() {
+        switch (rand() % 1) {
+        case 0:
+            return headerTypeDeclaration::gen();
+        }
+    }
 };
 
-
 } // namespace CODEGEN
-
-
-
 
 #endif

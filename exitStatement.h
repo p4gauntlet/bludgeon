@@ -5,27 +5,16 @@
 
 namespace CODEGEN {
 
-
 class exitStatement {
-public:
-	const char* types[0] = {
-	};
+  public:
+    const char *types[0] = {};
 
-	exitStatement() {
-	}
-	~exitStatement() {
-	}
+    exitStatement() {}
+    ~exitStatement() {}
 
-	static IR::ExitStatement* gen() {
-		return new IR::ExitStatement();
-	}
-
+    static IR::ExitStatement *gen() { return new IR::ExitStatement(); }
 };
 
-
 } // namespace CODEGEN
-
-
-
 
 #endif

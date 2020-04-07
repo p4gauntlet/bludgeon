@@ -1,6 +1,5 @@
-#include <iostream>
 #include <fstream>
-
+#include <iostream>
 
 #include "ir/ir.h"
 #include "lib/nullstream.h"
@@ -9,18 +8,18 @@
 
 void printUsage() {
     std::cout << "###How to use p4codegen###\n";
-    std::cout <<
-        "./p4codegen [output_filename] [flag=0 for bmv2, flag=1 for tofino]\n";
+    std::cout << "./p4codegen [output_filename] [flag=0 for bmv2, flag=1 for "
+                 "tofino]\n";
 }
 
 unsigned int good_seed() {
-    unsigned int  random_seed, random_seed_a, random_seed_b;
+    unsigned int random_seed, random_seed_a, random_seed_b;
     std::ifstream file("/dev/urandom", std::ios::binary);
 
     if (file.is_open()) {
         char *memblock;
-        int   size = sizeof(int);
-        memblock = new char [size];
+        int size = sizeof(int);
+        memblock = new char[size];
         file.read(memblock, size);
         file.close();
         random_seed_a = *reinterpret_cast<int *>(memblock);
@@ -29,7 +28,7 @@ unsigned int good_seed() {
         random_seed_a = 0;
     }
     random_seed_b = std::time(0);
-    random_seed   = random_seed_a xor random_seed_b;
+    random_seed = random_seed_a xor random_seed_b;
     return random_seed;
 }
 

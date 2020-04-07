@@ -1,9 +1,9 @@
 #ifndef _CODEGEN_H_
 #define _CODEGEN_H_
 
+#include <cstdlib>
 #include <cstring>
 #include <string>
-#include <cstdlib>
 
 #include "ir/ir.h"
 #include "lib/nullstream.h"
@@ -13,28 +13,23 @@
 
 static const char alphanum[] =
 
-// "0123456789"
+    // "0123456789"
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     "abcdefghijklmnopqrstuvwxyz";
 
-
 namespace CODEGEN {
 class CGenerator {
-public:
-
+  public:
     cstring o_file;
     std::ostream *ostream = nullptr;
     int flag = -1;
 
-    CGenerator(char *filename, int flag) :
-        o_file(filename), flag(flag) {
+    CGenerator(char *filename, int flag) : o_file(filename), flag(flag) {
         ostream = openFile(o_file, false);
         P4Scope::start_local_scope();
     }
 
-    ~CGenerator() {
-        P4Scope::end_local_scope();
-    }
+    ~CGenerator() { P4Scope::end_local_scope(); }
 
     static void emitBmv2Top(std::ostream *ostream);
     static void emitBmv2Bottom(std::ostream *ostream);
@@ -51,10 +46,8 @@ public:
     IR::Node *gen_func();
     IR::Node *gen_sys_parser(bool);
 
-
     void gen_p4_code();
 };
 } // namespace CODEGEN
-
 
 #endif // _CODEGEN_H_

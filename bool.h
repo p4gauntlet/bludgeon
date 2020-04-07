@@ -3,16 +3,12 @@
 
 #include "ir/ir.h"
 
-
 namespace CODEGEN {
 class bool_literal {
-public:
-    bool_literal() {
-    }
+  public:
+    bool_literal() {}
 
-    static IR::Type_Boolean *gen() {
-        return new IR::Type_Boolean();
-    }
+    static IR::Type_Boolean *gen() { return new IR::Type_Boolean(); }
 
     static IR::BoolLiteral *gen_literal() {
         if (rand() % 2 == 0) {
@@ -23,7 +19,5 @@ public:
     }
 };
 } // namespace CODEGEN
-
-
 
 #endif

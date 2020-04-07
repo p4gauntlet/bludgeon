@@ -12,7 +12,7 @@ IR::Key *keyElementList::gen(size_t len) {
         }
         // @name
         // Tao: actually, this may never happen
-        auto key_anno   = key->annotations->annotations.at(0);
+        auto key_anno = key->annotations->annotations.at(0);
         auto annot_expr = key_anno->expr.at(0);
         cstring key_annotat_name;
         if (annot_expr->is<IR::StringLiteral>()) {
@@ -24,7 +24,6 @@ IR::Key *keyElementList::gen(size_t len) {
 
         keys.push_back(key);
     }
-
 
     return new IR::Key(keys);
 }

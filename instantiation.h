@@ -5,26 +5,16 @@
 
 namespace CODEGEN {
 
-
 class instantiation {
-public:
-	const char* types[0] = {
-	};
-
-
+  public:
+    const char *types[0] = {};
 
     // Declaration_instance
     //
     //
-	instantiation() {
-	}
-
+    instantiation() {}
 };
 
-
 } // namespace CODEGEN
-
-
-
 
 #endif

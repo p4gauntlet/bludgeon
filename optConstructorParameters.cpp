@@ -1,10 +1,5 @@
 
 
-
 #include "optConstructorParameters.h"
 
-namespace CODEGEN {
-
-
-} // namespace CODEGEN
-
+namespace CODEGEN {} // namespace CODEGEN

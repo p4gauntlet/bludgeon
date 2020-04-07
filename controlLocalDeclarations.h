@@ -5,21 +5,13 @@
 
 namespace CODEGEN {
 
-
 class controlLocalDeclarations {
-public:
-	const char* types[0] = {
-	};
+  public:
+    const char *types[0] = {};
 
-	controlLocalDeclarations() {
-	}
-
+    controlLocalDeclarations() {}
 };
 
-
 } // namespace CODEGEN
-
-
-
 
 #endif

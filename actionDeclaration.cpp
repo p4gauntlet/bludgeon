@@ -1,10 +1,5 @@
 
 
-
 #include "actionDeclaration.h"
 
-namespace CODEGEN {
-
-
-} // namespace CODEGEN
-
+namespace CODEGEN {} // namespace CODEGEN

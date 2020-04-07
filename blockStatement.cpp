@@ -1,9 +1,8 @@
 #include "blockStatement.h"
-#include "variableDeclaration.h"
 #include "constantDeclaration.h"
-#include "statementOrDeclaration.h"
 #include "returnStatement.h"
-
+#include "statementOrDeclaration.h"
+#include "variableDeclaration.h"
 
 namespace CODEGEN {
 
@@ -21,7 +20,6 @@ IR::IndexedVector<IR::StatOrDecl> gen_sth(bool if_in_func = false) {
     }
     return stat_or_decls;
 }
-
 
 IR::BlockStatement *blockStatement::gen(bool if_in_func) {
     P4Scope::start_local_scope();

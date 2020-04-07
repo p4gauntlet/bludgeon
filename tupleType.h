@@ -5,21 +5,13 @@
 
 namespace CODEGEN {
 
-
 class tupleType {
-public:
-	const char* types[0] = {
-	};
+  public:
+    const char *types[0] = {};
 
-	tupleType() {
-	}
-
+    tupleType() {}
 };
 
-
 } // namespace CODEGEN
-
-
-
 
 #endif

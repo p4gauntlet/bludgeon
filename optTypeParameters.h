@@ -5,21 +5,13 @@
 
 namespace CODEGEN {
 
-
 class optTypeParameters {
-public:
-	const char* types[0] = {
-	};
+  public:
+    const char *types[0] = {};
 
-	optTypeParameters() {
-	}
-
+    optTypeParameters() {}
 };
 
-
 } // namespace CODEGEN
-
-
-
 
 #endif

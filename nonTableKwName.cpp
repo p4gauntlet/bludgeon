@@ -1,10 +1,5 @@
 
 
-
 #include "nonTableKwName.h"
 
-namespace CODEGEN {
-
-
-} // namespace CODEGEN
-
+namespace CODEGEN {} // namespace CODEGEN

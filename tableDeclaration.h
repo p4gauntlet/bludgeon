@@ -8,22 +8,15 @@
 
 namespace CODEGEN {
 class tableDeclaration {
-public:
-    const char *types[0] = {
-    };
+  public:
+    const char *types[0] = {};
 
+    tableDeclaration() {}
 
-
-    tableDeclaration() {
-    }
-
-    ~tableDeclaration() {
-    }
+    ~tableDeclaration() {}
 
     static IR::P4Table *gen();
 };
 } // namespace CODEGEN
-
-
 
 #endif

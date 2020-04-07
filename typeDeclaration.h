@@ -5,26 +5,15 @@
 
 namespace CODEGEN {
 
-
 class typeDeclaration {
-public:
-	const char* types[5] = {
-		"derivedTypeDeclaration",
-		"typedefDeclaration",
-		"parserTypeDeclaration",
-		"controlTypeDeclaration",
-		"packageTypeDeclaration"
-	};
+  public:
+    const char *types[5] = {"derivedTypeDeclaration", "typedefDeclaration",
+                            "parserTypeDeclaration", "controlTypeDeclaration",
+                            "packageTypeDeclaration"};
 
-	typeDeclaration() {
-	}
-
+    typeDeclaration() {}
 };
 
-
 } // namespace CODEGEN
-
-
-
 
 #endif

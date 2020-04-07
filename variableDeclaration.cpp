@@ -1,13 +1,11 @@
 #include "variableDeclaration.h"
 
-
-
 namespace CODEGEN {
 IR::Declaration_Variable *variableDeclaration::gen() {
     std::vector<int> types = {};
-    typeRef *type_ref      = new typeRef(true, types, STRUCT_LIKE);
-    cstring name           = randstr(6);
-    IR::Type *type         = type_ref->gen();
+    typeRef *type_ref = new typeRef(true, types, STRUCT_LIKE);
+    cstring name = randstr(6);
+    IR::Type *type = type_ref->gen();
 
     IR::Declaration_Variable *ret;
 
@@ -35,7 +33,6 @@ IR::Declaration_Variable *variableDeclaration::gen() {
     } else {
         BUG("Type %s not supported!", type->node_type_name());
     }
-
 
     P4Scope::add_to_scope(ret);
 

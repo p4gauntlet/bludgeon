@@ -8,23 +8,19 @@
 
 namespace CODEGEN {
 class specifiedIdentifierList {
-public:
-    const char *types[1] = {
-        "specifiedIdentifier"
-    };
+  public:
+    const char *types[1] = {"specifiedIdentifier"};
 
     std::set<cstring> members_name;
 
-    specifiedIdentifierList() {
-    }
+    specifiedIdentifierList() {}
 
     // TODO: Tao: better expr generation
     IR::IndexedVector<IR::SerEnumMember> gen(size_t len) {
         IR::IndexedVector<IR::SerEnumMember> members;
 
-
         for (size_t i = 0; i < len; i++) {
-            IR::ID *name       = new IR::ID(CODEGEN::randstr(2));
+            IR::ID *name = new IR::ID(CODEGEN::randstr(2));
             IR::Expression *ex = bit_literal::gen_int();
 
             if (members_name.find(name->name) != members_name.end()) {
@@ -42,7 +38,5 @@ public:
     }
 };
 } // namespace CODEGEN
-
-
 
 #endif

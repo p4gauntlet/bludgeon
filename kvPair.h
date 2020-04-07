@@ -5,22 +5,13 @@
 
 namespace CODEGEN {
 
-
 class kvPair {
-public:
-	const char* types[1] = {
-		"name"
-	};
+  public:
+    const char *types[1] = {"name"};
 
-	kvPair() {
-	}
-
+    kvPair() {}
 };
 
-
 } // namespace CODEGEN
-
-
-
 
 #endif

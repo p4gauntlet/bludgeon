@@ -1,20 +1,18 @@
 #include "codegen.h"
 
-
-#include "scope.h"
-#include "headerTypeDeclaration.h"
-#include "headerStackType.h"
-#include "headerUnionDeclaration.h"
-#include "structTypeDeclaration.h"
-#include "enumDeclaration.h"
 #include "actionDeclaration.h"
-#include "typedefDeclaration.h"
-#include "controlDeclaration.h"
-#include "tableDeclaration.h"
 #include "actionList.h"
+#include "controlDeclaration.h"
+#include "enumDeclaration.h"
 #include "functionDeclaration.h"
+#include "headerStackType.h"
+#include "headerTypeDeclaration.h"
+#include "headerUnionDeclaration.h"
 #include "p4parser.h"
-
+#include "scope.h"
+#include "structTypeDeclaration.h"
+#include "tableDeclaration.h"
+#include "typedefDeclaration.h"
 
 namespace CODEGEN {
 IR::Node *CGenerator::gen() {
@@ -22,17 +20,17 @@ IR::Node *CGenerator::gen() {
 
     while (1) {
         switch (rand() % 1) {
-            case 0: {
-                    n = headerTypeDeclaration::gen();
-                    break;
-                }
-            case 1: {
-                    auto hdrs = P4Scope::get_decls<IR::Type_Header>();
-                    if (hdrs.size() > 0) {
-                        n = headerUnionDeclaration::gen();
-                    }
-                    break;
-                }
+        case 0: {
+            n = headerTypeDeclaration::gen();
+            break;
+        }
+        case 1: {
+            auto hdrs = P4Scope::get_decls<IR::Type_Header>();
+            if (hdrs.size() > 0) {
+                n = headerUnionDeclaration::gen();
+            }
+            break;
+        }
         }
 
         if (n != nullptr) {
@@ -42,7 +40,6 @@ IR::Node *CGenerator::gen() {
 
     return n;
 }
-
 
 IR::Node *CGenerator::gen_act() {
     IR::Node *n = nullptr;
@@ -59,7 +56,6 @@ IR::Node *CGenerator::gen_act() {
     return n;
 }
 
-
 IR::Node *CGenerator::gen_struct() {
     IR::Node *n = nullptr;
 
@@ -72,7 +68,6 @@ IR::Node *CGenerator::gen_struct() {
     }
     return n;
 }
-
 
 IR::Node *CGenerator::gen_t_enum() {
     IR::Node *n = nullptr;
@@ -89,7 +84,6 @@ IR::Node *CGenerator::gen_t_enum() {
     }
     return n;
 }
-
 
 IR::Node *CGenerator::gen_tpdef() {
     IR::Node *n = nullptr;
@@ -111,44 +105,39 @@ IR::Node *CGenerator::gen_tab() {
     return tab_gen->gen();
 }
 
-
 IR::Node *CGenerator::gen_func() {
     auto func_gen = new functionDeclaration();
 
     return func_gen->gen();
 }
 
-
 IR::Node *CGenerator::gen_sys_parser(bool use_tofino = false) {
     auto p_gen = new p4Parser();
 
     if (use_tofino) {
         return p_gen->gen_tofino_p();
-    } else{
+    } else {
         return p_gen->gen_sys_p();
     }
 }
-
 
 void CGenerator::emitBmv2Top(std::ostream *ostream) {
     *ostream << "#include <core.p4>\n";
     *ostream << "#include <v1model.p4>\n\n";
 }
 
-
 void CGenerator::emitBmv2Bottom(std::ostream *ostream) {
     *ostream << "control vrfy(inout Headers h, inout Meta m) { apply {} }\n\n";
-    *ostream <<
-        "control update(inout Headers h, inout Meta m) { apply {} }\n\n";
-    *ostream <<
-        "control egress(inout Headers h, inout Meta m, inout standard_metadata_t sm) { apply {} }\n\n";
-    *ostream <<
-        "control deparser(packet_out b, in Headers h) { apply {b.emit(h);} }\n\n";
+    *ostream
+        << "control update(inout Headers h, inout Meta m) { apply {} }\n\n";
+    *ostream << "control egress(inout Headers h, inout Meta m, inout "
+                "standard_metadata_t sm) { apply {} }\n\n";
+    *ostream << "control deparser(packet_out b, in Headers h) { apply "
+                "{b.emit(h);} }\n\n";
 
-    *ostream <<
-        "V1Switch(p(), vrfy(), ingress(), egress(), update(), deparser()) main;\n\n";
+    *ostream << "V1Switch(p(), vrfy(), ingress(), egress(), update(), "
+                "deparser()) main;\n\n";
 }
-
 
 void CGenerator::emitTFTop(std::ostream *ostream) {
     *ostream << "#include <core.p4>\n";
@@ -156,8 +145,7 @@ void CGenerator::emitTFTop(std::ostream *ostream) {
     *ostream << "struct ingress_metadata_t {}\n"
                 "struct egress_metadata_t {}\n\n";
     // filter these structures from initialization
-    P4Scope::not_initialized_structs.insert(
-        "ingress_intrinsic_metadata_t");
+    P4Scope::not_initialized_structs.insert("ingress_intrinsic_metadata_t");
     P4Scope::not_initialized_structs.insert(
         "ingress_intrinsic_metadata_from_parser_t");
     P4Scope::not_initialized_structs.insert(
@@ -166,17 +154,21 @@ void CGenerator::emitTFTop(std::ostream *ostream) {
         "ingress_intrinsic_metadata_for_tm_t");
 }
 
-
 void CGenerator::emitTFBottom(std::ostream *ostream) {
     *ostream << "\n"
-                "// ---------------------------------------------------------------------------\n"
+                "// "
+                "--------------------------------------------------------------"
+                "-------------\n"
                 "// Ingress Deparser\n"
-                "// ---------------------------------------------------------------------------\n"
+                "// "
+                "--------------------------------------------------------------"
+                "-------------\n"
                 "control SwitchIngressDeparser(\n"
                 "        packet_out pkt,\n"
                 "        inout Headers hdr,\n"
                 "        in ingress_metadata_t ig_md,\n"
-                "        in ingress_intrinsic_metadata_for_deparser_t ig_dprsr_md) {\n"
+                "        in ingress_intrinsic_metadata_for_deparser_t "
+                "ig_dprsr_md) {\n"
                 "\n"
                 "    apply {\n"
                 "        pkt.emit(hdr);\n"
@@ -198,7 +190,8 @@ void CGenerator::emitTFBottom(std::ostream *ostream) {
                 "        packet_out pkt,\n"
                 "        inout Headers hdr,\n"
                 "        in egress_metadata_t eg_md,\n"
-                "        in egress_intrinsic_metadata_for_deparser_t eg_intr_dprs_md) {\n"
+                "        in egress_intrinsic_metadata_for_deparser_t "
+                "eg_intr_dprs_md) {\n"
                 "\n"
                 "    apply {\n"
                 "        pkt.emit(hdr);\n"
@@ -209,9 +202,12 @@ void CGenerator::emitTFBottom(std::ostream *ostream) {
                 "        inout Headers hdr,\n"
                 "        inout egress_metadata_t eg_md,\n"
                 "        in egress_intrinsic_metadata_t eg_intr_md,\n"
-                "        in egress_intrinsic_metadata_from_parser_t eg_intr_md_from_prsr,\n"
-                "        inout egress_intrinsic_metadata_for_deparser_t eg_intr_dprs_md,\n"
-                "        inout egress_intrinsic_metadata_for_output_port_t eg_intr_oport_md) {\n"
+                "        in egress_intrinsic_metadata_from_parser_t "
+                "eg_intr_md_from_prsr,\n"
+                "        inout egress_intrinsic_metadata_for_deparser_t "
+                "eg_intr_dprs_md,\n"
+                "        inout egress_intrinsic_metadata_for_output_port_t "
+                "eg_intr_oport_md) {\n"
                 "    apply {}\n"
                 "}\n"
                 "\n"
@@ -225,7 +221,6 @@ void CGenerator::emitTFBottom(std::ostream *ostream) {
                 "Switch(pipe) main;\n"
                 "";
 }
-
 
 void CGenerator::gen_p4_code() {
     auto objects = new IR::Vector<IR::Node>();
@@ -246,7 +241,6 @@ void CGenerator::gen_p4_code() {
     // generate struct Meta
     objects->push_back(structTypeDeclaration::gen_Meta());
 
-
     if (flag == 0) {
         CGenerator::emitBmv2Top(ostream);
 
@@ -259,7 +253,7 @@ void CGenerator::gen_p4_code() {
     } else if (flag == 1) {
         CGenerator::emitTFTop(ostream);
 
-        //objects->push_back(gen_func());
+        // objects->push_back(gen_func());
         // generate tofino metadatas
         structTypeDeclaration::gen_tf_md_t();
 

@@ -5,21 +5,13 @@
 
 namespace CODEGEN {
 
-
 class dotPrefix {
-public:
-	const char* types[0] = {
-	};
+  public:
+    const char *types[0] = {};
 
-	dotPrefix() {
-	}
-
+    dotPrefix() {}
 };
 
-
 } // namespace CODEGEN
-
-
-
 
 #endif

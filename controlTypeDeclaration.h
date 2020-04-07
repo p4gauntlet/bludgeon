@@ -10,22 +10,15 @@
 
 namespace CODEGEN {
 class controlTypeDeclaration {
-public:
-    const char *types[0] = {
-    };
+  public:
+    const char *types[0] = {};
 
+    controlTypeDeclaration() {}
 
-
-    controlTypeDeclaration() {
-    }
-
-    ~controlTypeDeclaration() {
-    }
+    ~controlTypeDeclaration() {}
 
     static IR::Type_Control *gen_ing_ctrl_type(int tf_flag);
 };
 } // namespace CODEGEN
-
-
 
 #endif

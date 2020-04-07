@@ -5,21 +5,13 @@
 
 namespace CODEGEN {
 
-
 class packageTypeDeclaration {
-public:
-	const char* types[0] = {
-	};
+  public:
+    const char *types[0] = {};
 
-	packageTypeDeclaration() {
-	}
-
+    packageTypeDeclaration() {}
 };
 
-
 } // namespace CODEGEN
-
-
-
 
 #endif

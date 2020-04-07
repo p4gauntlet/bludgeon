@@ -5,21 +5,13 @@
 
 namespace CODEGEN {
 
-
 class optInitializer {
-public:
-	const char* types[0] = {
-	};
+  public:
+    const char *types[0] = {};
 
-	optInitializer() {
-	}
-
+    optInitializer() {}
 };
 
-
 } // namespace CODEGEN
-
-
-
 
 #endif

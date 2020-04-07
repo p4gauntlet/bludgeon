@@ -1,21 +1,21 @@
 #include "common.h"
 
+#include "actionDeclaration.h"
+#include "actionList.h"
+#include "controlDeclaration.h"
+#include "enumDeclaration.h"
+#include "headerStackType.h"
+#include "headerTypeDeclaration.h"
+#include "headerUnionDeclaration.h"
+#include "ir/ir.h"
+#include "structTypeDeclaration.h"
+#include "tableDeclaration.h"
+#include "typedefDeclaration.h"
+#include <cstdlib>
 #include <cstring>
 #include <string>
-#include <cstdlib>
-#include "ir/ir.h"
-#include "headerTypeDeclaration.h"
-#include "headerStackType.h"
-#include "headerUnionDeclaration.h"
-#include "structTypeDeclaration.h"
-#include "enumDeclaration.h"
-#include "actionDeclaration.h"
-#include "typedefDeclaration.h"
-#include "controlDeclaration.h"
-#include "tableDeclaration.h"
-#include "actionList.h"
 
-const std::vector<cstring> str_keywords = { "if", "else", "key", "actions" };
+const std::vector<cstring> str_keywords = {"if", "else", "key", "actions"};
 
 namespace CODEGEN {
 cstring randstr(size_t len) {
@@ -28,8 +28,8 @@ cstring randstr(size_t len) {
             ss << alphanum[rand() % (sizeof(alphanum) - 1)];
         }
         ret = ss.str();
-        if (std::find(str_keywords.begin(),
-                      str_keywords.end(), ret) != str_keywords.end()) {
+        if (std::find(str_keywords.begin(), str_keywords.end(), ret) !=
+            str_keywords.end()) {
             continue;
         }
 
@@ -42,8 +42,7 @@ cstring randstr(size_t len) {
     return ret;
 }
 
-
-int randind(std::vector<int>& percent) {
+int randind(std::vector<int> &percent) {
 
     int sum = 0;
     for (auto i : percent) {
@@ -51,7 +50,7 @@ int randind(std::vector<int>& percent) {
     }
 
     int rand_num = rand() % sum;
-    int ret      = 0;
+    int ret = 0;
 
     int ret_sum = 0;
     for (auto i : percent) {
@@ -64,4 +63,4 @@ int randind(std::vector<int>& percent) {
 
     return ret;
 }
-} // namesapce CODEGEN
+} // namespace CODEGEN

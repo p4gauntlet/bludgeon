@@ -4,22 +4,18 @@
 #include "ir/ir.h"
 
 #include "annotations.h"
-#include "scope.h"
 #include "codegen.h"
+#include "scope.h"
 
 namespace CODEGEN {
 class keyElement {
-public:
-    keyElement() {
-    }
+  public:
+    keyElement() {}
 
-    ~keyElement() {
-    }
+    ~keyElement() {}
 
     static IR::KeyElement *gen(cstring match_kind);
 };
 } // namespace CODEGEN
-
-
 
 #endif

@@ -5,22 +5,13 @@
 
 namespace CODEGEN {
 
-
 class typeArgumentList {
-public:
-	const char* types[1] = {
-		"typeArg"
-	};
+  public:
+    const char *types[1] = {"typeArg"};
 
-	typeArgumentList() {
-	}
-
+    typeArgumentList() {}
 };
 
-
 } // namespace CODEGEN
-
-
-
 
 #endif

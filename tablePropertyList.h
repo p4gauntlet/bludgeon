@@ -3,18 +3,14 @@
 
 #include "ir/ir.h"
 
-
 #include "tableProperty.h"
 
 namespace CODEGEN {
 class tablePropertyList {
-public:
-    const char *types[1] = {
-        "tableProperty"
-    };
+  public:
+    const char *types[1] = {"tableProperty"};
 
-    tablePropertyList() {
-    }
+    tablePropertyList() {}
 
     IR::TableProperties *gen() {
         IR::IndexedVector<IR::Property> tab_properties;
@@ -28,7 +24,5 @@ public:
     }
 };
 } // namespace CODEGEN
-
-
 
 #endif

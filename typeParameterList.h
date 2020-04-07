@@ -5,22 +5,13 @@
 
 namespace CODEGEN {
 
-
 class typeParameterList {
-public:
-	const char* types[1] = {
-		"name"
-	};
+  public:
+    const char *types[1] = {"name"};
 
-	typeParameterList() {
-	}
-
+    typeParameterList() {}
 };
 
-
 } // namespace CODEGEN
-
-
-
 
 #endif

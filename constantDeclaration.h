@@ -3,24 +3,21 @@
 
 #include "ir/ir.h"
 
-#include "codegen.h"
-#include "scope.h"
-#include "expression.h"
 #include "baseType.h"
+#include "codegen.h"
+#include "expression.h"
+#include "scope.h"
 
 namespace CODEGEN {
 class constantDeclaration {
-public:
-    const char *types[0] = {
-    };
+  public:
+    const char *types[0] = {};
 
     IR::ID *name;
     IR::Expression *expr;
     IR::Type *tp;
 
-    constantDeclaration() {
-        name = new IR::ID(CODEGEN::randstr(4));
-    }
+    constantDeclaration() { name = new IR::ID(CODEGEN::randstr(4)); }
 
     ~constantDeclaration() {
         delete name;
@@ -29,8 +26,8 @@ public:
     }
 
     IR::Declaration_Constant *gen() {
-        std::vector<int> type = { 0, 1 };
-        auto base_type        = new baseType(false, type);
+        std::vector<int> type = {0, 1};
+        auto base_type = new baseType(false, type);
 
         tp = base_type->gen();
 
@@ -47,7 +44,5 @@ public:
     }
 };
 } // namespace CODEGEN
-
-
 
 #endif

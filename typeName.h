@@ -3,19 +3,15 @@
 
 #include "ir/ir.h"
 
-
 #include "prefixedType.h"
 
 namespace CODEGEN {
 class typeName {
-public:
-    const char *types[1] = {
-        "prefixedType"
-    };
+  public:
+    const char *types[1] = {"prefixedType"};
 
     cstring for_type;
-    typeName(cstring for_type) : for_type(for_type) {
-    }
+    typeName(cstring for_type) : for_type(for_type) {}
 
     IR::Type *gen() {
         auto prefixed_tp = new prefixedType(for_type);
@@ -24,7 +20,5 @@ public:
     }
 };
 } // namespace CODEGEN
-
-
 
 #endif

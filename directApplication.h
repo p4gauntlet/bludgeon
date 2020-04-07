@@ -5,21 +5,13 @@
 
 namespace CODEGEN {
 
-
 class directApplication {
-public:
-	const char* types[0] = {
-	};
+  public:
+    const char *types[0] = {};
 
-	directApplication() {
-	}
-
+    directApplication() {}
 };
 
-
 } // namespace CODEGEN
-
-
-
 
 #endif

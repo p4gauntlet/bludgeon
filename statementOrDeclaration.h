@@ -5,20 +5,14 @@
 
 namespace CODEGEN {
 class statementOrDeclaration {
-public:
-    const char *types[4] = {
-        "variableDeclaration",
-        "constantDeclaration",
-        "statement",
-        "instantiation"
-    };
+  public:
+    const char *types[4] = {"variableDeclaration", "constantDeclaration",
+                            "statement", "instantiation"};
     statementOrDeclaration() {}
     ~statementOrDeclaration() {}
 
     static IR::StatOrDecl *gen_rnd(bool if_in_func);
 };
 } // namespace CODEGEN
-
-
 
 #endif

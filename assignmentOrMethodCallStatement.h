@@ -7,18 +7,14 @@
 
 namespace CODEGEN {
 class assignmentOrMethodCallStatement {
-public:
-    const char *types[0] = {
-    };
+  public:
+    const char *types[0] = {};
 
-    assignmentOrMethodCallStatement() {
-    }
+    assignmentOrMethodCallStatement() {}
 
     static IR::AssignmentStatement *gen_assign();
     static IR::Statement *gen();
 };
 } // namespace CODEGEN
-
-
 
 #endif

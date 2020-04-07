@@ -1,10 +1,5 @@
 
 
-
 #include "typeArg.h"
 
-namespace CODEGEN {
-
-
-} // namespace CODEGEN
-
+namespace CODEGEN {} // namespace CODEGEN

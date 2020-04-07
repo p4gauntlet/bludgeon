@@ -5,24 +5,13 @@
 
 namespace CODEGEN {
 
-
 class typeOrVoid {
-public:
-	const char* types[3] = {
-		"typeRef",
-		"VOID",
-		"IDENTIFIER"
-	};
+  public:
+    const char *types[3] = {"typeRef", "VOID", "IDENTIFIER"};
 
-	typeOrVoid() {
-	}
-
+    typeOrVoid() {}
 };
 
-
 } // namespace CODEGEN
-
-
-
 
 #endif

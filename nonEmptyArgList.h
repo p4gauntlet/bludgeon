@@ -5,22 +5,13 @@
 
 namespace CODEGEN {
 
-
 class nonEmptyArgList {
-public:
-	const char* types[1] = {
-		"argument"
-	};
+  public:
+    const char *types[1] = {"argument"};
 
-	nonEmptyArgList() {
-	}
-
+    nonEmptyArgList() {}
 };
 
-
 } // namespace CODEGEN
-
-
-
 
 #endif

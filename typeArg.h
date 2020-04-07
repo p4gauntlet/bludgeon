@@ -5,24 +5,13 @@
 
 namespace CODEGEN {
 
-
 class typeArg {
-public:
-	const char* types[3] = {
-		"DONTCARE",
-		"typeRef",
-		"nonTypeName"
-	};
+  public:
+    const char *types[3] = {"DONTCARE", "typeRef", "nonTypeName"};
 
-	typeArg() {
-	}
-
+    typeArg() {}
 };
 
-
 } // namespace CODEGEN
-
-
-
 
 #endif

@@ -1,10 +1,5 @@
 
 
-
 #include "parameterList.h"
 
-namespace CODEGEN {
-
-
-} // namespace CODEGEN
-
+namespace CODEGEN {} // namespace CODEGEN

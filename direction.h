@@ -5,24 +5,13 @@
 
 namespace CODEGEN {
 
-
 class direction {
-public:
-	const char* types[3] = {
-		"IN",
-		"OUT",
-		"INOUT"
-	};
+  public:
+    const char *types[3] = {"IN", "OUT", "INOUT"};
 
-	direction() {
-	}
-
+    direction() {}
 };
 
-
 } // namespace CODEGEN
-
-
-
 
 #endif

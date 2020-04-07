@@ -3,25 +3,20 @@
 
 #include "ir/ir.h"
 
-#include "scope.h"
 #include "expression.h"
+#include "scope.h"
 
 namespace CODEGEN {
 class actionList {
-public:
-    const char *types[0] = {
-    };
+  public:
+    const char *types[0] = {};
 
-    actionList() {
-    }
+    actionList() {}
 
-    ~actionList() {
-    }
+    ~actionList() {}
 
     static IR::ActionList *gen(size_t len);
 };
 } // namespace CODEGEN
-
-
 
 #endif

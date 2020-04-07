@@ -1,19 +1,19 @@
 
 
-
 #include "structFieldList.h"
 
 namespace CODEGEN {
 
-IR::IndexedVector<IR::StructField> get_sfs (std::vector<cstring> &fields,
-        std::vector<int> &bit_size, size_t vec_size) {
+IR::IndexedVector<IR::StructField> get_sfs(std::vector<cstring> &fields,
+                                           std::vector<int> &bit_size,
+                                           size_t vec_size) {
 
     IR::IndexedVector<IR::StructField> ret_fields;
 
-    IR::ID* name;
-    IR::Type* tp;
+    IR::ID *name;
+    IR::Type *tp;
 
-    for (size_t i=0; i<vec_size; i++) {
+    for (size_t i = 0; i < vec_size; i++) {
         name = new IR::ID(fields.at(i));
         tp = new IR::Type_Bits(bit_size.at(i), false);
         ret_fields.push_back(new IR::StructField(*name, tp));
@@ -21,7 +21,6 @@ IR::IndexedVector<IR::StructField> get_sfs (std::vector<cstring> &fields,
 
     return ret_fields;
 }
-
 
 IR::IndexedVector<IR::StructField> structFieldList::gen_tf_ing_md_t() {
     std::vector<cstring> fields = {
@@ -34,7 +33,6 @@ IR::IndexedVector<IR::StructField> structFieldList::gen_tf_ing_md_t() {
 
     return get_sfs(fields, bit_size, fields.size());
 }
-
 
 IR::IndexedVector<IR::StructField> structFieldList::gen_tf_ing_md_for_tm_t() {
     std::vector<cstring> fields = {
@@ -80,7 +78,8 @@ IR::IndexedVector<IR::StructField> structFieldList::gen_tf_ing_md_for_tm_t() {
     return get_sfs(fields, bit_size, fields.size());
 }
 
-IR::IndexedVector<IR::StructField> structFieldList::gen_tf_ing_intr_md_from_prsr() {
+IR::IndexedVector<IR::StructField>
+structFieldList::gen_tf_ing_intr_md_from_prsr() {
     std::vector<cstring> fields = {
         // "parser_err",
     };
@@ -92,7 +91,8 @@ IR::IndexedVector<IR::StructField> structFieldList::gen_tf_ing_intr_md_from_prsr
     return get_sfs(fields, bit_size, fields.size());
 }
 
-IR::IndexedVector<IR::StructField> structFieldList::gen_tf_ing_intr_md_for_deprsr() {
+IR::IndexedVector<IR::StructField>
+structFieldList::gen_tf_ing_intr_md_for_deprsr() {
     std::vector<cstring> fields = {
         // "drop_ctl",
         // "digest_type",
@@ -122,7 +122,8 @@ IR::IndexedVector<IR::StructField> structFieldList::gen_tf_eg_intr_md_t() {
     return get_sfs(fields, bit_size, fields.size());
 }
 
-IR::IndexedVector<IR::StructField> structFieldList::gen_tf_eg_intr_md_from_prsr() {
+IR::IndexedVector<IR::StructField>
+structFieldList::gen_tf_eg_intr_md_from_prsr() {
     std::vector<cstring> fields = {
         // "parser_err",
     };
@@ -134,7 +135,8 @@ IR::IndexedVector<IR::StructField> structFieldList::gen_tf_eg_intr_md_from_prsr(
     return get_sfs(fields, bit_size, fields.size());
 }
 
-IR::IndexedVector<IR::StructField> structFieldList::gen_tf_eg_intr_md_for_deprsr() {
+IR::IndexedVector<IR::StructField>
+structFieldList::gen_tf_eg_intr_md_for_deprsr() {
     std::vector<cstring> fields = {
         // "drop_ctl",
         // "mirror_type",
@@ -152,7 +154,8 @@ IR::IndexedVector<IR::StructField> structFieldList::gen_tf_eg_intr_md_for_deprsr
     return get_sfs(fields, bit_size, fields.size());
 }
 
-IR::IndexedVector<IR::StructField> structFieldList::gen_tf_eg_intr_md_for_output_port() {
+IR::IndexedVector<IR::StructField>
+structFieldList::gen_tf_eg_intr_md_for_output_port() {
     std::vector<cstring> fields = {
         // "force_tx_error",
     };
@@ -165,4 +168,3 @@ IR::IndexedVector<IR::StructField> structFieldList::gen_tf_eg_intr_md_for_output
 }
 
 } // namespace CODEGEN
-

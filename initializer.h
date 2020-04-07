@@ -5,22 +5,13 @@
 
 namespace CODEGEN {
 
-
 class initializer {
-public:
-	const char* types[1] = {
-		"expression"
-	};
+  public:
+    const char *types[1] = {"expression"};
 
-	initializer() {
-	}
-
+    initializer() {}
 };
 
-
 } // namespace CODEGEN
-
-
-
 
 #endif

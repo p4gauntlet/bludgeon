@@ -5,21 +5,13 @@
 
 namespace CODEGEN {
 
-
 class emptyStatement {
-public:
-	const char* types[0] = {
-	};
+  public:
+    const char *types[0] = {};
 
-	emptyStatement() {
-	}
-
+    emptyStatement() {}
 };
 
-
 } // namespace CODEGEN
-
-
-
 
 #endif

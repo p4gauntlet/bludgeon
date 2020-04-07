@@ -5,17 +5,11 @@
 
 namespace CODEGEN {
 class argument {
-public:
-    const char *types[2] = {
-        "expression",
-        "DONTCARE"
-    };
+  public:
+    const char *types[2] = {"expression", "DONTCARE"};
 
-    argument() {
-    }
+    argument() {}
 };
 } // namespace CODEGEN
-
-
 
 #endif

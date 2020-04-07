@@ -1,10 +1,5 @@
 
 
-
 #include "prefixedNonTypeName.h"
 
-namespace CODEGEN {
-
-
-} // namespace CODEGEN
-
+namespace CODEGEN {} // namespace CODEGEN

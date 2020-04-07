@@ -5,26 +5,14 @@
 
 namespace CODEGEN {
 
-
 class nonTableKwName {
-public:
-	const char* types[5] = {
-		"IDENTIFIER",
-		"TYPE_IDENTIFIER",
-		"APPLY",
-		"STATE",
-		"TYPE"
-	};
+  public:
+    const char *types[5] = {"IDENTIFIER", "TYPE_IDENTIFIER", "APPLY", "STATE",
+                            "TYPE"};
 
-	nonTableKwName() {
-	}
-
+    nonTableKwName() {}
 };
 
-
 } // namespace CODEGEN
-
-
-
 
 #endif

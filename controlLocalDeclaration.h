@@ -5,26 +5,15 @@
 
 namespace CODEGEN {
 
-
 class controlLocalDeclaration {
-public:
-	const char* types[5] = {
-		"constantDeclaration",
-		"actionDeclaration",
-		"tableDeclaration",
-		"instantiation",
-		"variableDeclaration"
-	};
+  public:
+    const char *types[5] = {"constantDeclaration", "actionDeclaration",
+                            "tableDeclaration", "instantiation",
+                            "variableDeclaration"};
 
-	controlLocalDeclaration() {
-	}
-
+    controlLocalDeclaration() {}
 };
 
-
 } // namespace CODEGEN
-
-
-
 
 #endif

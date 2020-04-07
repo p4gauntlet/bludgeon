@@ -5,28 +5,14 @@
 
 namespace CODEGEN {
 
-
 class nonTypeName {
-public:
-	const char* types[7] = {
-		"IDENTIFIER",
-		"APPLY",
-		"KEY",
-		"ACTIONS",
-		"STATE",
-		"ENTRIES",
-		"TYPE"
-	};
+  public:
+    const char *types[7] = {"IDENTIFIER", "APPLY",   "KEY", "ACTIONS",
+                            "STATE",      "ENTRIES", "TYPE"};
 
-	nonTypeName() {
-	}
-
+    nonTypeName() {}
 };
 
-
 } // namespace CODEGEN
-
-
-
 
 #endif

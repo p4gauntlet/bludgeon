@@ -5,21 +5,13 @@
 
 namespace CODEGEN {
 
-
 class actionRef {
-public:
-	const char* types[0] = {
-	};
+  public:
+    const char *types[0] = {};
 
-	actionRef() {
-	}
-
+    actionRef() {}
 };
 
-
 } // namespace CODEGEN
-
-
-
 
 #endif

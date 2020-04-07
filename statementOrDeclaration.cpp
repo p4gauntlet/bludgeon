@@ -4,10 +4,10 @@
 
 namespace CODEGEN {
 IR::StatOrDecl *statementOrDeclaration::gen_rnd(bool if_in_func = false) {
-    std::vector<int> percent = { 10, 90 };
+    std::vector<int> percent = {10, 90};
     auto val = randind(percent);
     if (val == 0) {
-        return  variableDeclaration::gen();
+        return variableDeclaration::gen();
     } else {
         return statement::gen_rnd(if_in_func);
     }

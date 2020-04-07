@@ -5,21 +5,13 @@
 
 namespace CODEGEN {
 
-
 class errorDeclaration {
-public:
-	const char* types[0] = {
-	};
+  public:
+    const char *types[0] = {};
 
-	errorDeclaration() {
-	}
-
+    errorDeclaration() {}
 };
 
-
 } // namespace CODEGEN
-
-
-
 
 #endif

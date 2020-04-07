@@ -5,21 +5,13 @@
 
 namespace CODEGEN {
 
-
 class nonEmptyParameterList {
-public:
-	const char* types[0] = {
-	};
+  public:
+    const char *types[0] = {};
 
-	nonEmptyParameterList() {
-	}
-
+    nonEmptyParameterList() {}
 };
 
-
 } // namespace CODEGEN
-
-
-
 
 #endif

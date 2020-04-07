@@ -1,6 +1,5 @@
 #include "tableDeclaration.h"
 
-
 namespace CODEGEN {
 IR::P4Table *tableDeclaration::gen() {
     auto tab_property_list_gen = new tablePropertyList();

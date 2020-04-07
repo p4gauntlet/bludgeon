@@ -5,23 +5,13 @@
 
 namespace CODEGEN {
 
-
 class switchLabel {
-public:
-	const char* types[2] = {
-		"name",
-		"DEFAULT"
-	};
+  public:
+    const char *types[2] = {"name", "DEFAULT"};
 
-	switchLabel() {
-	}
-
+    switchLabel() {}
 };
 
-
 } // namespace CODEGEN
-
-
-
 
 #endif

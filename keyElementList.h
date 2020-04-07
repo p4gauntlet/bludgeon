@@ -3,24 +3,17 @@
 
 #include "ir/ir.h"
 
-
 #include "keyElement.h"
-
 
 namespace CODEGEN {
 class keyElementList {
-public:
+  public:
+    keyElementList() {}
 
-    keyElementList() {
-    }
-
-    ~keyElementList() {
-    }
+    ~keyElementList() {}
 
     static IR::Key *gen(size_t len);
 };
 } // namespace CODEGEN
-
-
 
 #endif

@@ -5,22 +5,13 @@
 
 namespace CODEGEN {
 
-
 class member {
-public:
-	const char* types[1] = {
-		"name"
-	};
+  public:
+    const char *types[1] = {"name"};
 
-	member() {
-	}
-
+    member() {}
 };
 
-
 } // namespace CODEGEN
-
-
-
 
 #endif

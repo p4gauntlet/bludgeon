@@ -1,10 +1,5 @@
 
 
-
 #include "nonEmptyParameterList.h"
 
-namespace CODEGEN {
-
-
-} // namespace CODEGEN
-
+namespace CODEGEN {} // namespace CODEGEN

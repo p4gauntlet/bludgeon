@@ -5,22 +5,13 @@
 
 namespace CODEGEN {
 
-
 class prefixedNonTypeName {
-public:
-	const char* types[1] = {
-		"nonTypeName"
-	};
+  public:
+    const char *types[1] = {"nonTypeName"};
 
-	prefixedNonTypeName() {
-	}
-
+    prefixedNonTypeName() {}
 };
 
-
 } // namespace CODEGEN
-
-
-
 
 #endif

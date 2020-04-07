@@ -5,21 +5,13 @@
 
 namespace CODEGEN {
 
-
 class switchCases {
-public:
-	const char* types[0] = {
-	};
+  public:
+    const char *types[0] = {};
 
-	switchCases() {
-	}
-
+    switchCases() {}
 };
 
-
 } // namespace CODEGEN
-
-
-
 
 #endif

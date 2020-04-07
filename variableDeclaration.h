@@ -3,31 +3,24 @@
 
 #include "ir/ir.h"
 
-
-#include "common.h"
 #include "codegen.h"
-#include "scope.h"
+#include "common.h"
 #include "expression.h"
-
+#include "scope.h"
 
 #include "typeRef.h"
 
 namespace CODEGEN {
 class variableDeclaration {
-public:
-    const char *types[0] = {
-    };
+  public:
+    const char *types[0] = {};
 
-    variableDeclaration() {
-    }
+    variableDeclaration() {}
 
-    ~variableDeclaration() {
-    }
+    ~variableDeclaration() {}
 
     static IR::Declaration_Variable *gen();
 };
 } // namespace CODEGEN
-
-
 
 #endif

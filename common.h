@@ -21,6 +21,4 @@ int randind(std::vector<int> &percent);
 
 } // namespace CODEGEN
 
-
-
 #endif

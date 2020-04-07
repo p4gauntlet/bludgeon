@@ -8,28 +8,25 @@
 
 #include "structField.h"
 
-
 namespace CODEGEN {
 class structFieldList {
-public:
-
-    const char *types[0] = {
-    };
+  public:
+    const char *types[0] = {};
 
     cstring for_type;
     cstring name;
-    std::set<cstring>fields_name;
-    std::set<cstring>fields_type;
+    std::set<cstring> fields_name;
+    std::set<cstring> fields_type;
 
-    structFieldList(cstring for_type, cstring name) :
-        for_type(for_type), name(name) {}
+    structFieldList(cstring for_type, cstring name)
+        : for_type(for_type), name(name) {}
 
-    IR::IndexedVector<IR::StructField>gen(size_t len) {
+    IR::IndexedVector<IR::StructField> gen(size_t len) {
         bool if_contain_stack = false;
         IR::IndexedVector<IR::StructField> fields;
 
         for (size_t i = 0; i < len; i++) {
-            auto struct_field   = new structField(for_type);
+            auto struct_field = new structField(for_type);
             IR::StructField *sf = struct_field->gen();
 
             if (sf == nullptr) {
@@ -37,8 +34,8 @@ public:
             }
 
             if (sf->type->is<IR::Type_Stack>() ||
-                sf->type->is<IR::Type_Header>()
-                || sf->type->is<IR::Type_HeaderUnion>()) {
+                sf->type->is<IR::Type_Header>() ||
+                sf->type->is<IR::Type_HeaderUnion>()) {
                 if_contain_stack = true;
             }
 
@@ -75,7 +72,7 @@ public:
         return fields;
     }
 
-    static IR::IndexedVector<IR::StructField>gen_sm() {
+    static IR::IndexedVector<IR::StructField> gen_sm() {
         IR::IndexedVector<IR::StructField> fields;
 
         // IR::ID   *name;
@@ -127,16 +124,16 @@ public:
         return fields;
     }
 
-    static IR::IndexedVector<IR::StructField>gen_tf_ing_md_t();
-    static IR::IndexedVector<IR::StructField>gen_tf_ing_md_for_tm_t();
-    static IR::IndexedVector<IR::StructField>gen_tf_ing_intr_md_from_prsr();
-    static IR::IndexedVector<IR::StructField>gen_tf_ing_intr_md_for_deprsr();
-    static IR::IndexedVector<IR::StructField>gen_tf_eg_intr_md_t();
-    static IR::IndexedVector<IR::StructField>gen_tf_eg_intr_md_from_prsr();
-    static IR::IndexedVector<IR::StructField>gen_tf_eg_intr_md_for_deprsr();
-    static IR::IndexedVector<IR::StructField>gen_tf_eg_intr_md_for_output_port();
+    static IR::IndexedVector<IR::StructField> gen_tf_ing_md_t();
+    static IR::IndexedVector<IR::StructField> gen_tf_ing_md_for_tm_t();
+    static IR::IndexedVector<IR::StructField> gen_tf_ing_intr_md_from_prsr();
+    static IR::IndexedVector<IR::StructField> gen_tf_ing_intr_md_for_deprsr();
+    static IR::IndexedVector<IR::StructField> gen_tf_eg_intr_md_t();
+    static IR::IndexedVector<IR::StructField> gen_tf_eg_intr_md_from_prsr();
+    static IR::IndexedVector<IR::StructField> gen_tf_eg_intr_md_for_deprsr();
+    static IR::IndexedVector<IR::StructField>
+    gen_tf_eg_intr_md_for_output_port();
 };
 } // namespace CODEGEN
-
 
 #endif // ifndef _STRUCTFIELDLIST_H_

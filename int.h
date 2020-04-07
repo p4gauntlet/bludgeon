@@ -5,16 +5,11 @@
 
 namespace CODEGEN {
 class int_literal {
-public:
-	int_literal() {
-	}
+  public:
+    int_literal() {}
 
-	static IR::Type_InfInt* gen() {
-		return new IR::Type_InfInt();
-	}
-	
+    static IR::Type_InfInt *gen() { return new IR::Type_InfInt(); }
 };
-}
-
+} // namespace CODEGEN
 
 #endif

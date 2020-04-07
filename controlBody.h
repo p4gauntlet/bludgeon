@@ -5,22 +5,13 @@
 
 namespace CODEGEN {
 
-
 class controlBody {
-public:
-	const char* types[1] = {
-		"blockStatement"
-	};
+  public:
+    const char *types[1] = {"blockStatement"};
 
-	controlBody() {
-	}
-
+    controlBody() {}
 };
 
-
 } // namespace CODEGEN
-
-
-
 
 #endif

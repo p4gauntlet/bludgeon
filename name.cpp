@@ -1,10 +1,5 @@
 
 
-
 #include "name.h"
 
-namespace CODEGEN {
-
-
-} // namespace CODEGEN
-
+namespace CODEGEN {} // namespace CODEGEN
