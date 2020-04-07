@@ -45,27 +45,29 @@ public:
 				t = rand()%2;
 			}
 			switch (t) {
-				case 0: {
+                case 0: { // Tao: base type
 							if (for_type==HEADER_UNION || for_type==STRUCT_HEADERS) {
+                                // Tao: header_union can only have headers
+                                // Header struct
 								break;
 							}
 							std::vector<int> b_types = {1}; // only bit<>
 							auto base_type = new baseType(false, b_types);
 							tp = base_type->gen(); break;
 						}
-				case 1: {
+                case 1: { // Tao: type name
 							auto type_name = new typeName(for_type);
 							tp = type_name->gen();
 							break;
 						}
-				case 2: {
+                case 2: { // Tao: header stack type
 							if (for_type == HEADER_UNION) {
 								break;
 							}
 							auto hdr_stack = new headerStackType(for_type);
 							tp = hdr_stack->gen();
 							break;
-						}
+						} 
 			}
 
 			if (tp != nullptr) {
