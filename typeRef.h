@@ -19,14 +19,11 @@ class typeRef {
         "tupleType" // not
     };
 
-    bool if_random;
-    std::vector<int> type;
-    cstring for_type;
 
-    typeRef(bool if_rand, std::vector<int> &type, cstring for_type)
-        : if_random(if_rand), type(type), for_type(for_type) {}
+    typeRef() {}
 
-    IR::Type *gen();
+    static IR::Type *gen(bool if_rand, std::vector<int> &type,
+                         cstring for_type);
 };
 } // namespace CODEGEN
 

@@ -1,11 +1,11 @@
 #include "variableDeclaration.h"
 
 namespace CODEGEN {
+
 IR::Declaration_Variable *variableDeclaration::gen() {
     std::vector<int> types = {};
-    typeRef *type_ref = new typeRef(true, types, STRUCT_LIKE);
     cstring name = randstr(6);
-    IR::Type *type = type_ref->gen();
+    IR::Type *type = typeRef::gen(true, types, STRUCT_LIKE);
 
     IR::Declaration_Variable *ret;
 

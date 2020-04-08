@@ -13,17 +13,11 @@ class headerStackType {
   public:
     const char *types[0] = {};
 
-    cstring for_type;
+    headerStackType() {}
 
-    typeName *type_name;
+    ~headerStackType() {}
 
-    headerStackType(cstring for_type) : for_type(for_type) {
-        type_name = new typeName(for_type);
-    }
-
-    ~headerStackType() { delete type_name; }
-
-    IR::Type *gen();
+    static IR::Type *gen(cstring for_type);
 };
 } // namespace CODEGEN
 

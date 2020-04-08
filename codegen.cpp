@@ -89,8 +89,7 @@ IR::Node *CGenerator::gen_tpdef() {
     IR::Node *n = nullptr;
 
     while (1) {
-        auto tpdef = new typedefDeclaration();
-        n = tpdef->gen();
+        n = typedefDeclaration::gen();
 
         if (n != nullptr) {
             break;
@@ -124,6 +123,7 @@ IR::Node *CGenerator::gen_sys_parser(bool use_tofino = false) {
 void CGenerator::emitBmv2Top(std::ostream *ostream) {
     *ostream << "#include <core.p4>\n";
     *ostream << "#include <v1model.p4>\n\n";
+    P4Scope::not_initialized_structs.insert("standard_metadata_t");
 }
 
 void CGenerator::emitBmv2Bottom(std::ostream *ostream) {

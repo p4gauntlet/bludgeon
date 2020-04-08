@@ -244,65 +244,20 @@ IR::Type_Bits *P4Scope::pick_declared_bit_type(bool must_write) {
     return new IR::Type_Bits(bit_width, false);
 }
 
-// Tao: filter is a mess here, sometimes it is filter, sometimes it is indicator
-void P4Scope::get_all_type_names(cstring filter,
-                                 std::vector<cstring> &type_names) {
-    for (auto i = scope.begin(); i < scope.end(); i++) {
-        for (size_t j = 0; j < (*i)->size(); j++) {
-            auto obj = (*i)->at(j);
-
-            if (filter == HEADER) {
-                if (obj->is<IR::Type_Declaration>() &&
-                    !obj->is<IR::Type_Header>() &&
-                    !obj->is<IR::Type_HeaderUnion>()) {
-                    auto tmp_obj = obj->to<IR::Type_Declaration>();
-                    type_names.push_back(tmp_obj->name.name);
-                }
-            } else if (filter == HEADER_UNION) { // we only want header def
-                if (obj->is<IR::Type_Header>()) {
-                    auto tmp_obj = obj->to<IR::Type_Declaration>();
-                    type_names.push_back(tmp_obj->name.name);
-                }
-            } else if ((filter == STRUCT) || (filter == STRUCT_HEADERS)) {
-                if (!obj->is<IR::Type_Struct>() && !obj->is<IR::Type_Enum>() &&
-                    !obj->is<IR::Type_SerEnum>() &&
-                    obj->is<IR::Type_Declaration>()) {
-                    if (obj->is<IR::Type_Typedef>()) {
-                        auto tpdef_obj = obj->to<IR::Type_Typedef>();
-                        auto tpdef_name = tpdef_obj->type->to<IR::Type_Name>();
-                        auto tpdef_type =
-                            get_type_by_name(tpdef_name->path->name.name);
-                        if (!(tpdef_type->is<IR::Type_Header>() ||
-                              tpdef_type->is<IR::Type_HeaderUnion>())) {
-                            continue;
-                        }
-                    }
-                    auto tmp_obj = obj->to<IR::Type_Declaration>();
-                    type_names.push_back(tmp_obj->name.name);
-                }
-            } else if (filter == STRUCT_LIKE) {
-                if (obj->is<IR::Type_StructLike>()) {
-                    auto tmp_obj = obj->to<IR::Type_StructLike>();
-                    if ((tmp_obj->name.name != "standard_metadata_t") &&
-                        (tmp_obj->name.name != "Meta") &&
-                        (tmp_obj->name.name != "Headers")) {
-                        type_names.push_back(tmp_obj->name.name);
-                    }
-                }
-            } else if (filter == HEADER_ONLY) {
-                if (obj->is<IR::Type_Header>() ||
-                    obj->is<IR::Type_HeaderUnion>()) {
-                    auto tmp_obj = obj->to<IR::Type_StructLike>();
-                    type_names.push_back(tmp_obj->name.name);
-                }
-            } else {
-                if (obj->is<IR::Type_Declaration>()) {
-                    auto tmp_obj = obj->to<IR::Type_Declaration>();
-                    type_names.push_back(tmp_obj->name.name);
+std::vector<const IR::Type_Declaration *>
+P4Scope::get_filtered_decls(std::set<cstring> filter) {
+    std::vector<const IR::Type_Declaration *> ret;
+    for (auto sub_scope : scope) {
+        for (auto node : *sub_scope) {
+            cstring name = node->node_type_name();
+            if (filter.find(name) == filter.end()) {
+                if (auto decl = node->to<IR::Type_Declaration>()) {
+                    ret.push_back(decl);
                 }
             }
         }
     }
+    return ret;
 }
 
 std::set<const IR::P4Table *> *P4Scope::get_callable_tables() {

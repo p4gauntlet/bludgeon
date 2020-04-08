@@ -16,28 +16,9 @@ class prefixedType {
         ". TYPE_IDENTIFIER" // not supported
     };
 
-    cstring for_type;
-    prefixedType(cstring for_type) : for_type(for_type) {}
+    prefixedType() {}
 
-    IR::Type *gen() {
-        // it is a Type Name
-        std::vector<cstring> l_types;
-
-        P4Scope::get_all_type_names(for_type, l_types);
-
-        if (l_types.size() == 0) {
-            return nullptr;
-        }
-
-        cstring name = l_types.at(rand() % l_types.size());
-
-        // we do not want it to have a stack type already
-        if (P4Scope::check_type_name(name)) {
-            return nullptr;
-        }
-
-        return new IR::Type_Name(name);
-    }
+    static IR::Type *gen(cstring for_type);
 };
 } // namespace CODEGEN
 

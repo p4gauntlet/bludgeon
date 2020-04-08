@@ -53,8 +53,6 @@ class P4Scope {
         types_w_stack.insert(name);
     }
 
-    static void get_all_type_names(cstring filter,
-                                   std::vector<cstring> &type_names);
     static const IR::Type_Declaration *get_type_by_name(cstring name);
 
     // template to get all declarations
@@ -72,6 +70,8 @@ class P4Scope {
         return ret;
     }
 
+    static std::vector<const IR::Type_Declaration *>
+    get_filtered_decls(std::set<cstring> filter);
     static std::map<cstring, std::vector<const IR::Type *>> get_action_def();
     static std::set<const IR::P4Table *> *get_callable_tables();
     static std::set<cstring> get_candidate_lvals(const IR::Type *tp,

@@ -2,13 +2,13 @@
 
 namespace CODEGEN {
 
-IR::Type *typeRef::gen() {
+IR::Type *typeRef::gen(bool if_rand, std::vector<int> &type, cstring for_type) {
     int num_trials = 100;
     IR::Type *tp = nullptr;
 
     while (num_trials--) {
         int t;
-        if (if_random == false) {
+        if (if_rand == false) {
             t = type.at(rand() % type.size());
         } else {
             t = rand() % 2;
@@ -24,16 +24,14 @@ IR::Type *typeRef::gen() {
             break;
         }
         case 1: {
-            auto type_name = new typeName(for_type);
-            tp = type_name->gen();
+            tp = typeName::gen(for_type);
             break;
         }
         case 2: {
             if (for_type == HEADER_UNION) {
                 break;
             }
-            auto hdr_stack = new headerStackType(for_type);
-            tp = hdr_stack->gen();
+            tp = headerStackType::gen(for_type);
             break;
         }
         }

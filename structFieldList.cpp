@@ -7,19 +7,112 @@ namespace CODEGEN {
 IR::IndexedVector<IR::StructField> get_sfs(std::vector<cstring> &fields,
                                            std::vector<int> &bit_size,
                                            size_t vec_size) {
-
     IR::IndexedVector<IR::StructField> ret_fields;
 
-    IR::ID *name;
-    IR::Type *tp;
-
     for (size_t i = 0; i < vec_size; i++) {
-        name = new IR::ID(fields.at(i));
-        tp = new IR::Type_Bits(bit_size.at(i), false);
-        ret_fields.push_back(new IR::StructField(*name, tp));
+        cstring name = fields.at(i);
+        IR::Type *tp = new IR::Type_Bits(bit_size.at(i), false);
+        ret_fields.push_back(new IR::StructField(name, tp));
     }
 
     return ret_fields;
+}
+
+IR::IndexedVector<IR::StructField>
+structFieldList::gen(cstring for_type, cstring name, size_t len) {
+    bool if_contain_stack = false;
+    IR::IndexedVector<IR::StructField> fields;
+    std::set<cstring> fields_name;
+    std::set<cstring> fields_type;
+
+    for (size_t i = 0; i < len; i++) {
+        IR::StructField *sf = structField::gen(for_type);
+
+        if (sf == nullptr) {
+            continue;
+        }
+
+        if (sf->type->is<IR::Type_Stack>() || sf->type->is<IR::Type_Header>() ||
+            sf->type->is<IR::Type_HeaderUnion>()) {
+            if_contain_stack = true;
+        }
+
+        // we check the filed name and type here
+        if (fields_name.find(sf->name.name) != fields_name.end()) {
+            delete sf;
+            continue;
+        }
+
+        cstring hdr_tpn;
+
+        if (for_type == HEADER_UNION) {
+            auto tpn = sf->type->to<IR::Type_Name>();
+            hdr_tpn = tpn->path->name.name;
+        }
+
+        fields_name.insert(sf->name.name);
+        fields_type.insert(hdr_tpn);
+
+        fields.push_back(sf);
+    }
+
+    if (if_contain_stack == true) {
+        P4Scope::insert_type_name(name);
+    }
+
+    return fields;
+}
+
+IR::IndexedVector<IR::StructField> structFieldList::gen_sm() {
+    IR::IndexedVector<IR::StructField> fields;
+
+    // IR::ID   *name;
+    // IR::Type *tp;
+
+    /*
+       name = new IR::ID("ingress_port");
+       tp = new IR::Type_Bits(9, false);
+       fields.push_back(new IR::StructField(*name, tp));
+       name = new IR::ID("egress_spec");
+       tp = new IR::Type_Bits(9, false);
+       fields.push_back(new IR::StructField(*name, tp));
+       name = new IR::ID("egress_port");
+       tp = new IR::Type_Bits(9, false);
+       fields.push_back(new IR::StructField(*name, tp));
+       name = new IR::ID("instance_type");
+       tp = new IR::Type_Bits(32, false);
+       fields.push_back(new IR::StructField(*name, tp));
+       name = new IR::ID("packet_length");
+       tp = new IR::Type_Bits(32, false);
+       fields.push_back(new IR::StructField(*name, tp));
+       name = new IR::ID("enq_timestamp");
+       tp = new IR::Type_Bits(32, false);
+       fields.push_back(new IR::StructField(*name, tp));
+       name = new IR::ID("enq_qdepth");
+       tp = new IR::Type_Bits(19, false);
+       fields.push_back(new IR::StructField(*name, tp));
+       // name = new IR::ID("dep_timedelta");
+       // tp = new IR::Type_Bits(32, false);
+       // fields.push_back(new IR::StructField(*name, tp));
+       name = new IR::ID("deq_qdepth");
+       tp = new IR::Type_Bits(19, false);
+       fields.push_back(new IR::StructField(*name, tp));
+       name = new IR::ID("ingress_global_timestamp");
+       tp = new IR::Type_Bits(48, false);
+       fields.push_back(new IR::StructField(*name, tp));
+       name = new IR::ID("egress_global_timestamp");
+       tp = new IR::Type_Bits(48, false);
+       fields.push_back(new IR::StructField(*name, tp));
+       name = new IR::ID("egress_rid");
+       tp = new IR::Type_Bits(16, false);
+       fields.push_back(new IR::StructField(*name, tp));
+       // Tao: error is omitted here
+       name = new IR::ID("priority");
+       tp = new IR::Type_Bits(3, false);
+       fields.push_back(new IR::StructField(*name, tp));
+     */
+
+    return fields;
 }
 
 IR::IndexedVector<IR::StructField> structFieldList::gen_tf_ing_md_t() {

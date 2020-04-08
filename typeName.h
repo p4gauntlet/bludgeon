@@ -10,14 +10,9 @@ class typeName {
   public:
     const char *types[1] = {"prefixedType"};
 
-    cstring for_type;
-    typeName(cstring for_type) : for_type(for_type) {}
+    typeName() {}
 
-    IR::Type *gen() {
-        auto prefixed_tp = new prefixedType(for_type);
-
-        return prefixed_tp->gen();
-    }
+    static IR::Type *gen(cstring for_type);
 };
 } // namespace CODEGEN
 

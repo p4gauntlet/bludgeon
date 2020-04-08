@@ -1,8 +1,8 @@
 #include "headerStackType.h"
 
 namespace CODEGEN {
-IR::Type *headerStackType::gen() {
-    IR::Type *tp = type_name->gen();
+IR::Type *headerStackType::gen(cstring for_type) {
+    IR::Type *tp = typeName::gen(for_type);
     IR::Expression *e = bit_literal::gen_int();
 
     if ((tp == nullptr) || (e == nullptr)) {

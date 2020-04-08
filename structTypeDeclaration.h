@@ -17,8 +17,8 @@ class structTypeDeclaration {
 
     static IR::Type_Struct *gen() {
         cstring name = randstr(6);
-        auto sfl = new structFieldList(STRUCT, name);
-        IR::IndexedVector<IR::StructField> fields = sfl->gen(rand() % 5 + 1);
+        IR::IndexedVector<IR::StructField> fields =
+            structFieldList::gen(STRUCT, name, rand() % 5 + 1);
 
         auto ret = new IR::Type_Struct(name, fields);
 
@@ -28,8 +28,8 @@ class structTypeDeclaration {
     }
 
     static IR::Type_Struct *gen_Headers() {
-        auto sfl = new structFieldList(STRUCT_HEADERS, "Headers");
-        IR::IndexedVector<IR::StructField> fields = sfl->gen(rand() % 5 + 1);
+        IR::IndexedVector<IR::StructField> fields =
+            structFieldList::gen(STRUCT_HEADERS, "Headers", rand() % 5 + 1);
 
         // Tao: hard code for ethernet_t eth_hdr;
         auto eth_sf =
@@ -62,10 +62,9 @@ class structTypeDeclaration {
     }
 
     static IR::Type_Struct *gen_Sm() {
-        IR::ID *name = new IR::ID("standard_metadata_t");
         auto fields = structFieldList::gen_sm();
 
-        auto ret = new IR::Type_Struct(*name, fields);
+        auto ret = new IR::Type_Struct("standard_metadata_t", fields);
 
         P4Scope::add_to_scope(ret);
 
