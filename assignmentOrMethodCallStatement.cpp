@@ -3,7 +3,7 @@
 #include "expression.h"
 
 namespace CODEGEN {
-IR::AssignmentStatement *assignmentOrMethodCallStatement::gen_assign() {
+IR::Statement *assignmentOrMethodCallStatement::gen_assign() {
     IR::AssignmentStatement *assignstat = nullptr;
     IR::Expression *left = nullptr, *right = nullptr;
 
@@ -14,8 +14,9 @@ IR::AssignmentStatement *assignmentOrMethodCallStatement::gen_assign() {
         IR::Type_Bits *bit_type = P4Scope::pick_declared_bit_type(true);
         // Ideally this should have a fallback option
         if (not bit_type) {
-            printf("Could not find writable bit lval for assignment\n");
-            return nullptr;
+            printf("Could not find writable bit lval for assignment!\n");
+            //TODO: Find a more meaningful assignment statement
+            return new IR::EmptyStatement();
         }
         cstring name = P4Scope::pick_lval(bit_type, true);
         left = new IR::PathExpression(name);
@@ -67,13 +68,11 @@ IR::Statement *gen_methodcall_expression(cstring method_name,
 IR::Statement *gen_methodcall() {
     IR::MethodCallExpression *mce = nullptr;
     std::vector<int> percent = {40, 40, 20};
-    bool fallback = false;
 
     switch (randind(percent)) {
     case 0: {
         auto actions = P4Scope::get_decls<IR::P4Action>();
         if (actions.size() == 0) {
-            fallback = true;
             break;
         }
         size_t idx = rand() % actions.size();
@@ -84,10 +83,8 @@ IR::Statement *gen_methodcall() {
     case 1: {
         auto funcs = P4Scope::get_decls<IR::Function>();
         if (funcs.size() == 0) {
-            fallback = true;
             break;
         }
-
         size_t idx = rand() % funcs.size();
         auto p4_fun = funcs.at(idx);
         auto params = p4_fun->getParameters()->parameters;
@@ -96,7 +93,6 @@ IR::Statement *gen_methodcall() {
     case 2: {
         auto tbl_set = P4Scope::get_callable_tables();
         if (tbl_set->size() == 0) {
-            fallback = true;
             break;
         }
         auto idx = rand() % tbl_set->size();
@@ -109,13 +105,6 @@ IR::Statement *gen_methodcall() {
         break;
     }
     }
-    if (fallback) {
-        // NoAction is a core action we can always call.
-        // mce = new IR::MethodCallExpression(new
-        // IR::PathExpression("NoAction"));
-        // TODO: Find a better fallback method...
-        return nullptr;
-    }
     if (mce) {
         return new IR::MethodCallStatement(mce);
     } else {
@@ -126,11 +115,13 @@ IR::Statement *gen_methodcall() {
 IR::Statement *assignmentOrMethodCallStatement::gen() {
     std::vector<int> percent = {75, 25};
     auto val = randind(percent);
-
     if (val == 0) {
         return assignmentOrMethodCallStatement::gen_assign();
     } else {
-        return gen_methodcall();
+        auto mst = gen_methodcall();
+        if (not mst)
+            return assignmentOrMethodCallStatement::gen_assign();
+        return mst;
     }
 }
 } // namespace CODEGEN

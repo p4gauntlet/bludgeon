@@ -39,8 +39,7 @@ IR::BlockStatement *controlDeclaration::gen_ctrl_components(
     // instantiations
 
     // blockstatement
-    auto blk_gen = new blockStatement();
-    auto blk_stat = blk_gen->gen();
+    auto blk_stat = blockStatement::gen();
 
     return blk_stat;
 }

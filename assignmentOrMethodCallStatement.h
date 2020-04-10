@@ -12,7 +12,7 @@ class assignmentOrMethodCallStatement {
 
     assignmentOrMethodCallStatement() {}
 
-    static IR::AssignmentStatement *gen_assign();
+    static IR::Statement *gen_assign();
     static IR::Statement *gen();
 };
 } // namespace CODEGEN

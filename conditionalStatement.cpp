@@ -4,16 +4,21 @@
 
 namespace CODEGEN {
 IR::IfStatement *conditionalStatement::gen_if_stat(bool if_in_func) {
-    IR::IfStatement *if_stat = nullptr;
-    IR::Expression *expr = nullptr;
+    IR::Expression *cond = nullptr;
     IR::Statement *if_true = nullptr, *if_false = nullptr;
 
-    expr = expression::gen_expr(new IR::Type_Boolean());
-    if_true = statement::gen_rnd(if_in_func);
-    if_false = statement::gen_rnd(if_in_func);
-    if ((expr != nullptr) && (if_true != nullptr) && (if_false != nullptr)) {
-        if_stat = new IR::IfStatement(expr, if_true, if_false);
+    cond = expression::gen_expr(new IR::Type_Boolean());
+    if (not cond) {
+        BUG("cond in IfStatement should not be nullptr!");
     }
-    return if_stat;
+    if_true = statement::gen_rnd(if_in_func);
+    if (not if_true) {
+        BUG("if_true in IfStatement should not be nullptr!");
+    }
+    if_false = statement::gen_rnd(if_in_func);
+    if (not if_false) {
+        BUG("if_false in IfStatement should not be nullptr!");
+    }
+    return  new IR::IfStatement(cond, if_true, if_false);;
 }
 } // namespace CODEGEN

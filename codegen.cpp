@@ -26,8 +26,10 @@ IR::Node *CGenerator::gen() {
             break;
         }
         case 1: {
+            //header unions are disabled for now, need to fix assignments
             auto hdrs = P4Scope::get_decls<IR::Type_Header>();
-            if (hdrs.size() > 0) {
+            // we can only generate a union if we have at least two headers
+            if (hdrs.size() > 1) {
                 n = headerUnionDeclaration::gen();
             }
             break;
@@ -240,6 +242,7 @@ void CGenerator::gen_p4_code() {
         // generate struct  standard_metadata_t
         structTypeDeclaration::gen_Sm();
 
+        objects->push_back(gen_func());
         objects->push_back(gen_func());
         objects->push_back(gen_sys_parser());
         objects->push_back(controlDeclaration::gen_ing_ctrl());

@@ -10,8 +10,7 @@ IR::P4Action *actionDeclaration::gen() {
     P4Scope::start_local_scope();
     params = parameterList::gen();
 
-    auto blk_gen = new blockStatement();
-    blk = blk_gen->gen();
+    blk = blockStatement::gen();
 
     auto ret = new IR::P4Action(name, params, blk);
 

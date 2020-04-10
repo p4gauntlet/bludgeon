@@ -14,9 +14,10 @@ IR::IndexedVector<IR::StatOrDecl> gen_sth(bool if_in_func = false) {
     // put tab_name .apply() after some initializations
     for (int num_stat = 0; num_stat <= max_statements; num_stat++) {
         IR::StatOrDecl *stmt = statementOrDeclaration::gen_rnd(if_in_func);
-        if (stmt != nullptr) {
-            stat_or_decls.push_back(stmt);
+        if (stmt == nullptr) {
+            BUG("Statement in BlockStatement should not be nullptr!");
         }
+        stat_or_decls.push_back(stmt);
     }
     return stat_or_decls;
 }

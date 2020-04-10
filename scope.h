@@ -11,20 +11,25 @@
 namespace CODEGEN {
 class P4Scope {
   public:
+    // the list of subscopes
     static std::vector<IR::Vector<IR::Node> *> scope;
+    // avoid duplicates
     static std::set<cstring> used_names;
     // a map of usable lvalues
     static std::map<cstring, std::map<int, std::set<cstring>>> lval_map;
     // a subset of the lval map that includes rw values
     static std::map<cstring, std::map<int, std::set<cstring>>> lval_map_rw;
 
-    // which type has a field whose type is stack
-    static std::set<cstring> types_w_stack;
+    // this is used to mark that we may be in a function
     static const IR::Type *ret_type;
+    // TODO: This should be replaced by get_decls
     static std::vector<IR::P4Control *> p4_ctrls;
+    // TODO: Maybe we can just remove tables from the declarations list?
     static std::set<const IR::P4Table *> callable_tables;
+    // not sure what this is about
     static const IR::Type_Struct *sys_hdr;
 
+    // structs that should not be initialized because they are incomplete
     static std::set<cstring> not_initialized_structs;
 
     P4Scope() {}
@@ -45,14 +50,6 @@ class P4Scope {
 
     IR::Expression *pick_bit_field(const IR::Type_Bits *tp, bool is_lval);
 
-    static bool check_type_name(const cstring &name) {
-        return types_w_stack.find(name) != types_w_stack.end();
-    }
-
-    static void insert_type_name(const cstring &name) {
-        types_w_stack.insert(name);
-    }
-
     static const IR::Type_Declaration *get_type_by_name(cstring name);
 
     // template to get all declarations
@@ -72,7 +69,6 @@ class P4Scope {
 
     static std::vector<const IR::Type_Declaration *>
     get_filtered_decls(std::set<cstring> filter);
-    static std::map<cstring, std::vector<const IR::Type *>> get_action_def();
     static std::set<const IR::P4Table *> *get_callable_tables();
     static std::set<cstring> get_candidate_lvals(const IR::Type *tp,
                                                  bool must_write = true);

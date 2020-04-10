@@ -6,11 +6,12 @@ std::set<cstring> P4Scope::used_names;
 std::map<cstring, std::map<int, std::set<cstring>>> P4Scope::lval_map;
 std::map<cstring, std::map<int, std::set<cstring>>> P4Scope::lval_map_rw;
 
-std::set<cstring> P4Scope::types_w_stack;
 const IR::Type *P4Scope::ret_type = nullptr;
 std::vector<IR::P4Control *> P4Scope::p4_ctrls;
 std::set<const IR::P4Table *> P4Scope::callable_tables;
 const IR::Type_Struct *P4Scope::sys_hdr;
+
+// TODO: This should be set by the backend
 std::set<cstring> P4Scope::not_initialized_structs = {
     "ingress_intrinsic_metadata_t",
     "ingress_intrinsic_metadata_from_parser_t",

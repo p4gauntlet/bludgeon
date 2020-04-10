@@ -11,15 +11,17 @@ namespace CODEGEN {
 IR::Statement *statement::gen_rnd(bool if_in_func = false) {
     std::vector<int> percent = {0, 75, 5, 5, 0, 5};
     IR::Statement *stmt = nullptr;
-
+    bool use_default_stmt = false;
     switch (randind(percent)) {
     case 0: {
-        switchStatement *switch_stat_gen = new switchStatement();
-        stmt = switch_stat_gen->gen();
+        stmt = switchStatement::gen();
+        if (not stmt) {
+            use_default_stmt = true;
+        }
         break;
     }
     case 1: {
-        stmt = assignmentOrMethodCallStatement::gen();
+        use_default_stmt = true;
         break;
     }
     case 2: {
@@ -31,15 +33,20 @@ IR::Statement *statement::gen_rnd(bool if_in_func = false) {
         break;
     }
     case 4: {
-        if (!if_in_func) {
+        if (if_in_func) {
+            use_default_stmt = true;
+        } else{
             stmt = exitStatement::gen();
         }
         break;
     }
     case 5: {
-        auto blk_stat = new blockStatement();
-        stmt = blk_stat->gen(if_in_func);
+        stmt = blockStatement::gen(if_in_func);
+        break;
     }
+    }
+    if (use_default_stmt) {
+        stmt = assignmentOrMethodCallStatement::gen();
     }
     return stmt;
 }

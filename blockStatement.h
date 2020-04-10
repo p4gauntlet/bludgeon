@@ -15,7 +15,7 @@ class blockStatement {
     blockStatement() {}
     ~blockStatement() {}
 
-    IR::BlockStatement *gen(bool if_in_func = false);
+    static IR::BlockStatement *gen(bool if_in_func = false);
 };
 } // namespace CODEGEN
 

@@ -32,7 +32,7 @@ IR::Declaration_Variable *variableDeclaration::gen() {
     cstring name = randstr(6);
     IR::Type *type = gen_type();
 
-    IR::Declaration_Variable *ret;
+    IR::Declaration_Variable *ret = nullptr;
 
     // Tao: construct list expression
     if (type->is<IR::Type_Bits>()) {
@@ -43,12 +43,9 @@ IR::Declaration_Variable *variableDeclaration::gen() {
         ret = new IR::Declaration_Variable(name, type, expr);
     } else if (type->is<IR::Type_Name>()) {
         IR::Vector<IR::Expression> exprs;
-        bool is_forbidden = false;
         auto type_name = type->to<IR::Type_Name>()->path->name.name;
-        if (P4Scope::not_initialized_structs.count(type_name) != 0) {
-            is_forbidden = true;
-        }
-        if (not is_forbidden) {
+        // check if struct is forbidden
+        if (P4Scope::not_initialized_structs.count(type_name) == 0) {
             auto expr = expression::gen_expr(type);
             ret = new IR::Declaration_Variable(name, type, expr);
         } else {

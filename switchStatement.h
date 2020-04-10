@@ -11,17 +11,12 @@
 namespace CODEGEN {
 class switchStatement {
   public:
-    IR::Expression *expr = nullptr;
-
     switchStatement() {}
 
     ~switchStatement() {
-        if (expr != nullptr) {
-            delete expr;
-        }
     }
 
-    IR::SwitchStatement *gen();
+    static IR::SwitchStatement *gen();
 };
 } // namespace CODEGEN
 

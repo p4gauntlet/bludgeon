@@ -15,8 +15,7 @@ IR::Function *functionDeclaration::gen() {
     tm = new IR::Type_Method(r_tp, params);
 
     P4Scope::ret_type = r_tp;
-    auto blk_gen = new blockStatement();
-    blk = blk_gen->gen(true);
+    blk = blockStatement::gen(true);
     P4Scope::ret_type = nullptr;
 
     auto ret = new IR::Function(name, tm, blk);
