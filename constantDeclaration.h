@@ -13,35 +13,11 @@ class constantDeclaration {
   public:
     const char *types[0] = {};
 
-    IR::ID *name;
-    IR::Expression *expr;
-    IR::Type *tp;
+    constantDeclaration() {}
 
-    constantDeclaration() { name = new IR::ID(CODEGEN::randstr(4)); }
+    ~constantDeclaration() {}
 
-    ~constantDeclaration() {
-        delete name;
-        delete expr;
-        delete tp;
-    }
-
-    IR::Declaration_Constant *gen() {
-        std::vector<int> type = {0, 1};
-        auto base_type = new baseType(false, type);
-
-        tp = base_type->gen();
-
-        if (tp->is<IR::Type_Boolean>()) {
-            expr = new IR::BoolLiteral(false);
-        } else {
-            expr = new IR::Constant(tp->to<IR::Type_Bits>(), rand() % 8 + 1);
-        }
-
-        // add to the scope
-        auto ret = new IR::Declaration_Constant(*name, tp, expr);
-        P4Scope::add_to_scope(ret);
-        return ret;
-    }
+    static IR::Declaration_Constant *gen();
 };
 } // namespace CODEGEN
 

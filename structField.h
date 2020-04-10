@@ -13,7 +13,7 @@ class structField {
 
     structField() {}
 
-    static IR::StructField *gen(cstring for_type);
+    static IR::StructField *gen();
 };
 
 } // namespace CODEGEN

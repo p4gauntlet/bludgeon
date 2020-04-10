@@ -27,8 +27,8 @@ IR::BlockStatement *controlDeclaration::gen_ctrl_components(
 
     // actionDeclarations
     for (int i = 0; i <= max_actions; i++) {
-        auto act_decl = new actionDeclaration();
-        local_decls.push_back(act_decl->gen());
+        auto act_decl = actionDeclaration::gen();
+        local_decls.push_back(act_decl);
     }
 
     for (int i = 0; i <= max_tables; i++) {

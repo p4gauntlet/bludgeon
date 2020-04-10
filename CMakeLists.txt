@@ -10,6 +10,7 @@ set (CODEGEN_SRCS
     scope.h
     common.h
     common.cpp
+    annotations.cpp
     annotations.h
     codegen.cpp
     codegen.h

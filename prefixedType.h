@@ -18,7 +18,7 @@ class prefixedType {
 
     prefixedType() {}
 
-    static IR::Type *gen(cstring for_type);
+    static IR::Type *gen();
 };
 } // namespace CODEGEN
 

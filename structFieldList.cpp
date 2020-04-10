@@ -18,51 +18,6 @@ IR::IndexedVector<IR::StructField> get_sfs(std::vector<cstring> &fields,
     return ret_fields;
 }
 
-IR::IndexedVector<IR::StructField>
-structFieldList::gen(cstring for_type, cstring name, size_t len) {
-    bool if_contain_stack = false;
-    IR::IndexedVector<IR::StructField> fields;
-    std::set<cstring> fields_name;
-    std::set<cstring> fields_type;
-
-    for (size_t i = 0; i < len; i++) {
-        IR::StructField *sf = structField::gen(for_type);
-
-        if (sf == nullptr) {
-            continue;
-        }
-
-        if (sf->type->is<IR::Type_Stack>() || sf->type->is<IR::Type_Header>() ||
-            sf->type->is<IR::Type_HeaderUnion>()) {
-            if_contain_stack = true;
-        }
-
-        // we check the filed name and type here
-        if (fields_name.find(sf->name.name) != fields_name.end()) {
-            delete sf;
-            continue;
-        }
-
-        cstring hdr_tpn;
-
-        if (for_type == HEADER_UNION) {
-            auto tpn = sf->type->to<IR::Type_Name>();
-            hdr_tpn = tpn->path->name.name;
-        }
-
-        fields_name.insert(sf->name.name);
-        fields_type.insert(hdr_tpn);
-
-        fields.push_back(sf);
-    }
-
-    if (if_contain_stack == true) {
-        P4Scope::insert_type_name(name);
-    }
-
-    return fields;
-}
-
 IR::IndexedVector<IR::StructField> structFieldList::gen_sm() {
     IR::IndexedVector<IR::StructField> fields;
 

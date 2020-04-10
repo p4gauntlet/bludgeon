@@ -2,9 +2,8 @@
 #include "expression.h"
 namespace CODEGEN {
 IR::KeyElement *keyElement::gen(cstring match_kind) {
-    auto annotat = new Annotations();
     auto match = new IR::PathExpression(match_kind);
-    auto annotations = annotat->gen();
+    auto annotations = Annotations::gen();
     // TODO: how to generate meaningful expr
     auto bit_type = P4Scope::pick_declared_bit_type(false);
 

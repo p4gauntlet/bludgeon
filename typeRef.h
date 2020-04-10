@@ -22,8 +22,7 @@ class typeRef {
 
     typeRef() {}
 
-    static IR::Type *gen(bool if_rand, std::vector<int> &type,
-                         cstring for_type);
+    static IR::Type *gen();
 };
 } // namespace CODEGEN
 

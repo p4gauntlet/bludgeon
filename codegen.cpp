@@ -45,8 +45,7 @@ IR::Node *CGenerator::gen_act() {
     IR::Node *n = nullptr;
 
     while (1) {
-        auto act_decl = new actionDeclaration();
-        n = act_decl->gen();
+        n = actionDeclaration::gen();
 
         if (n != nullptr) {
             break;
@@ -75,8 +74,7 @@ IR::Node *CGenerator::gen_t_enum() {
     while (1) {
         // auto t_enum = new enumDeclaration(rand()%2);
         // Tao: always generating SerEnum
-        auto t_enum = new enumDeclaration(1);
-        n = t_enum->gen();
+        n = enumDeclaration::gen(1);
 
         if (n != nullptr) {
             break;
@@ -104,19 +102,13 @@ IR::Node *CGenerator::gen_tab() {
     return tab_gen->gen();
 }
 
-IR::Node *CGenerator::gen_func() {
-    auto func_gen = new functionDeclaration();
-
-    return func_gen->gen();
-}
+IR::Node *CGenerator::gen_func() { return functionDeclaration::gen(); }
 
 IR::Node *CGenerator::gen_sys_parser(bool use_tofino = false) {
-    auto p_gen = new p4Parser();
-
     if (use_tofino) {
-        return p_gen->gen_tofino_p();
+        return p4Parser::gen_tofino_p();
     } else {
-        return p_gen->gen_sys_p();
+        return p4Parser::gen_sys_p();
     }
 }
 

@@ -2,45 +2,32 @@
 
 namespace CODEGEN {
 
-IR::Type *typeRef::gen(bool if_rand, std::vector<int> &type, cstring for_type) {
-    int num_trials = 100;
+IR::Type *typeRef::gen() {
     IR::Type *tp = nullptr;
+    std::vector<int> percent = {75, 25, 0};
 
-    while (num_trials--) {
-        int t;
-        if (if_rand == false) {
-            t = type.at(rand() % type.size());
-        } else {
-            t = rand() % 2;
+    switch (randind(percent)) {
+    case 0: {
+        std::vector<int> b_types = {1}; // only bit<>
+        tp = baseType::gen(false, b_types);
+        break;
+    }
+    case 1: {
+        auto l_types = P4Scope::get_decls<IR::Type_StructLike>();
+        if (l_types.size() == 0) {
+            return nullptr;
         }
-        switch (t) {
-        case 0: {
-            if ((for_type == HEADER_UNION) || (for_type == STRUCT_HEADERS)) {
-                break;
-            }
-            std::vector<int> b_types = {1}; // only bit<>
-            auto base_type = new baseType(false, b_types);
-            tp = base_type->gen();
-            break;
-        }
-        case 1: {
-            tp = typeName::gen(for_type);
-            break;
-        }
-        case 2: {
-            if (for_type == HEADER_UNION) {
-                break;
-            }
-            tp = headerStackType::gen(for_type);
-            break;
-        }
-        }
-
-        if (tp != nullptr) {
-            break;
-        }
+        auto candidate_type = l_types.at(rand() % l_types.size());
+        tp = new IR::Type_Name(candidate_type->name.name);
+        break;
+    }
+    case 2: {
+        // tp = headerStackType::gen();
+        break;
+    }
     }
 
     return tp;
 }
+
 } // namespace CODEGEN

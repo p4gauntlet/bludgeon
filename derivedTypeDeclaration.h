@@ -3,8 +3,6 @@
 
 #include "ir/ir.h"
 
-#include "headerTypeDeclaration.h"
-
 namespace CODEGEN {
 
 class derivedTypeDeclaration {
@@ -14,12 +12,7 @@ class derivedTypeDeclaration {
 
     derivedTypeDeclaration() {}
 
-    static IR::Type *gen() {
-        switch (rand() % 1) {
-        case 0:
-            return headerTypeDeclaration::gen();
-        }
-    }
+    static IR::Type *gen();
 };
 
 } // namespace CODEGEN

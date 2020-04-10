@@ -23,13 +23,9 @@ class baseType {
         "VARBIT < (expression) >" // not
     };
 
-    bool if_random;
-    std::vector<int> type;
+    baseType() {}
 
-    baseType(bool if_rand, std::vector<int> &type)
-        : if_random(if_rand), type(type) {}
-
-    IR::Type *gen();
+    static IR::Type *gen(bool if_rand, std::vector<int> &type);
 };
 } // namespace CODEGEN
 

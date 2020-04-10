@@ -3,10 +3,48 @@
 #include "headerTypeDeclaration.h"
 
 namespace CODEGEN {
+
+IR::Type *pick_field() {
+    std::vector<int> percent = {75, 25, 0};
+    IR::Type *tp = nullptr;
+    bool fallback = false;
+    switch (randind(percent)) {
+    case 0: {
+        fallback = true;
+        break;
+    }
+    case 1: {
+        auto l_types = P4Scope::get_decls<IR::Type_Struct>();
+        if (l_types.size() == 0) {
+            fallback = true;
+            break;
+        }
+        auto candidate_type = l_types.at(rand() % l_types.size());
+        tp = new IR::Type_Name(candidate_type->name.name);
+        break;
+    }
+    }
+    if (fallback) {
+        std::vector<int> b_types = {1}; // only bit<>
+        tp = baseType::gen(false, b_types);
+    }
+    return tp;
+}
+
 IR::Type_Header *headerTypeDeclaration::gen() {
     cstring name = randstr(6);
-    IR::IndexedVector<IR::StructField> fields =
-        structFieldList::gen(HEADER, name, rand() % 5 + 1);
+    IR::IndexedVector<IR::StructField> fields;
+    size_t len = rand() % 5 + 1;
+    for (size_t i = 0; i < len; i++) {
+        cstring field_name = randstr(4);
+        IR::Type *field_tp = pick_field();
+
+        if (auto struct_tp = field_tp->to<IR::Type_Struct>()) {
+            field_tp = new IR::Type_Name(struct_tp->name);
+        }
+        IR::StructField *sf = new IR::StructField(field_name, field_tp);
+        fields.push_back(sf);
+    }
     auto ret = new IR::Type_Header(name, fields);
 
     P4Scope::add_to_scope(ret);

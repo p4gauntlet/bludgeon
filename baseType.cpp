@@ -1,10 +1,10 @@
 #include "baseType.h"
 
 namespace CODEGEN {
-IR::Type *baseType::gen() {
+IR::Type *baseType::gen(bool if_rand, std::vector<int> &type) {
     int t;
 
-    if (if_random) {
+    if (if_rand) {
         t = rand() % 4;
     } else {
         t = type.at(rand() % type.size());

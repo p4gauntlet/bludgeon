@@ -12,7 +12,7 @@ class typeName {
 
     typeName() {}
 
-    static IR::Type *gen(cstring for_type);
+    static IR::Type *gen();
 };
 } // namespace CODEGEN
 

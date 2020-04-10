@@ -3,9 +3,8 @@
 namespace CODEGEN {
 
 IR::Declaration_Variable *variableDeclaration::gen() {
-    std::vector<int> types = {};
     cstring name = randstr(6);
-    IR::Type *type = typeRef::gen(true, types, STRUCT_LIKE);
+    IR::Type *type = typeRef::gen();
 
     IR::Declaration_Variable *ret;
 
@@ -29,7 +28,6 @@ IR::Declaration_Variable *variableDeclaration::gen() {
         } else {
             ret = new IR::Declaration_Variable(name, type);
         }
-
     } else {
         BUG("Type %s not supported!", type->node_type_name());
     }
