@@ -190,8 +190,6 @@ set (CODEGEN_SRCS
     expression.cpp
     p4parser.cpp
     p4state.cpp
-    sub_toP4.h
-    sub_toP4.cpp
     main.cpp
     )
 add_cpplint_files (${CMAKE_CURRENT_SOURCE_DIR} "${CODEGEN_SRCS}")

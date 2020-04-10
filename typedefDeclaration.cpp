@@ -4,24 +4,37 @@
 
 namespace CODEGEN {
 
-void typedefDeclaration::gen_t() {
-    const IR::Type *type = nullptr;
-    while (1) {
-        type = typeRef::gen();
-        if (type != nullptr) {
-            break;
-        }
+IR::Type *gen_t() {
+    std::vector<int> percent = {75, 25, 0};
+    IR::Type *tp = nullptr;
+    switch (randind(percent)) {
+    case 0: {
+        std::vector<int> b_types = {1}; // only bit<>
+        tp = baseType::gen(false, b_types);
+        break;
     }
+    case 1: {
+        auto l_types = P4Scope::get_decls<IR::Type_StructLike>();
+        if (l_types.size() == 0) {
+            return nullptr;
+        }
+        auto candidate_type = l_types.at(rand() % l_types.size());
+        tp = new IR::Type_Name(candidate_type->name.name);
+        break;
+    }
+    case 2: {
+        // tp = headerStackType::gen();
+        break;
+    }
+    }
+    return tp;
 }
 
-void typedefDeclaration::gen_base_t() {
-}
+void typedefDeclaration::gen_base_t() {}
 
 IR::Type_Typedef *typedefDeclaration::gen_typedef() {
     cstring name = randstr(5);
-    IR::Type *type = nullptr;
-
-    gen_t();
+    IR::Type *type =  gen_t();
     auto ret = new IR::Type_Typedef(name, type);
     P4Scope::add_to_scope(ret);
     return ret;

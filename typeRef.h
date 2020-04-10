@@ -22,7 +22,6 @@ class typeRef {
 
     typeRef() {}
 
-    static IR::Type *gen();
 };
 } // namespace CODEGEN
 

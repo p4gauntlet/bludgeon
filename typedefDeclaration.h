@@ -23,7 +23,6 @@ class typedefDeclaration {
     ~typedefDeclaration() {}
 
     static IR::Type *gen();
-    static void gen_t();
     static void gen_base_t();
     static IR::Type_Typedef *gen_typedef();
     static IR::Type_Newtype *gen_newtype();

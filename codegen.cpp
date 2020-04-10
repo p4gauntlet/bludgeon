@@ -13,6 +13,7 @@
 #include "structTypeDeclaration.h"
 #include "tableDeclaration.h"
 #include "typedefDeclaration.h"
+#include "frontends/p4/toP4/toP4.h"
 
 namespace CODEGEN {
 IR::Node *CGenerator::gen() {
@@ -257,7 +258,7 @@ void CGenerator::gen_p4_code() {
     IR::P4Program *program = new IR::P4Program(*objects);
 
     // output to the file
-    SubToP4 top4(ostream, false);
+    P4::ToP4 top4(ostream, false);
     program->apply(top4);
 
     if (flag == 0) {
