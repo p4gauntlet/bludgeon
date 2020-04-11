@@ -191,6 +191,11 @@ set (CODEGEN_SRCS
     p4parser.cpp
     p4state.cpp
     main.cpp
+    main.cpp
+    v1model.cpp
+    v1model.h
+    tna.cpp
+    tna.h
     )
 add_cpplint_files (${CMAKE_CURRENT_SOURCE_DIR} "${CODEGEN_SRCS}")
 

@@ -17,7 +17,6 @@ class controlTypeDeclaration {
 
     ~controlTypeDeclaration() {}
 
-    static IR::Type_Control *gen_ing_ctrl_type(int tf_flag);
 };
 } // namespace CODEGEN
 

@@ -14,10 +14,7 @@ class parameterList {
 
     parameterList() {}
 
-    static IR::ParameterList *gen_tf_ing_params();
-    static IR::ParameterList *gen_ing_params();
     static IR::ParameterList *gen(bool if_none_dir = false);
-    static IR::ParameterList *gen_par_params();
 };
 } // namespace CODEGEN
 

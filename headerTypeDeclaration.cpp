@@ -5,7 +5,7 @@
 namespace CODEGEN {
 
 IR::Type *pick_field() {
-    std::vector<int> percent = {75, 25, 0};
+    std::vector<int> percent = {75, 0, 0};
     IR::Type *tp = nullptr;
     bool fallback = false;
     switch (randind(percent)) {
@@ -14,6 +14,8 @@ IR::Type *pick_field() {
         break;
     }
     case 1: {
+        // This is buggy right now, headers should be able to have structs...
+        // TODO: Take a closer look
         auto l_types = P4Scope::get_decls<IR::Type_Struct>();
         if (l_types.size() == 0) {
             fallback = true;

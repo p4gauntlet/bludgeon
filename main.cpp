@@ -1,10 +1,15 @@
+#include <cstdlib>
+#include <cstring>
 #include <fstream>
 #include <iostream>
+#include <string>
 
+#include "frontends/p4/toP4/toP4.h"
 #include "ir/ir.h"
 #include "lib/nullstream.h"
-
-#include "codegen.h"
+#include "scope.h"
+#include "tna.h"
+#include "v1model.h"
 
 void printUsage() {
     std::cout << "###How to use p4codegen###\n";
@@ -32,6 +37,29 @@ unsigned int good_seed() {
     return random_seed;
 }
 
+namespace CODEGEN {
+void gen_p4_code(cstring output_file, int flag) {
+    std::ostream *ostream = openFile(output_file, false);
+    P4Scope::start_local_scope();
+
+    IR::P4Program *program = nullptr;
+    if (flag == 0) {
+        V1Model::generate_includes(ostream);
+        program = V1Model::gen();
+    } else if (flag == 1) {
+        TNA::generate_includes(ostream);
+        program = TNA::gen();
+    } else {
+        BUG("flag must be 0 or 1");
+    }
+    // output to the file
+    P4::ToP4 top4(ostream, false);
+    program->apply(top4);
+    ostream->flush();
+    P4Scope::end_local_scope();
+}
+} // namespace CODEGEN
+
 int main(int argc, char **argv) {
     srand(good_seed());
 
@@ -39,10 +67,10 @@ int main(int argc, char **argv) {
         printUsage();
         exit(-1);
     }
+    cstring output_file = argv[1];
+    int flag = atoi(argv[2]);
 
-    // Tao: craft a new program
-    CODEGEN::CGenerator *cg = new CODEGEN::CGenerator(argv[1], atoi(argv[2]));
-    cg->gen_p4_code();
+    CODEGEN::gen_p4_code(output_file, flag);
 
     return 0;
 }

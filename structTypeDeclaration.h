@@ -17,9 +17,6 @@ class structTypeDeclaration {
 
     static IR::Type_Struct *gen();
     static IR::Type_Struct *gen_Headers();
-    static IR::Type_Struct *gen_Meta();
-    static IR::Type_Struct *gen_Sm();
-    static void gen_tf_md_t();
 };
 } // namespace CODEGEN
 

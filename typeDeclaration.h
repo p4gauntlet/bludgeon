@@ -12,6 +12,8 @@ class typeDeclaration {
                             "packageTypeDeclaration"};
 
     typeDeclaration() {}
+
+    static IR::Type_Declaration *gen();
 };
 
 } // namespace CODEGEN

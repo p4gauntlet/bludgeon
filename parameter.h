@@ -16,11 +16,6 @@ class parameter {
 
     // Tao: the parameter seems can only be int<> bit<> in bmv2 model
     static IR::Parameter *gen(bool if_none_dir = false);
-    static IR::Parameter *gen_ing_headers();
-    static IR::Parameter *gen_ing_meta();
-    static IR::Parameter *gen_ing_sm();
-    static IR::Parameter *gen_pkt_in();
-    static IR::Parameter *gen_out_header();
     static IR::Parameter *gen_param(IR::Direction dir, cstring p_name,
                                     cstring t_name);
 };

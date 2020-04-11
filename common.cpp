@@ -1,3 +1,7 @@
+#include <cstdlib>
+#include <cstring>
+#include <string>
+
 #include "common.h"
 
 #include "actionDeclaration.h"
@@ -11,11 +15,14 @@
 #include "structTypeDeclaration.h"
 #include "tableDeclaration.h"
 #include "typedefDeclaration.h"
-#include <cstdlib>
-#include <cstring>
-#include <string>
 
 const std::vector<cstring> str_keywords = {"if", "else", "key", "actions"};
+
+static const char alphanum[] =
+
+    // "0123456789"
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    "abcdefghijklmnopqrstuvwxyz";
 
 namespace CODEGEN {
 cstring randstr(size_t len) {

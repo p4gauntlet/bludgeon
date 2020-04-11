@@ -15,9 +15,6 @@ class p4Parser {
     p4Parser() {}
 
     ~p4Parser() {}
-
-    static IR::P4Parser *gen_sys_p();
-    static IR::P4Parser *gen_tofino_p();
 };
 } // namespace CODEGEN
 
