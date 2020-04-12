@@ -1,5 +1,9 @@
 #include "parameter.h"
 
+#include "baseType.h"
+#include "common.h"
+#include "scope.h"
+
 namespace CODEGEN {
 
 // Tao: the parameter seems can only be int<> bit<> in bmv2 model

@@ -7,7 +7,6 @@
 #include "bool.h"
 #include "int.h"
 
-#include "codegen.h"
 #include "scope.h"
 
 namespace CODEGEN {
@@ -23,7 +22,7 @@ class expression {
     expression() {}
 
     static IR::Expression *gen_expr(const IR::Type *tp,
-                                    bool require_width = false);
+                                    Requirements *req = nullptr);
     static IR::Expression *gen_input_arg(const IR::Parameter *param);
     static bool check_input_arg(const IR::Parameter *param);
 };

@@ -12,9 +12,9 @@ IR::KeyElement *keyElement::gen(cstring match_kind) {
         printf("Could not find key lval for key matches\n");
         return nullptr;
     }
-    // for some reason expression do not work here?
-    // TODO: Fix
-    auto expr = expression::gen_expr(bit_type, true);
+    Requirements * req = new Requirements();
+    req->require_scalar = true;
+    auto expr = expression::gen_expr(bit_type, req);
     auto key = new IR::KeyElement(annotations, expr, match);
 
     return key;

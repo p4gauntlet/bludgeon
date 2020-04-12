@@ -1,7 +1,6 @@
 #ifndef _STRUCTFIELD_H_
 #define _STRUCTFIELD_H_
 
-#include "codegen.h"
 #include "ir/ir.h"
 #include "typeRef.h"
 

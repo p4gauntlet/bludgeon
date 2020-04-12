@@ -25,7 +25,8 @@ static IR::P4Parser *gen_p() {
     IR::IndexedVector<IR::Parameter> params;
     params.push_back(
         parameter::gen_param(IR::Direction::None, "pkt", "packet_in"));
-    params.push_back(parameter::gen_param(IR::Direction::Out, "hdr", "Headers"));
+    params.push_back(
+        parameter::gen_param(IR::Direction::Out, "hdr", "Headers"));
     params.push_back(parameter::gen_param(IR::Direction::InOut, "m", "Meta"));
     params.push_back(parameter::gen_param(IR::Direction::InOut, "sm",
                                           "standard_metadata_t"));
@@ -200,7 +201,7 @@ static IR::Declaration_Instance *gen_main() {
     return new IR::Declaration_Instance("main", package_name, args);
 }
 
-IR::Type_Struct *gen_Meta() {
+IR::Type_Struct *gen_meta() {
     // Do not emit meta fields for now, no need
     // FIXME: Design a way to emit these that plays nicely with all targets
     // auto   sfl   = new structFieldList(STRUCT, name->name);
@@ -214,7 +215,7 @@ IR::Type_Struct *gen_Meta() {
     return ret;
 }
 
-IR::Type_Struct *gen_Sm() {
+IR::Type_Struct *gen_standard_metadata_t() {
     auto fields = structFieldList::gen_sm();
 
     auto ret = new IR::Type_Struct("standard_metadata_t", fields);
@@ -244,10 +245,9 @@ IR::P4Program *V1Model::gen() {
     objects->push_back(structTypeDeclaration::gen_Headers());
 
     // generate struct Meta
-    objects->push_back(gen_Meta());
-
+    objects->push_back(gen_meta());
     // insert standard_metadata_t
-    gen_Sm();
+    gen_standard_metadata_t();
 
     objects->push_back(functionDeclaration::gen());
     objects->push_back(functionDeclaration::gen());

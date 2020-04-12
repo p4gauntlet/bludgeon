@@ -499,13 +499,15 @@ IR::Expression *construct_structlike_expr(const IR::Type_Name *tn,
     return expr;
 }
 
-IR::Expression *expression::gen_expr(const IR::Type *tp, bool require_width) {
+IR::Expression *expression::gen_expr(const IR::Type *tp, Requirements * req) {
     IR::Expression *expr = nullptr;
 
     Properties *prop = new Properties();
-    Requirements *req = new Requirements();
 
-    req->require_scalar = true;
+    // if no specific requirements were passed just generate default settings
+    if (not req) {
+        req = new Requirements();
+    }
 
     // TODO: Add specific restrictions to types later
     if (auto tb = tp->to<IR::Type_Bits>()) {

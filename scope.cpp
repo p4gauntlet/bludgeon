@@ -90,7 +90,7 @@ void P4Scope::delete_lval(const IR::Type *tp, cstring name) {
                 BUG("Type %s not yet supported", td->node_type_name());
             }
         } else {
-            printf("Type %s does not exist!\n", tn_name);
+            printf("Type %s does not exist!\n", tn_name.c_str());
             return;
         }
     } else {
@@ -166,7 +166,7 @@ std::set<cstring> P4Scope::get_candidate_lvals(const IR::Type *tp,
         bit_bucket = tb->width_bits();
     } else if (auto tn = tp->to<IR::Type_Name>()) {
         auto tn_name = tn->path->name.name;
-        if (auto td = get_type_by_name(tn_name)) {
+        if (get_type_by_name(tn_name)) {
             // bit_bucket = td->width_bits();
             bit_bucket = 1;
         } else {

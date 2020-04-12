@@ -12,8 +12,6 @@ set (CODEGEN_SRCS
     common.cpp
     annotations.cpp
     annotations.h
-    codegen.cpp
-    codegen.h
     bit.cpp
     bit.h
     declaration.h
@@ -192,10 +190,10 @@ set (CODEGEN_SRCS
     p4state.cpp
     main.cpp
     main.cpp
-    v1model.cpp
-    v1model.h
-    tna.cpp
-    tna.h
+    backends/v1model.cpp
+    backends/v1model.h
+    backends/tna.cpp
+    backends/tna.h
     )
 add_cpplint_files (${CMAKE_CURRENT_SOURCE_DIR} "${CODEGEN_SRCS}")
 
@@ -215,4 +213,4 @@ add_custom_target(linkp4bludgeon
   COMMAND ${CMAKE_COMMAND} -E create_symlink ${P4C_BINARY_DIR}/p4_14include ${CMAKE_CURRENT_BINARY_DIR}/p4_14include
   )
 add_dependencies(p4c_driver linkp4bludgeon)
-
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})

@@ -3,7 +3,6 @@
 
 #include "ir/ir.h"
 
-#include "codegen.h"
 #include "common.h"
 #include "expression.h"
 #include "scope.h"

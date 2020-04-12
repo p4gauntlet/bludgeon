@@ -3,9 +3,6 @@
 
 #include "ir/ir.h"
 
-#include "baseType.h"
-#include "codegen.h"
-
 namespace CODEGEN {
 class parameter {
   public:

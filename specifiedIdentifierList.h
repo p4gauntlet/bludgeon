@@ -3,7 +3,6 @@
 
 #include "ir/ir.h"
 
-#include "codegen.h"
 #include "expression.h"
 
 namespace CODEGEN {

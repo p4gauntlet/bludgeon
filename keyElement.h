@@ -4,7 +4,6 @@
 #include "ir/ir.h"
 
 #include "annotations.h"
-#include "codegen.h"
 #include "scope.h"
 
 namespace CODEGEN {

@@ -3,18 +3,7 @@
 #include <string>
 
 #include "common.h"
-
-#include "actionDeclaration.h"
-#include "actionList.h"
-#include "controlDeclaration.h"
-#include "enumDeclaration.h"
-#include "headerStackType.h"
-#include "headerTypeDeclaration.h"
-#include "headerUnionDeclaration.h"
-#include "ir/ir.h"
-#include "structTypeDeclaration.h"
-#include "tableDeclaration.h"
-#include "typedefDeclaration.h"
+#include "scope.h"
 
 const std::vector<cstring> str_keywords = {"if", "else", "key", "actions"};
 

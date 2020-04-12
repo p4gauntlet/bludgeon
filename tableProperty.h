@@ -3,8 +3,6 @@
 
 #include "ir/ir.h"
 
-#include "codegen.h"
-
 namespace CODEGEN {
 class tableProperty {
   public:

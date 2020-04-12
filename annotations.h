@@ -1,7 +1,6 @@
 #ifndef _ANNOTATIONS_H_
 #define _ANNOTATIONS_H_
 
-#include "codegen.h"
 #include "expression.h"
 #include "ir/ir.h"
 

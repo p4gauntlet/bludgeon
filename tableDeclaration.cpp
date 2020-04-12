@@ -1,5 +1,8 @@
 #include "tableDeclaration.h"
 
+#include "common.h"
+#include "scope.h"
+
 namespace CODEGEN {
 IR::P4Table *tableDeclaration::gen() {
     IR::TableProperties *tb_properties = tablePropertyList::gen();

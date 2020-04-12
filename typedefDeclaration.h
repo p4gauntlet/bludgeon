@@ -4,7 +4,6 @@
 #include "ir/ir.h"
 
 #include "baseType.h"
-#include "codegen.h"
 #include "common.h"
 #include "scope.h"
 #include "typeRef.h"

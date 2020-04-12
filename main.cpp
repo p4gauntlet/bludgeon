@@ -8,8 +8,8 @@
 #include "ir/ir.h"
 #include "lib/nullstream.h"
 #include "scope.h"
-#include "tna.h"
-#include "v1model.h"
+#include "backends/tna.h"
+#include "backends/v1model.h"
 
 void printUsage() {
     std::cout << "###How to use p4codegen###\n";
