@@ -10,7 +10,7 @@ IR::Type *gen_t() {
     switch (randind(percent)) {
     case 0: {
         std::vector<int> b_types = {1}; // only bit<>
-        tp = baseType::gen(false, b_types);
+        tp = baseType::pick_rnd_base_type(b_types);
         break;
     }
     case 1: {

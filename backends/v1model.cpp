@@ -249,8 +249,17 @@ IR::P4Program *V1Model::gen() {
     // insert standard_metadata_t
     gen_standard_metadata_t();
 
-    objects->push_back(functionDeclaration::gen());
-    objects->push_back(functionDeclaration::gen());
+    // generate some callables
+    int max_callable_decls =
+        MIN_CALLABLES + (rand() % (MAX_CALLABLES - MIN_CALLABLES + 1));
+    for (int i = 0; i < max_callable_decls; ++i) {
+        std::vector<int> percent = {50, 50};
+        if (randind(percent)) {
+            objects->push_back(actionDeclaration::gen());
+        } else {
+            objects->push_back(functionDeclaration::gen());
+        }
+    }
 
     // generate all the necessary pipelines for the package
     objects->push_back(gen_p());

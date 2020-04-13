@@ -28,7 +28,7 @@ IR::Type *pick_field() {
     }
     if (fallback) {
         std::vector<int> b_types = {1}; // only bit<>
-        tp = baseType::gen(false, b_types);
+        tp = baseType::pick_rnd_base_type(b_types);
     }
     return tp;
 }

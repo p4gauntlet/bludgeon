@@ -8,7 +8,7 @@
 #include "switchStatement.h"
 
 namespace CODEGEN {
-IR::Statement *statement::gen_rnd(bool if_in_func = false) {
+IR::Statement *statement::gen_rnd(bool is_in_func = false) {
     std::vector<int> percent = {0, 75, 5, 5, 0, 5};
     IR::Statement *stmt = nullptr;
     bool use_default_stmt = false;
@@ -25,7 +25,7 @@ IR::Statement *statement::gen_rnd(bool if_in_func = false) {
         break;
     }
     case 2: {
-        stmt = conditionalStatement::gen_if_stat(if_in_func);
+        stmt = conditionalStatement::gen_if_stat(is_in_func);
         break;
     }
     case 3: {
@@ -33,7 +33,7 @@ IR::Statement *statement::gen_rnd(bool if_in_func = false) {
         break;
     }
     case 4: {
-        if (if_in_func) {
+        if (is_in_func) {
             use_default_stmt = true;
         } else{
             stmt = exitStatement::gen();
@@ -41,12 +41,12 @@ IR::Statement *statement::gen_rnd(bool if_in_func = false) {
         break;
     }
     case 5: {
-        stmt = blockStatement::gen(if_in_func);
+        stmt = blockStatement::gen(is_in_func);
         break;
     }
     }
     if (use_default_stmt) {
-        stmt = assignmentOrMethodCallStatement::gen();
+        stmt = assignmentOrMethodCallStatement::gen(is_in_func);
     }
     return stmt;
 }

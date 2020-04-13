@@ -1,33 +1,81 @@
 #include "baseType.h"
 
 namespace CODEGEN {
-IR::Type *baseType::gen(bool if_rand, std::vector<int> &type) {
-    int t;
 
-    if (if_rand) {
-        t = rand() % 4;
-    } else {
-        t = type.at(rand() % type.size());
+const int baseType::bit_widths[5];
+
+IR::Type_Base *baseType::pick_rnd_base_type(std::vector<int> &type) {
+    if (type.size() == 0) {
+        BUG("pick_rnd_base_type: Type list cannot be empty");
+    }
+    IR::Type_Base *tb = nullptr;
+    int t = type.at(rand() % type.size());
+    if (t > 3) {
+        BUG("pick_rnd_base_type: Invalid value");
     }
     switch (t) {
     case 0: {
         // bool
-        return bool_literal::gen();
+        tb = gen_bool_type();
+        break;
     }
     case 1: {
         // bit<>
-        return bit_literal::gen(false);
+        tb = gen_bit_type(false);
+        break;
     }
     case 2: {
-        // int<>, Tao: NOTE here it is bit<>
-        return bit_literal::gen(false);
-    }
-    case 3: {
-        return int_literal::gen();
-        // int
+        // int<>, this is not supported right now
+        tb = gen_bit_type(true);
+        break;
     }
     }
 
-    return nullptr;
+    return tb;
 }
+
+IR::BoolLiteral *baseType::gen_bool_literal() {
+    if (rand() % 2 == 0) {
+        return new IR::BoolLiteral(false);
+    } else {
+        return new IR::BoolLiteral(true);
+    }
+}
+
+// isSigned, true -> int<>, false -> bit<>
+// Tao: we only use false here
+IR::Type_Bits *baseType::gen_bit_type(bool isSigned) {
+    int size = rand() % (sizeof(bit_widths) / sizeof(int));
+
+    return new IR::Type_Bits(bit_widths[size], isSigned);
+}
+
+IR::Constant *baseType::gen_int_literal(big_int max_size, bool no_zero) {
+    big_int value = rand() % max_size;
+    while (1) {
+        if (no_zero && value == 0) {
+            // retry until we generate a value that is not zero
+            value = rand() % max_size;
+            continue;
+        }
+        break;
+    }
+    return new IR::Constant(value);
+}
+
+IR::Constant *baseType::gen_bit_literal(const IR::Type *tb, bool no_zero) {
+    big_int max_size = ((big_int)1U << tb->width_bits()) - 1;
+    big_int value = rand() % max_size;
+
+    while (1) {
+        if (no_zero && value == 0) {
+            // retry until we generate a value that is not zero
+            value = rand() % max_size;
+            continue;
+        }
+        break;
+    }
+    return new IR::Constant(tb, value);
+}
+
 } // namespace CODEGEN

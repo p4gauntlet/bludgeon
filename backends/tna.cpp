@@ -123,7 +123,7 @@ static IR::P4Control *gen_switch_ingress() {
     auto blk_stat = controlDeclaration::gen_ctrl_components(local_decls);
     // hardcode the output port to be zero
     auto output_port = new IR::PathExpression("ig_tm_md.ucast_egress_port");
-    auto output_port_val = new IR::Constant(int_literal::gen(), 0);
+    auto output_port_val = new IR::Constant(new IR::Type_InfInt(), 0);
     auto assign = new IR::AssignmentStatement(output_port, output_port_val);
     // some hack to insert the expression at the beginning
     auto it = blk_stat->components.begin();
@@ -375,9 +375,18 @@ IR::P4Program *TNA::gen() {
     // generate struct egress_metadata_t
     objects->push_back(gen_egress_metadata_t());
 
-    // functions do not work in tofino yet
-    // objects->push_back(functionDeclaration::gen());
-    // objects->push_back(functionDeclaration::gen());
+    // generate some callables
+    int max_callable_decls =
+        MIN_CALLABLES + (rand() % (MAX_CALLABLES - MIN_CALLABLES + 1));
+    for (int i = 0; i < max_callable_decls; ++i) {
+        std::vector<int> percent = {50, 50};
+        if (randind(percent)) {
+            objects->push_back(actionDeclaration::gen());
+        } else {
+            // functions do not work in tofino yet
+            // objects->push_back(functionDeclaration::gen());
+        }
+    }
 
     // generate all the necessary pipelines for the package
     objects->push_back(gen_switch_ingress_parser());

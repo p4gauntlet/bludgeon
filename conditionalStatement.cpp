@@ -3,7 +3,7 @@
 #include "statement.h"
 
 namespace CODEGEN {
-IR::IfStatement *conditionalStatement::gen_if_stat(bool if_in_func) {
+IR::IfStatement *conditionalStatement::gen_if_stat(bool is_in_func) {
     IR::Expression *cond = nullptr;
     IR::Statement *if_true = nullptr, *if_false = nullptr;
 
@@ -11,13 +11,17 @@ IR::IfStatement *conditionalStatement::gen_if_stat(bool if_in_func) {
     if (not cond) {
         BUG("cond in IfStatement should not be nullptr!");
     }
-    if_true = statement::gen_rnd(if_in_func);
+    if_true = statement::gen_rnd(is_in_func);
     if (not if_true) {
-        BUG("if_true in IfStatement should not be nullptr!");
+        // could not generate a statement
+        // this happens when there is now way to generate an assignment
+        if_true = new IR::EmptyStatement();
     }
-    if_false = statement::gen_rnd(if_in_func);
+    if_false = statement::gen_rnd(is_in_func);
     if (not if_false) {
-        BUG("if_false in IfStatement should not be nullptr!");
+        // could not generate a statement
+        // this happens when there is now way to generate an assignment
+        if_false = new IR::EmptyStatement();
     }
     return  new IR::IfStatement(cond, if_true, if_false);;
 }

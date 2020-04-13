@@ -5,8 +5,8 @@
 namespace CODEGEN {
 IR::Declaration_Constant *gen() {
     IR::Expression *expr;
-    std::vector<int> type = {0, 1};
-    IR::Type *tp = baseType::gen(false, type);
+    std::vector<int> b_types = {0, 1};
+    IR::Type *tp = baseType::pick_rnd_base_type(b_types);
     cstring name = randstr(4);
 
     if (tp->is<IR::Type_Boolean>()) {

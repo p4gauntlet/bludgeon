@@ -3,11 +3,6 @@
 
 #include "ir/ir.h"
 
-#include "scope.h"
-
-#include "bit.h"
-#include "identifierList.h"
-#include "specifiedIdentifierList.h"
 
 namespace CODEGEN {
 

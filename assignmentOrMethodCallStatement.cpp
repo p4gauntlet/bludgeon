@@ -1,6 +1,10 @@
 #include "assignmentOrMethodCallStatement.h"
+
 #include "blockStatement.h"
+#include "common.h"
 #include "expression.h"
+#include "argument.h"
+#include "scope.h"
 
 namespace CODEGEN {
 IR::Statement *assignmentOrMethodCallStatement::gen_assign() {
@@ -15,8 +19,8 @@ IR::Statement *assignmentOrMethodCallStatement::gen_assign() {
         // Ideally this should have a fallback option
         if (not bit_type) {
             printf("Could not find writable bit lval for assignment!\n");
-            //TODO: Find a more meaningful assignment statement
-            return new IR::EmptyStatement();
+            // TODO: Find a more meaningful assignment statement
+            return nullptr;
         }
         cstring name = P4Scope::pick_lval(bit_type, true);
         left = new IR::PathExpression(name);
@@ -41,7 +45,7 @@ IR::Statement *gen_methodcall_expression(cstring method_name,
 
     for (auto par : params) {
         IR::Argument *arg;
-        if (not expression::check_input_arg(par)) {
+        if (not argument::check_input_arg(par)) {
             auto name = randstr(6);
             auto expr = expression::gen_expr(par->type);
             // all this boilerplate should be somewhere else...
@@ -49,7 +53,7 @@ IR::Statement *gen_methodcall_expression(cstring method_name,
             P4Scope::add_to_scope(decl);
             decls.push_back(decl);
         }
-        arg = new IR::Argument(expression::gen_input_arg(par));
+        arg = new IR::Argument(argument::gen_input_arg(par));
         args->push_back(arg);
     }
     auto path_expr = new IR::PathExpression(method_name);
@@ -65,9 +69,18 @@ IR::Statement *gen_methodcall_expression(cstring method_name,
     }
 }
 
-IR::Statement *gen_methodcall() {
+IR::Statement *gen_methodcall(bool is_in_func) {
     IR::MethodCallExpression *mce = nullptr;
-    std::vector<int> percent = {40, 40, 20};
+
+    int fun_pct = 40;
+    int action_pct = 40;
+    int tbl_pct = 20;
+    // functions cannot call actions or tables so set their chance to zero
+    if (is_in_func) {
+        action_pct = 0;
+        tbl_pct = 0;
+    }
+    std::vector<int> percent = {action_pct, fun_pct, tbl_pct};
 
     switch (randind(percent)) {
     case 0: {
@@ -108,20 +121,18 @@ IR::Statement *gen_methodcall() {
     if (mce) {
         return new IR::MethodCallStatement(mce);
     } else {
-        return nullptr;
+        // unable to return a methodcall, return an assignment instead
+        return assignmentOrMethodCallStatement::gen_assign();
     }
 }
 
-IR::Statement *assignmentOrMethodCallStatement::gen() {
+IR::Statement *assignmentOrMethodCallStatement::gen(bool is_in_func) {
     std::vector<int> percent = {75, 25};
     auto val = randind(percent);
     if (val == 0) {
         return assignmentOrMethodCallStatement::gen_assign();
     } else {
-        auto mst = gen_methodcall();
-        if (not mst)
-            return assignmentOrMethodCallStatement::gen_assign();
-        return mst;
+        return gen_methodcall(is_in_func);
     }
 }
 } // namespace CODEGEN

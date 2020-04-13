@@ -27,9 +27,8 @@ IR::Parameter *parameter::gen(bool if_none_dir) {
     } else {
         dir = IR::Direction::None;
     }
-    std::vector<int> type = {1, 2};
-
-    tp = baseType::gen(false, type);
+    std::vector<int> type = {1}; // only bit for now
+    tp = baseType::pick_rnd_base_type(type);
 
     return new IR::Parameter(name, dir, tp);
 }

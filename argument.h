@@ -9,6 +9,8 @@ class argument {
     const char *types[2] = {"expression", "DONTCARE"};
 
     argument() {}
+    static IR::Expression *gen_input_arg(const IR::Parameter *param);
+    static bool check_input_arg(const IR::Parameter *param);
 };
 } // namespace CODEGEN
 

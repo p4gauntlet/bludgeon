@@ -3,10 +3,6 @@
 
 #include "ir/ir.h"
 
-// minimum and maximum number of statements
-#define MIN_T_DECLS 1
-#define MAX_T_DECLS 8
-
 namespace CODEGEN {
 class TNA {
   public:

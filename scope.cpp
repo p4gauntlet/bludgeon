@@ -73,6 +73,9 @@ void P4Scope::delete_lval(const IR::Type *tp, cstring name) {
     if (auto tb = tp->to<IR::Type_Bits>()) {
         type_key = IR::Type_Bits::static_type_name();
         bit_bucket = tb->width_bits();
+    } else if (auto tb = tp->to<IR::Type_Boolean>()) {
+        type_key = IR::Type_Boolean::static_type_name();
+        bit_bucket = tb->width_bits();
     } else if (auto tn = tp->to<IR::Type_Name>()) {
         auto tn_name = tn->path->name.name;
         if (tn_name == "packet_in") {
@@ -87,7 +90,7 @@ void P4Scope::delete_lval(const IR::Type *tp, cstring name) {
                 bit_bucket = 1;
                 delete_compound_lvals(tn_type, name);
             } else {
-                BUG("Type %s not yet supported", td->node_type_name());
+                BUG("Type_Name %s not yet supported", td->node_type_name());
             }
         } else {
             printf("Type %s does not exist!\n", tn_name.c_str());
@@ -128,6 +131,9 @@ void P4Scope::add_lval(const IR::Type *tp, cstring name, bool read_only) {
     if (auto tb = tp->to<IR::Type_Bits>()) {
         type_key = IR::Type_Bits::static_type_name();
         bit_bucket = tb->width_bits();
+    } else if (auto tb = tp->to<IR::Type_Boolean>()) {
+        type_key = IR::Type_Boolean::static_type_name();
+        bit_bucket = tb->width_bits();
     } else if (auto tn = tp->to<IR::Type_Name>()) {
         auto tn_name = tn->path->name.name;
         if (tn_name == "packet_in") {
@@ -142,7 +148,7 @@ void P4Scope::add_lval(const IR::Type *tp, cstring name, bool read_only) {
                 bit_bucket = 1;
                 add_compound_lvals(tn_type, name);
             } else {
-                BUG("Type %s not yet supported", td->node_type_name());
+                BUG("Type_Name %s not yet supported", td->node_type_name());
             }
         } else {
             BUG("Type %s does not exist", tn_name);
@@ -163,6 +169,9 @@ std::set<cstring> P4Scope::get_candidate_lvals(const IR::Type *tp,
 
     if (auto tb = tp->to<IR::Type_Bits>()) {
         type_key = IR::Type_Bits::static_type_name();
+        bit_bucket = tb->width_bits();
+    } else if (auto tb = tp->to<IR::Type_Boolean>()) {
+        type_key = IR::Type_Boolean::static_type_name();
         bit_bucket = tb->width_bits();
     } else if (auto tn = tp->to<IR::Type_Name>()) {
         auto tn_name = tn->path->name.name;

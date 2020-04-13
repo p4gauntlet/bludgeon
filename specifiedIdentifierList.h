@@ -3,8 +3,6 @@
 
 #include "ir/ir.h"
 
-#include "expression.h"
-
 namespace CODEGEN {
 class specifiedIdentifierList {
   public:

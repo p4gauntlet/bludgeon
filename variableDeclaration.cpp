@@ -3,12 +3,12 @@
 namespace CODEGEN {
 
 IR::Type *gen_type() {
-    std::vector<int> percent = {75, 25, 0};
+    std::vector<int> percent = {85, 15, 0};
     IR::Type *tp = nullptr;
     switch (randind(percent)) {
     case 0: {
-        std::vector<int> b_types = {1}; // only bit<>
-        tp = baseType::gen(false, b_types);
+        std::vector<int> b_types = {0, 1};
+        tp = baseType::pick_rnd_base_type(b_types);
         break;
     }
     case 1: {
@@ -21,7 +21,7 @@ IR::Type *gen_type() {
         break;
     }
     case 2: {
-        // tp = headerStackType::gen();
+        tp = headerStackType::gen();
         break;
     }
     }
@@ -51,6 +51,9 @@ IR::Declaration_Variable *variableDeclaration::gen() {
         } else {
             ret = new IR::Declaration_Variable(name, type);
         }
+    } else if (type->is<IR::Type_Stack>()) {
+        // header stacks do not have an initializer yet
+        ret = new IR::Declaration_Variable(name, type);
     } else {
         BUG("Type %s not supported!", type->node_type_name());
     }

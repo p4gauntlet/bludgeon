@@ -1,6 +1,7 @@
-
-
 #include "specifiedIdentifierList.h"
+
+#include "baseType.h"
+#include "common.h"
 
 namespace CODEGEN {
 
@@ -10,7 +11,7 @@ IR::IndexedVector<IR::SerEnumMember> specifiedIdentifierList::gen(size_t len) {
 
     for (size_t i = 0; i < len; i++) {
         cstring name = randstr(2);
-        IR::Expression *ex = bit_literal::gen_int();
+        IR::Expression *ex = baseType::gen_int_literal();
 
         if (members_name.find(name) != members_name.end()) {
             delete ex;

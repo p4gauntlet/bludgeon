@@ -3,8 +3,6 @@
 
 #include "ir/ir.h"
 
-#include "expression.h"
-
 namespace CODEGEN {
 class assignmentOrMethodCallStatement {
   public:
@@ -13,7 +11,7 @@ class assignmentOrMethodCallStatement {
     assignmentOrMethodCallStatement() {}
 
     static IR::Statement *gen_assign();
-    static IR::Statement *gen();
+    static IR::Statement *gen(bool is_in_func = false);
 };
 } // namespace CODEGEN
 

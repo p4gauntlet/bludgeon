@@ -5,10 +5,6 @@
 
 #include "common.h"
 
-// minimum and maximum number of statements
-#define MAX_STAT 10
-#define MIN_STAT 3
-
 namespace CODEGEN {
 class blockStatement {
   public:

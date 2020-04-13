@@ -1,5 +1,9 @@
 #include "expression.h"
 
+#include "argument.h"
+#include "baseType.h"
+#include "scope.h"
+
 namespace CODEGEN {
 #define MAX_DEPTH 3
 
@@ -22,11 +26,11 @@ gen_functioncall_expression(cstring method_name, IR::ParameterList params) {
     bool can_call = true;
 
     for (auto par : params) {
-        if (not expression::check_input_arg(par)) {
+        if (not argument::check_input_arg(par)) {
             can_call = false;
         } else {
             IR::Argument *arg;
-            arg = new IR::Argument(expression::gen_input_arg(par));
+            arg = new IR::Argument(argument::gen_input_arg(par));
             args->push_back(arg);
         }
     }
@@ -43,7 +47,7 @@ IR::Expression *construct_unary_expr(const IR::Type_Bits *tb, Requirements *req,
     IR::Expression *expr = nullptr;
 
     if (prop->depth > MAX_DEPTH) {
-        return bit_literal::gen_bit(tb);
+        return baseType::gen_bit_literal(tb);
     }
     prop->depth++;
 
@@ -72,7 +76,7 @@ IR::Expression *construct_unary_expr(const IR::Type_Bits *tb, Requirements *req,
     case 3: {
         auto p4_functions = P4Scope::get_decls<IR::Function>();
         if (p4_functions.size() == 0) {
-            expr = bit_literal::gen_bit(tb);
+            expr = baseType::gen_bit_literal(tb);
             break;
         }
         size_t idx = rand() % p4_functions.size();
@@ -84,7 +88,7 @@ IR::Expression *construct_unary_expr(const IR::Type_Bits *tb, Requirements *req,
         // sometimes, functions may not be callable
         // because we do not have the right return values
         if (not expr || not ret_type) {
-            expr = bit_literal::gen_bit(tb);
+            expr = baseType::gen_bit_literal(tb);
             break;
         }
         // if the return value does not match try to cast it
@@ -101,7 +105,7 @@ IR::Expression *construct_binary_expr(const IR::Type_Bits *tb,
     IR::Expression *expr = nullptr;
 
     if (prop->depth > MAX_DEPTH) {
-        return bit_literal::gen_bit(tb);
+        return baseType::gen_bit_literal(tb);
     }
     prop->depth++;
     // todo add a restricted methodcallexpression here
@@ -117,15 +121,21 @@ IR::Expression *construct_binary_expr(const IR::Type_Bits *tb,
     case 1: {
         // pick a division that matches the type
         // TODO: Make more sophisticated
-        IR::Expression *left = bit_literal::gen_bit(tb);
-        IR::Expression *right = bit_literal::gen_bit(tb);
-
+        // this requires only compile time known values
+        IR::Expression *left = baseType::gen_bit_literal(tb, req->not_zero);
+        req->not_zero = true;
+        IR::Expression *right = baseType::gen_bit_literal(tb, req->not_zero);
+        req->not_zero = false;
         expr = new IR::Div(tb, left, right);
     } break;
     case 2: {
+        // pick a modulo that matches the type
         // TODO: Make more sophisticated
-        IR::Expression *left = bit_literal::gen_bit(tb);
-        IR::Expression *right = bit_literal::gen_bit(tb);
+        // this requires only compile time known values
+        IR::Expression *left = baseType::gen_bit_literal(tb, req->not_zero);
+        req->not_zero = true;
+        IR::Expression *right = baseType::gen_bit_literal(tb, req->not_zero);
+        req->not_zero = false;
         expr = new IR::Mod(tb, left, right);
     } break;
     case 3: {
@@ -228,7 +238,7 @@ IR::Expression *construct_binary_expr(const IR::Type_Bits *tb,
         size_t split = (rand() % type_width) + 1;
         // TODO: lazy fallback
         if (split >= type_width) {
-            return bit_literal::gen_bit(tb);
+            return baseType::gen_bit_literal(tb);
         }
         auto tl = new IR::Type_Bits(type_width - split, false);
         auto tr = new IR::Type_Bits(split, false);
@@ -255,7 +265,7 @@ IR::Expression *construct_ternary_expr(const IR::Type_Bits *tb,
     IR::Expression *expr = nullptr;
 
     if (prop->depth > MAX_DEPTH) {
-        return bit_literal::gen_bit(tb);
+        return baseType::gen_bit_literal(tb);
     }
     prop->depth++;
     std::vector<int> percent = {50, 50};
@@ -299,40 +309,26 @@ IR::Expression *construct_ternary_expr(const IR::Type_Bits *tb,
 }
 
 IR::Expression *pick_var(const IR::Type_Bits *tb) {
-    cstring type_key = tb->toString();
     cstring node_name = tb->node_type_name();
     auto avail_bit_types = P4Scope::lval_map[node_name].size();
-
-    if (avail_bit_types > 0) {
-        if (P4Scope::lval_map.count(type_key) != 0) {
-            auto candidates = P4Scope::lval_map[node_name][tb->width_bits()];
-            size_t idx = rand() % candidates.size();
-            auto lval = std::begin(candidates);
-            // 'advance' the iterator n times
-            std::advance(lval, idx);
-            return new IR::PathExpression(*lval);
-        } else {
-            auto bit_types = P4Scope::lval_map[node_name];
-            size_t bit_type_idx = rand() % bit_types.size();
-            auto it = bit_types.begin();
-            std::advance(it, bit_type_idx);
-
-            size_t idx = rand() % it->second.size();
-            auto lval = std::begin(it->second);
-            // 'advance' the iterator n times
-            std::advance(lval, idx);
-            return new IR::Cast(tb, new IR::PathExpression(*lval));
-        }
+    if (P4Scope::check_lval(tb)) {
+        cstring name = P4Scope::pick_lval(tb);
+        return new IR::TypeNameExpression(name);
+    } else if (avail_bit_types > 0) {
+        // even if we do not find anything we can still cast other bits
+        auto new_tb = P4Scope::pick_declared_bit_type();
+        cstring name = P4Scope::pick_lval(new_tb);
+        return new IR::Cast(tb, new IR::PathExpression(name));
     }
 
     // fallback, just generate a literal
-    return bit_literal::gen_bit(tb);
+    return baseType::gen_bit_literal(tb);
 }
 
 IR::Expression *construct_bit_expr(const IR::Type_Bits *tb, Requirements *req,
                                    Properties *prop) {
     IR::Expression *expr = nullptr;
-    std::vector<int> percent = {15, 15, 20, 10, 20, 10};
+    std::vector<int> percent = {20, 5, 25, 10, 20, 10};
 
     switch (randind(percent)) {
     case 0: {
@@ -340,22 +336,18 @@ IR::Expression *construct_bit_expr(const IR::Type_Bits *tb, Requirements *req,
         expr = pick_var(tb);
     } break;
     case 1: {
-        // pick an int literal if allowed
-        //  I think gen literal does not work like this
-        // should be different
-        // this should work
-        // but causes a floating point exception sometimes...
+        // pick an int literal, if allowed
         if (req->require_scalar) {
-            expr = bit_literal::gen_bit(tb);
+            expr = baseType::gen_bit_literal(tb, req->not_zero);
         } else {
             big_int max_size = ((big_int)1U << tb->width_bits()) - 1;
-            expr = bit_literal::gen_int(max_size);
+            expr = baseType::gen_int_literal(max_size, req->not_zero);
             prop->width_unknown = true;
         }
     } break;
     case 2: {
         // pick a bit literal that matches the type
-        expr = bit_literal::gen_bit(tb);
+        expr = baseType::gen_bit_literal(tb, req->not_zero);
     } break;
     case 3: {
         // pick a unary expression that matches the type
@@ -404,17 +396,21 @@ IR::Expression *construct_boolean_expr(Requirements *req, Properties *prop) {
     IR::Expression *left;
     IR::Expression *right;
 
-    std::vector<int> percent = {0, 40, 40, 5, 5, 10};
+    std::vector<int> percent = {20, 20, 40, 5, 5, 10};
 
     switch (randind(percent)) {
     case 0: {
-        // pick a boolean variable from available the declarations
-        // TODO: Fix this
-        expr = bool_literal::gen_literal();
+        auto tb = new IR::Type_Boolean();
+        if (P4Scope::check_lval(tb)) {
+            cstring name = P4Scope::pick_lval(tb);
+            expr = new IR::TypeNameExpression(name);
+        } else {
+            expr = baseType::gen_bool_literal();
+        }
     } break;
     case 1: {
         // pick a boolean literal
-        expr = bool_literal::gen_literal();
+        expr = baseType::gen_bool_literal();
     } break;
     case 2: {
         // pick a Not expression
@@ -499,7 +495,7 @@ IR::Expression *construct_structlike_expr(const IR::Type_Name *tn,
     return expr;
 }
 
-IR::Expression *expression::gen_expr(const IR::Type *tp, Requirements * req) {
+IR::Expression *expression::gen_expr(const IR::Type *tp, Requirements *req) {
     IR::Expression *expr = nullptr;
 
     Properties *prop = new Properties();
@@ -522,20 +518,4 @@ IR::Expression *expression::gen_expr(const IR::Type *tp, Requirements * req) {
     return expr;
 }
 
-IR::Expression *expression::gen_input_arg(const IR::Parameter *param) {
-    if (param->direction == IR::Direction::In) {
-        return expression::gen_expr(param->type);
-    } else {
-        cstring lval = P4Scope::pick_lval(param->type, true);
-        return new IR::PathExpression(lval);
-    }
-}
-
-bool expression::check_input_arg(const IR::Parameter *param) {
-    if (param->direction == IR::Direction::In) {
-        return P4Scope::check_lval(param->type, false);
-    } else {
-        return P4Scope::check_lval(param->type, true);
-    }
-}
 } // namespace CODEGEN

@@ -8,6 +8,8 @@
 
 #include "scope.h"
 
+#define MAX_HEADER_STACK_SIZE 10
+
 namespace CODEGEN {
 class headerStackType {
   public:

@@ -1,5 +1,7 @@
 #include "annotations.h"
 
+#include "common.h"
+
 namespace CODEGEN {
 IR::Annotations *Annotations::gen() {
     Util::SourceInfo si;

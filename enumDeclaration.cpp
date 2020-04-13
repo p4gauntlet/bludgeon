@@ -1,6 +1,11 @@
-
-
 #include "enumDeclaration.h"
+
+
+#include "scope.h"
+
+#include "baseType.h"
+#include "identifierList.h"
+#include "specifiedIdentifierList.h"
 
 namespace CODEGEN {
 
@@ -15,7 +20,7 @@ static IR::Type_Enum *gen_enum(cstring name) {
 
 static IR::Type_SerEnum *gen_ser_enum(cstring name) {
     auto members = specifiedIdentifierList::gen(3);
-    IR::Type_Bits *tp = bit_literal::gen(false);
+    IR::Type_Bits *tp = baseType::gen_bit_type(false);
 
     auto ret = new IR::Type_SerEnum(name, tp, members);
 

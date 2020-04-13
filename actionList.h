@@ -3,8 +3,6 @@
 
 #include "ir/ir.h"
 
-#include "expression.h"
-#include "scope.h"
 
 namespace CODEGEN {
 class actionList {

@@ -3,11 +3,8 @@
 
 #include "ir/ir.h"
 
-#include "bit.h"
-#include "bool.h"
-#include "int.h"
-
 namespace CODEGEN {
+
 class baseType {
   public:
     const char *types[10] = {
@@ -24,8 +21,19 @@ class baseType {
     };
 
     baseType() {}
+    static constexpr int bit_widths[5] = {8, 16, 32, 64, 128};
 
-    static IR::Type *gen(bool if_rand, std::vector<int> &type);
+    static IR::Type_Base *pick_rnd_base_type(std::vector<int> &type);
+
+    static IR::Type_Boolean *gen_bool_type() { return new IR::Type_Boolean(); }
+    static IR::Type_InfInt *gen_int_type() { return new IR::Type_InfInt(); }
+    static IR::Type_Bits *gen_bit_type(bool isSigned);
+
+    static IR::BoolLiteral *gen_bool_literal();
+    static IR::Constant *gen_int_literal(big_int max_size = INT_MAX,
+                                         bool not_zero = false);
+    static IR::Constant *gen_bit_literal(const IR::Type *tb,
+                                         bool not_zero = false);
 };
 } // namespace CODEGEN
 
