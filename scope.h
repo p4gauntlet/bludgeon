@@ -46,10 +46,10 @@ class P4Scope {
     static bool check_lval(const IR::Type *tp, bool must_write = false);
     static cstring pick_lval(const IR::Type *tp, bool must_write = false);
     static void delete_lval(const IR::Type *tp, cstring name);
+    static std::set<cstring> get_candidate_lvals(const IR::Type *tp,
+                                                 bool must_write = true);
 
     static IR::Type_Bits *pick_declared_bit_type(bool must_write = false);
-
-    IR::Expression *pick_bit_field(const IR::Type_Bits *tp, bool is_lval);
 
     static const IR::Type_Declaration *get_type_by_name(cstring name);
 
@@ -71,8 +71,6 @@ class P4Scope {
     static std::vector<const IR::Type_Declaration *>
     get_filtered_decls(std::set<cstring> filter);
     static std::set<const IR::P4Table *> *get_callable_tables();
-    static std::set<cstring> get_candidate_lvals(const IR::Type *tp,
-                                                 bool must_write = true);
 };
 } // namespace CODEGEN
 

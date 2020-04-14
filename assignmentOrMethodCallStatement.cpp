@@ -1,9 +1,9 @@
 #include "assignmentOrMethodCallStatement.h"
 
+#include "argument.h"
 #include "blockStatement.h"
 #include "common.h"
 #include "expression.h"
-#include "argument.h"
 #include "scope.h"
 
 namespace CODEGEN {
@@ -74,13 +74,14 @@ IR::Statement *gen_methodcall(bool is_in_func) {
 
     int fun_pct = 40;
     int action_pct = 40;
-    int tbl_pct = 20;
+    int tbl_pct = 15;
+    int built_in = 5;
     // functions cannot call actions or tables so set their chance to zero
     if (is_in_func) {
         action_pct = 0;
         tbl_pct = 0;
     }
-    std::vector<int> percent = {action_pct, fun_pct, tbl_pct};
+    std::vector<int> percent = {action_pct, fun_pct, tbl_pct, built_in};
 
     switch (randind(percent)) {
     case 0: {
@@ -115,6 +116,33 @@ IR::Statement *gen_methodcall(bool is_in_func) {
         auto mem = new IR::Member(new IR::PathExpression(tbl->name), "apply");
         mce = new IR::MethodCallExpression(mem);
         tbl_set->erase(tbl_iter);
+        break;
+    }
+    case 3: {
+        auto hdrs = P4Scope::get_decls<IR::Type_Header>();
+        if (hdrs.size() == 0) {
+            break;
+        }
+        std::set<cstring> hdr_lvals;
+        for (auto hdr : hdrs) {
+            auto available_lvals = P4Scope::get_candidate_lvals(hdr, true);
+            hdr_lvals.insert(available_lvals.begin(), available_lvals.end());
+        }
+        if (hdr_lvals.size() == 0) {
+            break;
+        }
+        auto idx = rand() % hdr_lvals.size();
+        auto hdr_lval_iter = std::begin(hdr_lvals);
+        std::advance(hdr_lval_iter, idx);
+        cstring hdr_lval = *hdr_lval_iter;
+        cstring call;
+        if (rand() % 2) {
+            call = "setValid";
+        } else {
+            call = "setInvalid";
+        }
+        auto mem = new IR::Member(new IR::PathExpression(hdr_lval), call);
+        mce = new IR::MethodCallExpression(mem);
         break;
     }
     }

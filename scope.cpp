@@ -5,14 +5,14 @@ std::vector<IR::Vector<IR::Node> *> P4Scope::scope;
 std::set<cstring> P4Scope::used_names;
 std::map<cstring, std::map<int, std::set<cstring>>> P4Scope::lval_map;
 std::map<cstring, std::map<int, std::set<cstring>>> P4Scope::lval_map_rw;
-
-const IR::Type *P4Scope::ret_type = nullptr;
 std::vector<IR::P4Control *> P4Scope::p4_ctrls;
 std::set<const IR::P4Table *> P4Scope::callable_tables;
+
+const IR::Type *P4Scope::ret_type;
 const IR::Type_Struct *P4Scope::sys_hdr;
 
 // TODO: This should be set by the backend
-std::set<cstring> P4Scope::not_initialized_structs = {};
+std::set<cstring> P4Scope::not_initialized_structs;
 
 void P4Scope::add_to_scope(const IR::Node *n) {
     auto l_scope = P4Scope::scope.back();
@@ -26,7 +26,6 @@ void P4Scope::add_to_scope(const IR::Node *n) {
 
 void P4Scope::start_local_scope() {
     IR::Vector<IR::Node> *local_scope = new IR::Vector<IR::Node>();
-
     scope.push_back(local_scope);
 }
 
@@ -83,14 +82,13 @@ void P4Scope::delete_lval(const IR::Type *tp, cstring name) {
         }
         if (auto td = get_type_by_name(tn_name)) {
             if (auto tn_type = td->to<IR::Type_StructLike>()) {
-                // width_bits should work here, do not know why not...
                 type_key = tn_name;
-                // does not work for some reason...
+                // width_bits should work here, do not know why not...
                 // bit_bucket = P4Scope::compound_type[tn_name]->width_bits();
                 bit_bucket = 1;
                 delete_compound_lvals(tn_type, name);
             } else {
-                BUG("Type_Name %s not yet supported", td->node_type_name());
+                BUG("Type_Name %s not found!", td->node_type_name());
             }
         } else {
             printf("Type %s does not exist!\n", tn_name.c_str());
@@ -136,6 +134,7 @@ void P4Scope::add_lval(const IR::Type *tp, cstring name, bool read_only) {
         bit_bucket = tb->width_bits();
     } else if (auto tn = tp->to<IR::Type_Name>()) {
         auto tn_name = tn->path->name.name;
+        // FIXME: this could be better
         if (tn_name == "packet_in") {
             return;
         }
@@ -173,9 +172,13 @@ std::set<cstring> P4Scope::get_candidate_lvals(const IR::Type *tp,
     } else if (auto tb = tp->to<IR::Type_Boolean>()) {
         type_key = IR::Type_Boolean::static_type_name();
         bit_bucket = tb->width_bits();
+    } else if (auto ts = tp->to<IR::Type_StructLike>()) {
+        type_key = ts->name.name;
+        bit_bucket = 1;
     } else if (auto tn = tp->to<IR::Type_Name>()) {
         auto tn_name = tn->path->name.name;
         if (get_type_by_name(tn_name)) {
+            type_key = tn_name;
             // bit_bucket = td->width_bits();
             bit_bucket = 1;
         } else {
