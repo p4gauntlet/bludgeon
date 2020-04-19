@@ -340,7 +340,7 @@ IR::Expression *construct_bit_expr(const IR::Type_Bits *tb, Requirements *req,
         if (req->require_scalar) {
             expr = baseType::gen_bit_literal(tb, req->not_zero);
         } else {
-            big_int max_size = ((big_int)1U << tb->width_bits()) - 1;
+            big_int max_size = ((big_int)1U << tb->width_bits());
             expr = baseType::gen_int_literal(max_size, req->not_zero);
             prop->width_unknown = true;
         }

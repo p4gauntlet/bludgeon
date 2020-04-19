@@ -16,7 +16,12 @@ IR::Type_HeaderUnion *headerUnionDeclaration::gen() {
     std::set<cstring> visited_headers;
     // we need to guarantee correct execution so try as long as we can
     // this is a bit dicey... do not like it
+    int attempts = 0;
     while (true) {
+        if (attempts >= 100) {
+            BUG("We should not need this many attempts!");
+        }
+        attempts++;
         cstring field_name = randstr(4);
         auto hdr_tp = l_types.at(rand() % l_types.size());
         // check if we have already added this header

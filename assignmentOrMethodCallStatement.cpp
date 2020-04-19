@@ -72,10 +72,10 @@ IR::Statement *gen_methodcall_expression(cstring method_name,
 IR::Statement *gen_methodcall(bool is_in_func) {
     IR::MethodCallExpression *mce = nullptr;
 
-    int fun_pct = 40;
-    int action_pct = 40;
+    int fun_pct = 45;
+    int action_pct = 44;
     int tbl_pct = 15;
-    int built_in = 5;
+    int built_in = 1;
     // functions cannot call actions or tables so set their chance to zero
     if (is_in_func) {
         action_pct = 0;

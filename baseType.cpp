@@ -51,11 +51,11 @@ IR::Type_Bits *baseType::gen_bit_type(bool isSigned) {
 }
 
 IR::Constant *baseType::gen_int_literal(big_int max_size, bool no_zero) {
-    big_int value = rand() % max_size;
-    while (1) {
+    big_int value;
+    while (true) {
+        value = rand() % max_size;
         if (no_zero && value == 0) {
             // retry until we generate a value that is not zero
-            value = rand() % max_size;
             continue;
         }
         break;
@@ -64,10 +64,10 @@ IR::Constant *baseType::gen_int_literal(big_int max_size, bool no_zero) {
 }
 
 IR::Constant *baseType::gen_bit_literal(const IR::Type *tb, bool no_zero) {
-    big_int max_size = ((big_int)1U << tb->width_bits()) - 1;
+    big_int max_size = ((big_int)1U << tb->width_bits());
     big_int value = rand() % max_size;
 
-    while (1) {
+    while (true) {
         if (no_zero && value == 0) {
             // retry until we generate a value that is not zero
             value = rand() % max_size;
