@@ -74,8 +74,10 @@ IR::Expression *construct_unary_expr(const IR::Type_Bits *tb, Requirements *req,
         expr = new IR::Cast(tb, construct_bit_expr(tb, req, prop));
     } break;
     case 3: {
+
         auto p4_functions = P4Scope::get_decls<IR::Function>();
-        if (p4_functions.size() == 0) {
+        // TODO: Make this more sophisticated
+        if (p4_functions.size() == 0 || req->compile_time_known) {
             expr = baseType::gen_bit_literal(tb);
             break;
         }
@@ -313,7 +315,7 @@ IR::Expression *pick_var(const IR::Type_Bits *tb) {
     auto avail_bit_types = P4Scope::lval_map[node_name].size();
     if (P4Scope::check_lval(tb)) {
         cstring name = P4Scope::pick_lval(tb);
-        return new IR::TypeNameExpression(name);
+        return new IR::PathExpression(name);
     } else if (avail_bit_types > 0) {
         // even if we do not find anything we can still cast other bits
         auto new_tb = P4Scope::pick_declared_bit_type();
@@ -333,15 +335,27 @@ IR::Expression *construct_bit_expr(const IR::Type_Bits *tb, Requirements *req,
     switch (randind(percent)) {
     case 0: {
         // pick a variable that matches the type
-        expr = pick_var(tb);
+        // do not pick, if the requirement is to be a compile time known value
+        // TODO: This is lazy, we can easily check
+        if (req->compile_time_known) {
+            expr = baseType::gen_bit_literal(tb, req->not_zero);
+        } else {
+            expr = pick_var(tb);
+        }
     } break;
     case 1: {
         // pick an int literal, if allowed
         if (req->require_scalar) {
             expr = baseType::gen_bit_literal(tb, req->not_zero);
         } else {
-            big_int max_size = ((big_int)1U << tb->width_bits());
-            expr = baseType::gen_int_literal(max_size, req->not_zero);
+            bool has_int = P4Scope::check_lval(new IR::Type_InfInt());
+            if (rand() % 2 || not has_int) {
+                big_int max_size = ((big_int)1U << tb->width_bits());
+                expr = baseType::gen_int_literal(max_size, req->not_zero);
+            } else {
+                cstring name = P4Scope::pick_lval(new IR::Type_InfInt());
+                expr = new IR::PathExpression(name);
+            }
             prop->width_unknown = true;
         }
     } break;
@@ -401,6 +415,11 @@ IR::Expression *construct_boolean_expr(Requirements *req, Properties *prop) {
     switch (randind(percent)) {
     case 0: {
         auto tb = new IR::Type_Boolean();
+        // TODO: This is lazy, we can easily check
+        if (req->compile_time_known) {
+            expr = baseType::gen_bool_literal();
+            break;
+        }
         if (P4Scope::check_lval(tb)) {
             cstring name = P4Scope::pick_lval(tb);
             expr = new IR::TypeNameExpression(name);
@@ -508,6 +527,9 @@ IR::Expression *expression::gen_expr(const IR::Type *tp, Requirements *req) {
     // TODO: Add specific restrictions to types later
     if (auto tb = tp->to<IR::Type_Bits>()) {
         expr = construct_bit_expr(tb, req, prop);
+    } else if (tp->is<IR::Type_InfInt>()) {
+        big_int max_size = ((big_int)1U << 32);
+        expr = baseType::gen_int_literal(max_size, req->not_zero);
     } else if (tp->is<IR::Type_Boolean>()) {
         expr = construct_boolean_expr(req, prop);
     } else if (auto tn = tp->to<IR::Type_Name>()) {

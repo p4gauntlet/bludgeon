@@ -3,10 +3,6 @@
 
 #include "ir/ir.h"
 
-#include "baseType.h"
-#include "expression.h"
-#include "scope.h"
-
 namespace CODEGEN {
 class constantDeclaration {
   public:

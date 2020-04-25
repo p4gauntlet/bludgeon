@@ -3,12 +3,6 @@
 
 #include "ir/ir.h"
 
-#include "common.h"
-#include "expression.h"
-#include "scope.h"
-
-#include "typeRef.h"
-
 namespace CODEGEN {
 class variableDeclaration {
   public:

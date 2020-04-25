@@ -1,9 +1,14 @@
 #include "variableDeclaration.h"
 
+#include "common.h"
+#include "expression.h"
+#include "scope.h"
+#include "typeRef.h"
+
 namespace CODEGEN {
 
 IR::Type *gen_type() {
-    std::vector<int> percent = {85, 15, 0};
+    std::vector<int> percent = {80, 15, 0};
     IR::Type *tp = nullptr;
     switch (randind(percent)) {
     case 0: {
@@ -35,7 +40,7 @@ IR::Declaration_Variable *variableDeclaration::gen() {
     IR::Declaration_Variable *ret = nullptr;
 
     // Tao: construct list expression
-    if (type->is<IR::Type_Bits>()) {
+    if (type->is<IR::Type_Bits>() || type->is<IR::Type_InfInt>()) {
         auto expr = expression::gen_expr(type);
         ret = new IR::Declaration_Variable(name, type, expr);
     } else if (type->is<IR::Type_Boolean>()) {

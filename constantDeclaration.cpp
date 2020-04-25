@@ -1,23 +1,48 @@
-
-
 #include "constantDeclaration.h"
 
-namespace CODEGEN {
-IR::Declaration_Constant *gen() {
-    IR::Expression *expr;
-    std::vector<int> b_types = {0, 1};
-    IR::Type *tp = baseType::pick_rnd_base_type(b_types);
-    cstring name = randstr(4);
+#include "common.h"
+#include "expression.h"
+#include "scope.h"
+#include "typeRef.h"
 
-    if (tp->is<IR::Type_Boolean>()) {
-        expr = new IR::BoolLiteral(false);
+namespace CODEGEN {
+
+IR::Type *gen_constant_type() {
+    std::vector<int> percent = {80, 20};
+    IR::Type *tp = nullptr;
+    switch (randind(percent)) {
+    case 0: {
+        std::vector<int> b_types = {0, 1};
+        tp = baseType::pick_rnd_base_type(b_types);
+        break;
+    }
+    case 1: {
+        tp = new IR::Type_InfInt();
+        break;
+    }
+    }
+    return tp;
+}
+
+IR::Declaration_Constant *constantDeclaration::gen() {
+    cstring name = randstr(6);
+    IR::Type *type = gen_constant_type();
+
+    IR::Declaration_Constant *ret = nullptr;
+    auto req = new Requirements();
+    req->compile_time_known = true;
+
+    // Tao: construct list expression
+    if (type->is<IR::Type_Bits>() || type->is<IR::Type_InfInt>() ||
+        type->is<IR::Type_Boolean>()) {
+        auto expr = expression::gen_expr(type, req);
+        ret = new IR::Declaration_Constant(name, type, expr);
     } else {
-        expr = new IR::Constant(tp->to<IR::Type_Bits>(), rand() % 8 + 1);
+        BUG("Type %s not supported!", type->node_type_name());
     }
 
-    // add to the scope
-    auto ret = new IR::Declaration_Constant(name, tp, expr);
     P4Scope::add_to_scope(ret);
+
     return ret;
 }
 

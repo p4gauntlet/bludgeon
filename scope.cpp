@@ -75,6 +75,9 @@ void P4Scope::delete_lval(const IR::Type *tp, cstring name) {
     } else if (auto tb = tp->to<IR::Type_Boolean>()) {
         type_key = IR::Type_Boolean::static_type_name();
         bit_bucket = tb->width_bits();
+    } else if (tp->is<IR::Type_InfInt>()) {
+        type_key = IR::Type_InfInt::static_type_name();
+        bit_bucket = 1;
     } else if (auto tn = tp->to<IR::Type_Name>()) {
         auto tn_name = tn->path->name.name;
         if (tn_name == "packet_in") {
@@ -132,6 +135,9 @@ void P4Scope::add_lval(const IR::Type *tp, cstring name, bool read_only) {
     } else if (auto tb = tp->to<IR::Type_Boolean>()) {
         type_key = IR::Type_Boolean::static_type_name();
         bit_bucket = tb->width_bits();
+    } else if (tp->is<IR::Type_InfInt>()) {
+        type_key = IR::Type_InfInt::static_type_name();
+        bit_bucket = 1;
     } else if (auto tn = tp->to<IR::Type_Name>()) {
         auto tn_name = tn->path->name.name;
         // FIXME: this could be better
@@ -172,6 +178,9 @@ std::set<cstring> P4Scope::get_candidate_lvals(const IR::Type *tp,
     } else if (auto tb = tp->to<IR::Type_Boolean>()) {
         type_key = IR::Type_Boolean::static_type_name();
         bit_bucket = tb->width_bits();
+    } else if (tp->is<IR::Type_InfInt>()) {
+        type_key = IR::Type_InfInt::static_type_name();
+        bit_bucket = 1;
     } else if (auto ts = tp->to<IR::Type_StructLike>()) {
         type_key = ts->name.name;
         bit_bucket = 1;
