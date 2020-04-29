@@ -5,7 +5,7 @@
 namespace CODEGEN {
 
 IR::Type *pick_field() {
-    std::vector<int> percent = {75, 0, 0};
+    std::vector<int64_t> percent = {75, 0, 0};
     IR::Type *tp = nullptr;
     bool fallback = false;
     switch (randind(percent)) {

@@ -11,7 +11,7 @@ IR::Statement *assignmentOrMethodCallStatement::gen_assign() {
     IR::AssignmentStatement *assignstat = nullptr;
     IR::Expression *left = nullptr, *right = nullptr;
 
-    std::vector<int> percent = {100, 0};
+    std::vector<int64_t> percent = {100, 0};
 
     switch (randind(percent)) {
     case 0: {
@@ -72,16 +72,16 @@ IR::Statement *gen_methodcall_expression(cstring method_name,
 IR::Statement *gen_methodcall(bool is_in_func) {
     IR::MethodCallExpression *mce = nullptr;
 
-    int fun_pct = 45;
-    int action_pct = 44;
-    int tbl_pct = 15;
-    int built_in = 1;
+    int64_t fun_pct = 45;
+    int64_t action_pct = 44;
+    int64_t tbl_pct = 15;
+    int64_t built_in = 1;
     // functions cannot call actions or tables so set their chance to zero
     if (is_in_func) {
         action_pct = 0;
         tbl_pct = 0;
     }
-    std::vector<int> percent = {action_pct, fun_pct, tbl_pct, built_in};
+    std::vector<int64_t> percent = {action_pct, fun_pct, tbl_pct, built_in};
 
     switch (randind(percent)) {
     case 0: {
@@ -89,7 +89,7 @@ IR::Statement *gen_methodcall(bool is_in_func) {
         if (actions.size() == 0) {
             break;
         }
-        size_t idx = rand() % actions.size();
+        size_t idx = get_rnd_int(0, actions.size() - 1);
         auto p4_fun = actions.at(idx);
         auto params = p4_fun->getParameters()->parameters;
         return gen_methodcall_expression(p4_fun->name, params);
@@ -99,7 +99,7 @@ IR::Statement *gen_methodcall(bool is_in_func) {
         if (funcs.size() == 0) {
             break;
         }
-        size_t idx = rand() % funcs.size();
+        size_t idx = get_rnd_int(0, funcs.size() - 1);
         auto p4_fun = funcs.at(idx);
         auto params = p4_fun->getParameters()->parameters;
         return gen_methodcall_expression(p4_fun->name, params);
@@ -109,7 +109,7 @@ IR::Statement *gen_methodcall(bool is_in_func) {
         if (tbl_set->size() == 0) {
             break;
         }
-        auto idx = rand() % tbl_set->size();
+        auto idx = get_rnd_int(0, tbl_set->size() - 1);
         auto tbl_iter = std::begin(*tbl_set);
         std::advance(tbl_iter, idx);
         const IR::P4Table *tbl = *tbl_iter;
@@ -131,7 +131,7 @@ IR::Statement *gen_methodcall(bool is_in_func) {
         if (hdr_lvals.size() == 0) {
             break;
         }
-        auto idx = rand() % hdr_lvals.size();
+        auto idx = get_rnd_int(0, hdr_lvals.size() - 1);
         auto hdr_lval_iter = std::begin(hdr_lvals);
         std::advance(hdr_lval_iter, idx);
         cstring hdr_lval = *hdr_lval_iter;
@@ -155,7 +155,7 @@ IR::Statement *gen_methodcall(bool is_in_func) {
 }
 
 IR::Statement *assignmentOrMethodCallStatement::gen(bool is_in_func) {
-    std::vector<int> percent = {75, 25};
+    std::vector<int64_t> percent = {75, 25};
     auto val = randind(percent);
     if (val == 0) {
         return assignmentOrMethodCallStatement::gen_assign();

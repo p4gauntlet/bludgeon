@@ -13,7 +13,7 @@
 namespace CODEGEN {
 
 IR::Type_Declaration *typeDeclaration::gen() {
-    std::vector<int> percent = {50, 50, 0};
+    std::vector<int64_t> percent = {50, 50, 0};
     IR::Type_Declaration *decl = nullptr;
     bool use_default_decl = false;
     switch (randind(percent)) {

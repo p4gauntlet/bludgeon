@@ -362,8 +362,7 @@ IR::P4Program *TNA::gen() {
     objects->push_back(headerTypeDeclaration::gen_eth());
 
     // generate some declarations
-    int max_type_decls =
-        MIN_T_DECLS + (rand() % (MAX_T_DECLS - MIN_T_DECLS + 1));
+    int max_type_decls = get_rnd_int(MIN_T_DECLS, MAX_T_DECLS);
     for (int i = 0; i < max_type_decls; ++i) {
         objects->push_back(typeDeclaration::gen());
     }
@@ -376,10 +375,9 @@ IR::P4Program *TNA::gen() {
     objects->push_back(gen_egress_metadata_t());
 
     // generate some callables
-    int max_callable_decls =
-        MIN_CALLABLES + (rand() % (MAX_CALLABLES - MIN_CALLABLES + 1));
+    int max_callable_decls = get_rnd_int(MIN_CALLABLES, MAX_CALLABLES);
     for (int i = 0; i < max_callable_decls; ++i) {
-        std::vector<int> percent = {50, 50};
+        std::vector<int64_t> percent = {50, 50};
         if (randind(percent)) {
             objects->push_back(actionDeclaration::gen());
         } else {

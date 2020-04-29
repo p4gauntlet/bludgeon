@@ -51,7 +51,7 @@ IR::Expression *construct_unary_expr(const IR::Type_Bits *tb, Requirements *req,
     }
     prop->depth++;
 
-    std::vector<int> percent = {20, 20, 10, 50};
+    std::vector<int64_t> percent = {20, 20, 10, 50};
 
     switch (randind(percent)) {
     case 0: {
@@ -74,7 +74,6 @@ IR::Expression *construct_unary_expr(const IR::Type_Bits *tb, Requirements *req,
         expr = new IR::Cast(tb, construct_bit_expr(tb, req, prop));
     } break;
     case 3: {
-
         auto p4_functions = P4Scope::get_decls<IR::Function>();
         // TODO: Make this more sophisticated
         if (p4_functions.size() == 0 || req->compile_time_known) {
@@ -111,7 +110,7 @@ IR::Expression *construct_binary_expr(const IR::Type_Bits *tb,
     }
     prop->depth++;
     // todo add a restricted methodcallexpression here
-    std::vector<int> percent = {5, 5, 5, 10, 10, 10, 10, 5, 5, 10, 10, 10, 5};
+    std::vector<int64_t> percent = {5, 5, 5, 10, 10, 10, 10, 5, 5, 10, 10, 10, 5};
 
     switch (randind(percent)) {
     case 0: {
@@ -270,7 +269,7 @@ IR::Expression *construct_ternary_expr(const IR::Type_Bits *tb,
         return baseType::gen_bit_literal(tb);
     }
     prop->depth++;
-    std::vector<int> percent = {50, 50};
+    std::vector<int64_t> percent = {50, 50};
 
     switch (randind(percent)) {
     case 0: {
@@ -330,7 +329,7 @@ IR::Expression *pick_var(const IR::Type_Bits *tb) {
 IR::Expression *construct_bit_expr(const IR::Type_Bits *tb, Requirements *req,
                                    Properties *prop) {
     IR::Expression *expr = nullptr;
-    std::vector<int> percent = {20, 5, 25, 10, 20, 10};
+    std::vector<int64_t> percent = {20, 5, 25, 10, 20, 10};
 
     switch (randind(percent)) {
     case 0: {
@@ -390,7 +389,7 @@ IR::Expression *construct_cmp_expr(Requirements *req, Properties *prop) {
     IR::Expression *left = construct_bit_expr(new_type, req, prop);
     IR::Expression *right = construct_bit_expr(new_type, req, prop);
 
-    std::vector<int> percent = {50, 50};
+    std::vector<int64_t> percent = {50, 50};
 
     switch (randind(percent)) {
     case 0: {
@@ -410,7 +409,7 @@ IR::Expression *construct_boolean_expr(Requirements *req, Properties *prop) {
     IR::Expression *left;
     IR::Expression *right;
 
-    std::vector<int> percent = {20, 20, 40, 5, 5, 10};
+    std::vector<int64_t> percent = {20, 20, 40, 5, 5, 10};
 
     switch (randind(percent)) {
     case 0: {
@@ -487,7 +486,7 @@ IR::ListExpression *gen_struct_list(const IR::Type_Name *tn, Requirements *req,
 IR::Expression *construct_structlike_expr(const IR::Type_Name *tn,
                                           Requirements *req, Properties *prop) {
     IR::Expression *expr = nullptr;
-    std::vector<int> percent = {50, 50};
+    std::vector<int64_t> percent = {50, 50};
 
     // because fallthrough is not very portable...
     bool use_default_expr = false;

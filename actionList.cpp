@@ -17,7 +17,14 @@ IR::MethodCallExpression *gen_actioncall_expression(cstring method_name,
             can_call = false;
         } else {
             IR::Argument *arg;
-            arg = new IR::Argument(argument::gen_input_arg(par));
+            if (par->direction == IR::Direction::In) {
+                Requirements *req = new Requirements();
+                req->compile_time_known = true;
+                arg = new IR::Argument(expression::gen_expr(par->type, req));
+            } else {
+                cstring lval = P4Scope::pick_lval(par->type, true);
+                arg = new IR::Argument(new IR::PathExpression(lval));
+            }
             args->push_back(arg);
         }
     }
@@ -39,7 +46,7 @@ IR::ActionList *actionList::gen(size_t len) {
         return new IR::ActionList(act_list);
     }
     for (size_t i = 0; i < len; i++) {
-        size_t idx = rand() % p4_actions.size();
+        size_t idx = get_rnd_int(0, p4_actions.size() - 1);
         auto p4_act = p4_actions[idx];
         cstring act_name = p4_act->name.name;
 

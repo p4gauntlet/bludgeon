@@ -8,7 +8,7 @@
 namespace CODEGEN {
 
 IR::Type *gen_type() {
-    std::vector<int> percent = {80, 15, 0};
+    std::vector<int64_t> percent = {80, 15, 0};
     IR::Type *tp = nullptr;
     switch (randind(percent)) {
     case 0: {
@@ -22,7 +22,14 @@ IR::Type *gen_type() {
             return nullptr;
         }
         auto candidate_type = l_types.at(rand() % l_types.size());
-        tp = new IR::Type_Name(candidate_type->name.name);
+        auto type_name = candidate_type->name.name;
+        // check if struct is forbidden
+        if (P4Scope::not_initialized_structs.count(type_name) == 0) {
+            tp = new IR::Type_Name(candidate_type->name.name);
+        } else {
+            std::vector<int> b_types = {0, 1};
+            tp = baseType::pick_rnd_base_type(b_types);
+        }
         break;
     }
     case 2: {
@@ -47,15 +54,8 @@ IR::Declaration_Variable *variableDeclaration::gen() {
         auto expr = expression::gen_expr(type);
         ret = new IR::Declaration_Variable(name, type, expr);
     } else if (type->is<IR::Type_Name>()) {
-        IR::Vector<IR::Expression> exprs;
-        auto type_name = type->to<IR::Type_Name>()->path->name.name;
-        // check if struct is forbidden
-        if (P4Scope::not_initialized_structs.count(type_name) == 0) {
-            auto expr = expression::gen_expr(type);
-            ret = new IR::Declaration_Variable(name, type, expr);
-        } else {
-            ret = new IR::Declaration_Variable(name, type);
-        }
+        auto expr = expression::gen_expr(type);
+        ret = new IR::Declaration_Variable(name, type, expr);
     } else if (type->is<IR::Type_Stack>()) {
         // header stacks do not have an initializer yet
         ret = new IR::Declaration_Variable(name, type);

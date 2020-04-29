@@ -21,7 +21,8 @@
 namespace CODEGEN {
 
 cstring randstr(size_t len);
-int randind(const std::vector<int> &percent);
+int64_t randind(const std::vector<int64_t> &percent);
+int64_t get_rnd_int(int64_t min, int64_t max);
 
 } // namespace CODEGEN
 

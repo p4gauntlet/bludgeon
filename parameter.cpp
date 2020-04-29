@@ -6,14 +6,59 @@
 
 namespace CODEGEN {
 
+IR::Type *gen_param_type() {
+    std::vector<int64_t> percent = {95, 5, 1};
+    IR::Type *tp = nullptr;
+    switch (randind(percent)) {
+    case 0: {
+        std::vector<int> b_types = {0, 1};
+        tp = baseType::pick_rnd_base_type(b_types);
+        break;
+    }
+    case 1: {
+        auto l_types = P4Scope::get_decls<IR::Type_StructLike>();
+        if (l_types.size() == 0) {
+            return nullptr;
+        }
+        auto candidate_type = l_types.at(rand() % l_types.size());
+        auto type_name = candidate_type->name.name;
+        // check if struct is forbidden
+        if (P4Scope::not_initialized_structs.count(type_name) == 0) {
+            tp = new IR::Type_Name(candidate_type->name.name);
+        } else {
+            std::vector<int> b_types = {0, 1};
+            tp = baseType::pick_rnd_base_type(b_types);
+        }
+        break;
+    }
+    case 2: {
+        tp = new IR::Type_InfInt();
+        break;
+    }
+    }
+    return tp;
+}
+
 // Tao: the parameter seems can only be int<> bit<> in bmv2 model
 IR::Parameter *parameter::gen(bool if_none_dir) {
     cstring name = randstr(4);
     IR::Type *tp;
     IR::Direction dir;
 
-    if (if_none_dir == false) {
-        switch (rand() % 3) {
+    tp = gen_param_type();
+    if (if_none_dir) {
+        dir = IR::Direction::None;
+    } else {
+        int64_t pct_in = 33;
+        int64_t pct_out = 33;
+        int64_t pct_inout = 33;
+        // It is not possible to have a writable int parameter right now
+        if (tp->is<IR::Type_InfInt>()) {
+            pct_out = 0;
+            pct_inout = 0;
+        }
+        std::vector<int64_t> percent = {pct_in, pct_out, pct_inout};
+        switch (randind(percent)) {
         case 0:
             dir = IR::Direction::In;
             break;
@@ -24,11 +69,7 @@ IR::Parameter *parameter::gen(bool if_none_dir) {
             dir = IR::Direction::InOut;
             break;
         }
-    } else {
-        dir = IR::Direction::None;
     }
-    std::vector<int> type = {1}; // only bit for now
-    tp = baseType::pick_rnd_base_type(type);
 
     return new IR::Parameter(name, dir, tp);
 }

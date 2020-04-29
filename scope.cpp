@@ -14,13 +14,14 @@ const IR::Type_Struct *P4Scope::sys_hdr;
 // TODO: This should be set by the backend
 std::set<cstring> P4Scope::not_initialized_structs;
 
-void P4Scope::add_to_scope(const IR::Node *n) {
+void P4Scope::add_to_scope(const IR::Node *node) {
     auto l_scope = P4Scope::scope.back();
+    l_scope->push_back(node);
 
-    l_scope->push_back(n);
-
-    if (auto dv = n->to<IR::Declaration_Variable>()) {
+    if (auto dv = node->to<IR::Declaration_Variable>()) {
         add_lval(dv->type, dv->name.name);
+    } else if (auto dc = node->to<IR::Declaration_Constant>()) {
+        add_lval(dc->type, dc->name.name, true);
     }
 }
 
@@ -35,6 +36,8 @@ void P4Scope::end_local_scope() {
     for (auto node : *local_scope) {
         if (auto decl = node->to<IR::Declaration_Variable>()) {
             delete_lval(decl->type, decl->name.name);
+        } else if (auto dc = node->to<IR::Declaration_Constant>()) {
+            delete_lval(dc->type, dc->name.name);
         } else if (auto param = node->to<IR::Parameter>()) {
             delete_lval(param->type, param->name.name);
         }
@@ -44,13 +47,14 @@ void P4Scope::end_local_scope() {
     scope.pop_back();
 }
 
-void add_compound_lvals(const IR::Type_StructLike *sl_type, cstring sl_name) {
+void add_compound_lvals(const IR::Type_StructLike *sl_type, cstring sl_name,
+                        bool read_only) {
     for (auto field : sl_type->fields) {
         std::stringstream ss;
         ss.str("");
         ss << sl_name << "." << field->name.name;
         cstring field_name(ss.str());
-        P4Scope::add_lval(field->type, field_name);
+        P4Scope::add_lval(field->type, field_name, read_only);
     }
 }
 
@@ -151,7 +155,7 @@ void P4Scope::add_lval(const IR::Type *tp, cstring name, bool read_only) {
                 // does not work for some reason...
                 // bit_bucket = P4Scope::compound_type[tn_name]->width_bits();
                 bit_bucket = 1;
-                add_compound_lvals(tn_type, name);
+                add_compound_lvals(tn_type, name, read_only);
             } else {
                 BUG("Type_Name %s not yet supported", td->node_type_name());
             }

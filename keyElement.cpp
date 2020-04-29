@@ -14,6 +14,7 @@ IR::KeyElement *keyElement::gen(cstring match_kind) {
     }
     Requirements * req = new Requirements();
     req->require_scalar = true;
+    req->compile_time_known = true;
     auto expr = expression::gen_expr(bit_type, req);
     auto key = new IR::KeyElement(annotations, expr, match);
 
