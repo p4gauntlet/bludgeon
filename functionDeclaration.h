@@ -1,11 +1,6 @@
 #ifndef _FUNCTIONDECLARATION_H_
 #define _FUNCTIONDECLARATION_H_
 
-#include "blockStatement.h"
-#include "expression.h"
-#include "parameterList.h"
-#include "scope.h"
-
 #include "ir/ir.h"
 
 namespace CODEGEN {

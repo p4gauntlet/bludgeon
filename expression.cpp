@@ -75,13 +75,21 @@ IR::Expression *construct_unary_expr(const IR::Type_Bits *tb, Requirements *req,
     } break;
     case 3: {
         auto p4_functions = P4Scope::get_decls<IR::Function>();
+
+        IR::IndexedVector<IR::Declaration> viable_functions;
+        for (auto fun : p4_functions) {
+            if (fun->type->returnType->to<IR::Type_Bits>()) {
+                viable_functions.push_back(fun);
+            }
+        }
         // TODO: Make this more sophisticated
-        if (p4_functions.size() == 0 || req->compile_time_known) {
+        if (viable_functions.size() == 0 || req->compile_time_known) {
             expr = baseType::gen_bit_literal(tb);
             break;
         }
-        size_t idx = rand() % p4_functions.size();
-        auto p4_fun = p4_functions[idx];
+
+        size_t idx = rand() % viable_functions.size();
+        auto p4_fun = viable_functions[idx]->to<IR::Function>();
         cstring fun_name = p4_fun->name.name;
         auto params = p4_fun->getParameters();
         auto ret_type = p4_fun->type->returnType;

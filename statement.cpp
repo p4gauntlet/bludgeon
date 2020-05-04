@@ -9,7 +9,7 @@
 
 namespace CODEGEN {
 IR::Statement *statement::gen_rnd(bool is_in_func = false) {
-    std::vector<int64_t> percent = {0, 75, 5, 5, 0, 5};
+    std::vector<int64_t> percent = {5, 70, 3, 5, 5, 2};
     IR::Statement *stmt = nullptr;
     bool use_default_stmt = false;
     switch (randind(percent)) {
