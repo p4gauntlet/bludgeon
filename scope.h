@@ -34,8 +34,7 @@ class P4Scope {
 
     P4Scope() {}
 
-    ~P4Scope() {
-    }
+    ~P4Scope() {}
 
     static void add_to_scope(const IR::Node *n);
     static void start_local_scope();

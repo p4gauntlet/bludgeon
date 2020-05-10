@@ -56,6 +56,12 @@ set (CODEGEN_SRCS
     exitStatement.h
     expression.cpp
     expression.h
+    expression_boolean.cpp
+    expression_boolean.h
+    expression_bit.cpp
+    expression_bit.h
+    expression_struct.cpp
+    expression_struct.h
     expressionList.cpp
     expressionList.h
     functionDeclaration.cpp

@@ -251,7 +251,7 @@ IR::P4Program *V1Model::gen() {
     // generate some callables
     int max_callable_decls = get_rnd_int(MIN_CALLABLES, MAX_CALLABLES);
     for (int i = 0; i < max_callable_decls; ++i) {
-        std::vector<int64_t> percent = {50, 50};
+        std::vector<int64_t> percent = {20, 80};
         if (randind(percent)) {
             objects->push_back(actionDeclaration::gen());
         } else {
