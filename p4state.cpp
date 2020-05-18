@@ -115,9 +115,8 @@ IR::ParserState *p4State::gen_hdr_states() {
         auto sf_name = hdr_fields_names.at(i);
         auto sf_type = hdr_fields_types[sf_name];
         auto mem = new IR::Member(new IR::PathExpression("hdr"), sf_name);
-        if (sf_type->is<IR::Type_Stack>()) {
-            auto sf_tp_s = sf_type->to<IR::Type_Stack>();
-            auto size = sf_tp_s->size->to<IR::Constant>()->value;
+        if (auto sf_tp_s = sf_type->to<IR::Type_Stack>()) {
+            auto size = sf_tp_s->getSize();
             auto ele_tp_name = sf_tp_s->elementType;
             auto ele_tp = P4Scope::get_type_by_name(
                 ele_tp_name->to<IR::Type_Name>()->path->name.name);
@@ -126,13 +125,14 @@ IR::ParserState *p4State::gen_hdr_states() {
                     auto next_mem = new IR::Member(mem, "next");
                     components.push_back(gen_hdr_extract(pkt_call, next_mem));
                 }
-            } else if (ele_tp->is<IR::Type_HeaderUnion>()) {
+            } else if (auto hdru_tp = ele_tp->to<IR::Type_HeaderUnion>()) {
                 for (auto j = 0; j < size; j++) {
-                    auto hdru_tp = ele_tp->to<IR::Type_HeaderUnion>();
                     auto arr_ind = new IR::ArrayIndex(mem, new IR::Constant(j));
                     gen_hdr_union_extract(components, hdru_tp, arr_ind,
                                           pkt_call);
                 }
+            } else {
+                BUG("wtf here %s", sf_type->node_type_name());
             }
         } else if (sf_type->is<IR::Type_Name>()) {
             auto hdr_field_tp = P4Scope::get_type_by_name(

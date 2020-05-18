@@ -17,6 +17,9 @@ class structTypeDeclaration {
 
     static IR::Type_Struct *gen();
     static IR::Type_Struct *gen_Headers();
+
+  private:
+    static IR::StructField *pick_field();
 };
 } // namespace CODEGEN
 

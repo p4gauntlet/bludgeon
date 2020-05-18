@@ -78,7 +78,7 @@ IR::Expression *expression::gen_expr(const IR::Type *tp, Requirements *req) {
     } else if (auto tn = tp->to<IR::Type_Name>()) {
         expr = expression_struct::construct(tn, req, prop);
     } else {
-        BUG("Type %s not yet supported", tp->node_type_name());
+        BUG("Expression: Type %s not yet supported", tp->node_type_name());
     }
     return expr;
 }

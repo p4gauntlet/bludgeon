@@ -82,6 +82,22 @@ void P4Scope::delete_lval(const IR::Type *tp, cstring name) {
     } else if (tp->is<IR::Type_InfInt>()) {
         type_key = IR::Type_InfInt::static_type_name();
         bit_bucket = 1;
+    } else if (auto ts = tp->to<IR::Type_Stack>()) {
+        size_t stack_size = ts->getSize();
+        type_key = IR::Type_Stack::static_type_name();
+        bit_bucket = 1;
+        if (auto tn_type = ts->elementType->to<IR::Type_Name>()) {
+            for (size_t idx = 0; idx < stack_size; ++idx) {
+                std::stringstream ss;
+                ss.str("");
+                ss << name << "[" << idx << "]";
+                cstring stack_name(ss.str());
+                delete_lval(tn_type, stack_name);
+            }
+        } else {
+            BUG("Type_Name %s not yet supported",
+                ts->elementType->node_type_name());
+        }
     } else if (auto tn = tp->to<IR::Type_Name>()) {
         auto tn_name = tn->path->name.name;
         if (tn_name == "packet_in") {
@@ -142,6 +158,22 @@ void P4Scope::add_lval(const IR::Type *tp, cstring name, bool read_only) {
     } else if (tp->is<IR::Type_InfInt>()) {
         type_key = IR::Type_InfInt::static_type_name();
         bit_bucket = 1;
+    } else if (auto ts = tp->to<IR::Type_Stack>()) {
+        size_t stack_size = ts->getSize();
+        type_key = IR::Type_Stack::static_type_name();
+        bit_bucket = 1;
+        if (auto tn_type = ts->elementType->to<IR::Type_Name>()) {
+            for (size_t idx = 0; idx < stack_size; ++idx) {
+                std::stringstream ss;
+                ss.str("");
+                ss << name << "[" << idx << "]";
+                cstring stack_name(ss.str());
+                add_lval(tn_type, stack_name, read_only);
+            }
+        } else {
+            BUG("Type_Name %s not yet supported",
+                ts->elementType->node_type_name());
+        }
     } else if (auto tn = tp->to<IR::Type_Name>()) {
         auto tn_name = tn->path->name.name;
         // FIXME: this could be better
@@ -169,7 +201,7 @@ void P4Scope::add_lval(const IR::Type *tp, cstring name, bool read_only) {
         lval_map_rw[type_key][bit_bucket].insert(name);
     }
     lval_map[type_key][bit_bucket].insert(name);
-}
+} // namespace CODEGEN
 
 std::set<cstring> P4Scope::get_candidate_lvals(const IR::Type *tp,
                                                bool must_write) {

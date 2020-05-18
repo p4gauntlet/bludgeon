@@ -8,7 +8,7 @@
 namespace CODEGEN {
 
 IR::Type *gen_type() {
-    std::vector<int64_t> percent = {80, 15, 0};
+    std::vector<int64_t> percent = {80, 15, 5};
     IR::Type *tp = nullptr;
     switch (randind(percent)) {
     case 0: {

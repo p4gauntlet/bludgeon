@@ -16,15 +16,27 @@ IR::ListExpression *gen_struct_list(const IR::Type_Name *tn, Requirements *req,
         if (auto tn_type = td->to<IR::Type_StructLike>()) {
             for (auto sf : tn_type->fields) {
                 IR::Expression *expr;
-                if (auto field_tb = sf->type->to<IR::Type_Bits>()) {
-                    expr = expression_bit::construct(field_tb, req, prop);
-                } else if (auto field_tn = sf->type->to<IR::Type_Name>()) {
+                if (auto field_tn = sf->type->to<IR::Type_Name>()) {
+                    // cannot use another type here yet
                     expr = gen_struct_list(field_tn, req, prop);
+                    components.push_back(expr);
+                } else if (auto field_ts = sf->type->to<IR::Type_Stack>()) {
+                    auto stack_size = field_ts->getSize();
+                    auto stack_type = field_ts->elementType;
+                    if (auto s_type_name = stack_type->to<IR::Type_Name>()) {
+                        for (size_t idx = 0; idx < stack_size; ++idx) {
+                            expr = gen_struct_list(s_type_name, req, prop);
+                            components.push_back(expr);
+                        }
+
+                    } else {
+                        BUG("gen_struct_list: Stack Type %s unsupported",
+                            tn_name);
+                    }
                 } else {
-                    BUG("gen_struct_list: Type %s not yet supported",
-                        sf->type->node_type_name());
+                    expr = expression::gen_expr(sf->type, req);
+                    components.push_back(expr);
                 }
-                components.push_back(expr);
             }
         } else {
             BUG("gen_struct_list: Requested Type %s not a struct-like type",
