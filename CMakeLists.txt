@@ -16,6 +16,8 @@ set (CODEGEN_SRCS
     argument.h
     assignmentOrMethodCallStatement.cpp
     assignmentOrMethodCallStatement.h
+    backends/top.cpp
+    backends/top.h
     backends/tna.cpp
     backends/tna.h
     backends/v1model.cpp

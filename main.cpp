@@ -4,12 +4,13 @@
 #include <iostream>
 #include <string>
 
+#include "backends/tna.h"
+#include "backends/top.h"
+#include "backends/v1model.h"
 #include "frontends/p4/toP4/toP4.h"
 #include "ir/ir.h"
 #include "lib/nullstream.h"
 #include "scope.h"
-#include "backends/tna.h"
-#include "backends/v1model.h"
 
 void printUsage() {
     std::cout << "###How to use p4codegen###\n";
@@ -49,8 +50,11 @@ void gen_p4_code(cstring output_file, int flag) {
     } else if (flag == 1) {
         TNA::generate_includes(ostream);
         program = TNA::gen();
+    } else if (flag == 2) {
+        Top::generate_includes(ostream);
+        program = Top::gen();
     } else {
-        BUG("flag must be 0 or 1");
+        BUG("flag must be 0, 1, or 2");
     }
     // output to the file
     P4::ToP4 top4(ostream, false);
