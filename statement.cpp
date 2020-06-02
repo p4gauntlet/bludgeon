@@ -29,7 +29,7 @@ IR::Statement *statement::gen_rnd(bool is_in_func = false) {
         break;
     }
     case 3: {
-        stmt = returnStatement::gen_ret_stat(P4Scope::ret_type);
+        stmt = returnStatement::gen_ret_stat(P4Scope::prop.ret_type);
         break;
     }
     case 4: {

@@ -105,7 +105,6 @@ IR::Type_Struct *structTypeDeclaration::gen_Headers() {
     }
     auto ret = new IR::Type_Struct("Headers", fields);
 
-    P4Scope::sys_hdr = ret;
     P4Scope::add_to_scope(ret);
 
     return ret;

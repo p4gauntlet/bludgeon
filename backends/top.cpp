@@ -2,9 +2,9 @@
 
 #include "actionDeclaration.h"
 #include "controlDeclaration.h"
+#include "externDeclaration.h"
 #include "frontends/p4/toP4/toP4.h"
 #include "functionDeclaration.h"
-#include "externDeclaration.h"
 #include "headerTypeDeclaration.h"
 #include "p4parser.h"
 #include "scope.h"
@@ -26,7 +26,7 @@ static IR::P4Parser *gen_p() {
     params.push_back(
         parameter::gen_param(IR::Direction::None, "pkt", "packet_in"));
     params.push_back(
-        parameter::gen_param(IR::Direction::Out, "hdr", "Headers"));
+        parameter::gen_param(IR::Direction::Out, "hdr", SYS_HDR_NAME));
     auto par_list = new IR::ParameterList(params);
     IR::Type_Parser *type_parser = new IR::Type_Parser("p", par_list);
 
@@ -67,7 +67,7 @@ static IR::P4Control *gen_ingress() {
 
     IR::IndexedVector<IR::Parameter> params;
     params.push_back(
-        parameter::gen_param(IR::Direction::InOut, "h", "Headers"));
+        parameter::gen_param(IR::Direction::InOut, "h", SYS_HDR_NAME));
     auto par_list = new IR::ParameterList(params);
     IR::Type_Control *type_ctrl = new IR::Type_Control("ingress", par_list);
 
@@ -94,7 +94,6 @@ static IR::P4Control *gen_ingress() {
     IR::P4Control *p4ctrl =
         new IR::P4Control("ingress", type_ctrl, local_decls, blk_stat);
     P4Scope::add_to_scope(p4ctrl);
-    P4Scope::p4_ctrls.push_back(p4ctrl);
     return p4ctrl;
 }
 
@@ -114,7 +113,7 @@ static IR::Type_Parser *gen_parser_type() {
     params.push_back(
         parameter::gen_param(IR::Direction::None, "b", "packet_in"));
     params.push_back(
-        parameter::gen_param(IR::Direction::Out, "hdr", "Headers"));
+        parameter::gen_param(IR::Direction::Out, "hdr", SYS_HDR_NAME));
     auto par_list = new IR::ParameterList(params);
     return new IR::Type_Parser("Parser", par_list);
 }
@@ -122,7 +121,7 @@ static IR::Type_Parser *gen_parser_type() {
 static IR::Type_Control *gen_ingress_type() {
     IR::IndexedVector<IR::Parameter> params;
     params.push_back(
-        parameter::gen_param(IR::Direction::InOut, "hdr", "Headers"));
+        parameter::gen_param(IR::Direction::InOut, "hdr", SYS_HDR_NAME));
     auto par_list = new IR::ParameterList(params);
     return new IR::Type_Control("Ingress", par_list);
 }

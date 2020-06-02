@@ -103,7 +103,12 @@ IR::ParserState *p4State::gen_hdr_states() {
     std::vector<cstring> hdr_fields_names;
     std::map<const cstring, const IR::Type *> hdr_fields_types;
 
-    for (auto sf : P4Scope::sys_hdr->fields) {
+    auto sys_hdr_type = P4Scope::get_type_by_name(SYS_HDR_NAME);
+    auto sys_hdr = sys_hdr_type->to<IR::Type_Struct>();
+    if (not sys_hdr) {
+        BUG("Unexpected system header %s", sys_hdr_type->static_type_name());
+    }
+    for (auto sf : sys_hdr->fields) {
         hdr_fields_names.push_back(sf->name.name);
         hdr_fields_types.emplace(sf->name.name, sf->type);
     }
@@ -116,17 +121,17 @@ IR::ParserState *p4State::gen_hdr_states() {
         auto sf_type = hdr_fields_types[sf_name];
         auto mem = new IR::Member(new IR::PathExpression("hdr"), sf_name);
         if (auto sf_tp_s = sf_type->to<IR::Type_Stack>()) {
-            auto size = sf_tp_s->getSize();
+            size_t size = sf_tp_s->getSize();
             auto ele_tp_name = sf_tp_s->elementType;
             auto ele_tp = P4Scope::get_type_by_name(
                 ele_tp_name->to<IR::Type_Name>()->path->name.name);
             if (ele_tp->is<IR::Type_Header>()) {
-                for (auto j = 0; j < size; j++) {
+                for (size_t j = 0; j < size; j++) {
                     auto next_mem = new IR::Member(mem, "next");
                     components.push_back(gen_hdr_extract(pkt_call, next_mem));
                 }
             } else if (auto hdru_tp = ele_tp->to<IR::Type_HeaderUnion>()) {
-                for (auto j = 0; j < size; j++) {
+                for (size_t j = 0; j < size; j++) {
                     auto arr_ind = new IR::ArrayIndex(mem, new IR::Constant(j));
                     gen_hdr_union_extract(components, hdru_tp, arr_ind,
                                           pkt_call);

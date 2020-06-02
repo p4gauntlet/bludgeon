@@ -27,8 +27,8 @@ IR::BlockStatement *blockStatement::gen(bool is_in_func) {
 
     auto stat_or_decls = gen_sth(is_in_func);
 
-    if (is_in_func && not P4Scope::ret_type->to<IR::Type_Void>()) {
-        auto ret_stat = returnStatement::gen_ret_stat(P4Scope::ret_type);
+    if (is_in_func && not P4Scope::prop.ret_type->to<IR::Type_Void>()) {
+        auto ret_stat = returnStatement::gen_ret_stat(P4Scope::prop.ret_type);
         stat_or_decls.push_back(ret_stat);
     }
     P4Scope::end_local_scope();

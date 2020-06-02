@@ -27,7 +27,7 @@ static IR::P4Parser *gen_switch_ingress_parser() {
     params.push_back(
         parameter::gen_param(IR::Direction::None, "pkt", "packet_in"));
     params.push_back(
-        parameter::gen_param(IR::Direction::Out, "hdr", "Headers"));
+        parameter::gen_param(IR::Direction::Out, "hdr", SYS_HDR_NAME));
     params.push_back(parameter::gen_param(IR::Direction::Out, "ig_md",
                                           "ingress_metadata_t"));
     params.push_back(parameter::gen_param(IR::Direction::Out, "ig_intr_md",
@@ -88,7 +88,7 @@ static IR::P4Control *gen_switch_ingress() {
 
     IR::IndexedVector<IR::Parameter> params;
     params.push_back(
-        parameter::gen_param(IR::Direction::InOut, "h", "Headers"));
+        parameter::gen_param(IR::Direction::InOut, "h", SYS_HDR_NAME));
     params.push_back(parameter::gen_param(IR::Direction::InOut, "ig_md",
                                           "ingress_metadata_t"));
     params.push_back(parameter::gen_param(IR::Direction::In, "ig_intr_md",
@@ -135,7 +135,6 @@ static IR::P4Control *gen_switch_ingress() {
     IR::P4Control *p4ctrl =
         new IR::P4Control("ingress", type_ctrl, local_decls, blk_stat);
     P4Scope::add_to_scope(p4ctrl);
-    P4Scope::p4_ctrls.push_back(p4ctrl);
     return p4ctrl;
 }
 
@@ -158,7 +157,7 @@ static IR::P4Control *gen_switch_ingress_deparser() {
     params.push_back(
         parameter::gen_param(IR::Direction::None, "pkt", "packet_out"));
     params.push_back(
-        parameter::gen_param(IR::Direction::InOut, "h", "Headers"));
+        parameter::gen_param(IR::Direction::InOut, "h", SYS_HDR_NAME));
     params.push_back(
         parameter::gen_param(IR::Direction::In, "ig_md", "ingress_metadata_t"));
     params.push_back(
@@ -181,7 +180,7 @@ static IR::P4Parser *gen_switch_egress_parser() {
     IR::IndexedVector<IR::Parameter> params;
     params.push_back(
         parameter::gen_param(IR::Direction::None, "pkt", "packet_in"));
-    params.push_back(parameter::gen_param(IR::Direction::Out, "h", "Headers"));
+    params.push_back(parameter::gen_param(IR::Direction::Out, "h", SYS_HDR_NAME));
     params.push_back(
         parameter::gen_param(IR::Direction::Out, "eg_md", "egress_metadata_t"));
     params.push_back(parameter::gen_param(IR::Direction::Out, "eg_intr_md",
@@ -214,7 +213,7 @@ static IR::P4Control *gen_switch_egress_deparser() {
     params.push_back(
         parameter::gen_param(IR::Direction::None, "pkt", "packet_out"));
     params.push_back(
-        parameter::gen_param(IR::Direction::InOut, "h", "Headers"));
+        parameter::gen_param(IR::Direction::InOut, "h", SYS_HDR_NAME));
     params.push_back(
         parameter::gen_param(IR::Direction::In, "eg_md", "egress_metadata_t"));
     params.push_back(
@@ -236,7 +235,7 @@ static IR::P4Control *gen_switch_egress() {
 
     IR::IndexedVector<IR::Parameter> params;
     params.push_back(
-        parameter::gen_param(IR::Direction::InOut, "h", "Headers"));
+        parameter::gen_param(IR::Direction::InOut, "h", SYS_HDR_NAME));
     params.push_back(parameter::gen_param(IR::Direction::InOut, "eg_md",
                                           "egress_metadata_t"));
     params.push_back(parameter::gen_param(IR::Direction::In, "eg_intr_md",
@@ -337,6 +336,8 @@ IR::Type_Struct *gen_egress_metadata_t() {
 }
 
 IR::P4Program *TNA::gen() {
+
+
     // insert banned structures
     P4Scope::not_initialized_structs.insert("ingress_intrinsic_metadata_t");
     P4Scope::not_initialized_structs.insert(

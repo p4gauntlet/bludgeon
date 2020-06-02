@@ -24,6 +24,9 @@ struct Properties {
     bool width_unknown;
     bool has_methodcall;
     size_t depth = 0;
+    // this means we are in a block that returns
+    // we need to return an expression with the specified type
+    const IR::Type *ret_type = nullptr;
     Properties() : width_unknown(false), has_methodcall{false} {}
 };
 
@@ -38,19 +41,19 @@ class P4Scope {
     // a subset of the lval map that includes rw values
     static std::map<cstring, std::map<int, std::set<cstring>>> lval_map_rw;
 
-    // this is used to mark that we may be in a function
-    static const IR::Type *ret_type;
-    // TODO: This should be replaced by get_decls
-    static std::vector<IR::P4Control *> p4_ctrls;
     // TODO: Maybe we can just remove tables from the declarations list?
+    // this is back end specific
     static std::set<const IR::P4Table *> callable_tables;
-    // not sure what this is about
-    static const IR::Type_Struct *sys_hdr;
 
     // structs that should not be initialized because they are incomplete
     static std::set<cstring> not_initialized_structs;
+    // Properties that define the current state of the program
+    // for example, when a return expression must be returned in a block
     static Properties prop;
+    // back-end or node-specific restrictions
     static Requirements req;
+
+
     P4Scope() {}
 
     ~P4Scope() {}

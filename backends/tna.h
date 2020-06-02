@@ -2,9 +2,12 @@
 #define _TNA_H_
 
 #include "ir/ir.h"
+#include "scope.h"
 
 namespace CODEGEN {
+
 class TNA {
+
   public:
     TNA() {}
     ~TNA() {}

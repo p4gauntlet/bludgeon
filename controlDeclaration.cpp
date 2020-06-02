@@ -45,13 +45,15 @@ IR::BlockStatement *controlDeclaration::gen_ctrl_components(
 }
 
 IR::Declaration_Instance *controlDeclaration::gen_decl_instance() {
-    size_t size = P4Scope::p4_ctrls.size();
+    auto p4_ctrls = P4Scope::get_decls<IR::P4Control>();
+    size_t size = p4_ctrls.size();
 
     if (size == 0) {
+        //FIXME: Figure out a better way to handle this nullptr
         return nullptr;
     }
     IR::Vector<IR::Argument> *args = new IR::Vector<IR::Argument>();
-    IR::P4Control *p4ctrl = P4Scope::p4_ctrls.at(rand() % size);
+    const IR::P4Control *p4ctrl = p4_ctrls.at(rand() % size);
     IR::Type *tp = new IR::Type_Name(p4ctrl->name);
 
     return new IR::Declaration_Instance(randstr(6), tp, args);

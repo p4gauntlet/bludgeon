@@ -26,7 +26,7 @@ static IR::P4Parser *gen_p() {
     params.push_back(
         parameter::gen_param(IR::Direction::None, "pkt", "packet_in"));
     params.push_back(
-        parameter::gen_param(IR::Direction::Out, "hdr", "Headers"));
+        parameter::gen_param(IR::Direction::Out, "hdr", SYS_HDR_NAME));
     params.push_back(parameter::gen_param(IR::Direction::InOut, "m", "Meta"));
     params.push_back(parameter::gen_param(IR::Direction::InOut, "sm",
                                           "standard_metadata_t"));
@@ -70,7 +70,7 @@ static IR::P4Control *gen_ingress() {
 
     IR::IndexedVector<IR::Parameter> params;
     params.push_back(
-        parameter::gen_param(IR::Direction::InOut, "h", "Headers"));
+        parameter::gen_param(IR::Direction::InOut, "h", SYS_HDR_NAME));
     params.push_back(parameter::gen_param(IR::Direction::InOut, "m", "Meta"));
     params.push_back(parameter::gen_param(IR::Direction::InOut, "sm",
                                           "standard_metadata_t"));
@@ -100,7 +100,6 @@ static IR::P4Control *gen_ingress() {
     IR::P4Control *p4ctrl =
         new IR::P4Control("ingress", type_ctrl, local_decls, blk_stat);
     P4Scope::add_to_scope(p4ctrl);
-    P4Scope::p4_ctrls.push_back(p4ctrl);
     return p4ctrl;
 }
 
@@ -110,7 +109,7 @@ static IR::P4Control *gen_vrfy() {
 
     IR::IndexedVector<IR::Parameter> params;
     params.push_back(
-        parameter::gen_param(IR::Direction::InOut, "h", "Headers"));
+        parameter::gen_param(IR::Direction::InOut, "h", SYS_HDR_NAME));
     params.push_back(parameter::gen_param(IR::Direction::InOut, "m", "Meta"));
     auto par_list = new IR::ParameterList(params);
     auto type_ctrl = new IR::Type_Control("vrfy", par_list);
@@ -126,7 +125,7 @@ static IR::P4Control *gen_update() {
 
     IR::IndexedVector<IR::Parameter> params;
     params.push_back(
-        parameter::gen_param(IR::Direction::InOut, "h", "Headers"));
+        parameter::gen_param(IR::Direction::InOut, "h", SYS_HDR_NAME));
     params.push_back(parameter::gen_param(IR::Direction::InOut, "m", "Meta"));
     auto par_list = new IR::ParameterList(params);
     auto type_ctrl = new IR::Type_Control("update", par_list);
@@ -142,7 +141,7 @@ static IR::P4Control *gen_egress() {
 
     IR::IndexedVector<IR::Parameter> params;
     params.push_back(
-        parameter::gen_param(IR::Direction::InOut, "h", "Headers"));
+        parameter::gen_param(IR::Direction::InOut, "h", SYS_HDR_NAME));
     params.push_back(parameter::gen_param(IR::Direction::InOut, "m", "Meta"));
     params.push_back(parameter::gen_param(IR::Direction::InOut, "sm",
                                           "standard_metadata_t"));
@@ -172,7 +171,8 @@ static IR::P4Control *gen_deparser() {
     IR::IndexedVector<IR::Parameter> params;
     params.push_back(
         parameter::gen_param(IR::Direction::None, "pkt", "packet_out"));
-    params.push_back(parameter::gen_param(IR::Direction::In, "h", "Headers"));
+    params.push_back(
+        parameter::gen_param(IR::Direction::In, "h", SYS_HDR_NAME));
     auto par_list = new IR::ParameterList(params);
     auto type_ctrl = new IR::Type_Control("deparser", par_list);
     IR::IndexedVector<IR::Declaration> local_decls;

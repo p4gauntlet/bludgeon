@@ -52,9 +52,9 @@ IR::Function *functionDeclaration::gen() {
     IR::Type *r_tp = gen_return_type();
     tm = new IR::Type_Method(r_tp, params);
 
-    P4Scope::ret_type = r_tp;
+    P4Scope::prop.ret_type = r_tp;
     blk = blockStatement::gen(true);
-    P4Scope::ret_type = nullptr;
+    P4Scope::prop.ret_type = nullptr;
 
     auto ret = new IR::Function(name, tm, blk);
     P4Scope::end_local_scope();

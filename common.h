@@ -1,9 +1,6 @@
 #ifndef _COMMON_H_
 #define _COMMON_H_
 
-#define ETH_HEADER_T "ethernet_t"
-#define ETH_HDR "eth_hdr"
-
 #include "ir/ir.h"
 
 // minimum and maximum number of type declarations
@@ -17,6 +14,11 @@
 // minimum and maximum number of callable declarations
 #define MIN_CALLABLES 0
 #define MAX_CALLABLES 4
+
+// hardcoded initialization names
+#define SYS_HDR_NAME "Headers"
+#define ETH_HEADER_T "ethernet_t"
+#define ETH_HDR "eth_hdr"
 
 namespace CODEGEN {
 

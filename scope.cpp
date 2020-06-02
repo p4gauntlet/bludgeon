@@ -5,16 +5,15 @@ std::vector<IR::Vector<IR::Node> *> P4Scope::scope;
 std::set<cstring> P4Scope::used_names;
 std::map<cstring, std::map<int, std::set<cstring>>> P4Scope::lval_map;
 std::map<cstring, std::map<int, std::set<cstring>>> P4Scope::lval_map_rw;
-std::vector<IR::P4Control *> P4Scope::p4_ctrls;
 std::set<const IR::P4Table *> P4Scope::callable_tables;
 
-const IR::Type *P4Scope::ret_type;
-const IR::Type_Struct *P4Scope::sys_hdr;
 
-// TODO: This should be set by the backend
+// TODO: This should be set by the back end
 std::set<cstring> P4Scope::not_initialized_structs;
 Properties P4Scope::prop;
 Requirements P4Scope::req;
+
+
 
 void P4Scope::add_to_scope(const IR::Node *node) {
     auto l_scope = P4Scope::scope.back();
@@ -203,7 +202,7 @@ void P4Scope::add_lval(const IR::Type *tp, cstring name, bool read_only) {
         lval_map_rw[type_key][bit_bucket].insert(name);
     }
     lval_map[type_key][bit_bucket].insert(name);
-} // namespace CODEGEN
+}
 
 std::set<cstring> P4Scope::get_candidate_lvals(const IR::Type *tp,
                                                bool must_write) {
@@ -271,7 +270,7 @@ cstring P4Scope::pick_lval(const IR::Type *tp, bool must_write) {
     }
     size_t idx = rand() % candidates.size();
     auto lval = std::begin(candidates);
-    // 'advance' the iterator idx times
+    // "advance" the iterator idx times
     std::advance(lval, idx);
 
     return *lval;
