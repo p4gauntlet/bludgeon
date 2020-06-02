@@ -9,6 +9,24 @@
 #include "ir/ir.h"
 
 namespace CODEGEN {
+
+struct Requirements {
+    bool require_scalar;
+    bool compile_time_known;
+    bool no_methodcalls;
+    bool not_zero;
+    Requirements()
+        : require_scalar(false),
+          compile_time_known(false), no_methodcalls{false}, not_zero(false){};
+};
+
+struct Properties {
+    bool width_unknown;
+    bool has_methodcall;
+    size_t depth = 0;
+    Properties() : width_unknown(false), has_methodcall{false} {}
+};
+
 class P4Scope {
   public:
     // the list of subscopes
@@ -31,7 +49,8 @@ class P4Scope {
 
     // structs that should not be initialized because they are incomplete
     static std::set<cstring> not_initialized_structs;
-
+    static Properties prop;
+    static Requirements req;
     P4Scope() {}
 
     ~P4Scope() {}

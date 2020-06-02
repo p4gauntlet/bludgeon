@@ -2,13 +2,11 @@
 
 #include "argument.h"
 #include "baseType.h"
-#include "expression_bit.h"
 #include "scope.h"
 
 namespace CODEGEN {
 
-IR::ListExpression *gen_struct_list(const IR::Type_Name *tn, Requirements *req,
-                                    Properties *prop) {
+IR::ListExpression *gen_struct_list(const IR::Type_Name *tn) {
     IR::Vector<IR::Expression> components;
     cstring tn_name = tn->path->name.name;
 
@@ -18,14 +16,14 @@ IR::ListExpression *gen_struct_list(const IR::Type_Name *tn, Requirements *req,
                 IR::Expression *expr;
                 if (auto field_tn = sf->type->to<IR::Type_Name>()) {
                     // cannot use another type here yet
-                    expr = gen_struct_list(field_tn, req, prop);
+                    expr = gen_struct_list(field_tn);
                     components.push_back(expr);
                 } else if (auto field_ts = sf->type->to<IR::Type_Stack>()) {
                     auto stack_size = field_ts->getSize();
                     auto stack_type = field_ts->elementType;
                     if (auto s_type_name = stack_type->to<IR::Type_Name>()) {
                         for (size_t idx = 0; idx < stack_size; ++idx) {
-                            expr = gen_struct_list(s_type_name, req, prop);
+                            expr = gen_struct_list(s_type_name);
                             components.push_back(expr);
                         }
 
@@ -34,7 +32,7 @@ IR::ListExpression *gen_struct_list(const IR::Type_Name *tn, Requirements *req,
                             tn_name);
                     }
                 } else {
-                    expr = expression::gen_expr(sf->type, req);
+                    expr = expression::gen_expr(sf->type);
                     components.push_back(expr);
                 }
             }
@@ -48,9 +46,7 @@ IR::ListExpression *gen_struct_list(const IR::Type_Name *tn, Requirements *req,
     return new IR::ListExpression(components);
 }
 
-IR::Expression *expression_struct::construct(const IR::Type_Name *tn,
-                                             Requirements *req,
-                                             Properties *prop) {
+IR::Expression *expression_struct::construct(const IR::Type_Name *tn) {
     IR::Expression *expr = nullptr;
     std::vector<int64_t> percent = {50, 30, 20};
 
@@ -90,7 +86,7 @@ IR::Expression *expression_struct::construct(const IR::Type_Name *tn,
         }
 
         const IR::Type *ret_type;
-        expr = expression::pick_function(viable_functions, &ret_type, req);
+        expr = expression::pick_function(viable_functions, &ret_type);
         // can not find a suitable function, generate a default value
         if (not expr) {
             use_default_expr = true;
@@ -99,7 +95,7 @@ IR::Expression *expression_struct::construct(const IR::Type_Name *tn,
     }
     }
     if (use_default_expr) {
-        expr = gen_struct_list(tn, req, prop);
+        expr = gen_struct_list(tn);
     }
     return expr;
 }

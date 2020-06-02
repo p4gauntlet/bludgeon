@@ -34,9 +34,9 @@ expression::gen_functioncall(cstring method_name, IR::ParameterList params) {
 
 IR::MethodCallExpression *
 expression::pick_function(IR::IndexedVector<IR::Declaration> viable_functions,
-                          const IR::Type **ret_type, Requirements *req) {
+                          const IR::Type **ret_type) {
     // TODO: Make this more sophisticated
-    if (viable_functions.size() == 0 || req->compile_time_known) {
+    if (viable_functions.size() == 0 || P4Scope::req.compile_time_known) {
         return nullptr;
     }
 
@@ -64,29 +64,26 @@ expression::pick_function(IR::IndexedVector<IR::Declaration> viable_functions,
     return expr;
 }
 
-IR::Expression *expression::gen_expr(const IR::Type *tp, Requirements *req) {
+IR::Expression *expression::gen_expr(const IR::Type *tp) {
     IR::Expression *expr = nullptr;
 
-    Properties *prop = new Properties();
+    // reset the expression depth
+    P4Scope::prop.depth = 0;
 
-    // if no specific requirements were passed just generate default settings
-    if (not req) {
-        req = new Requirements();
-    }
-
-    // TODO: Add specific restrictions to types later
     if (auto tb = tp->to<IR::Type_Bits>()) {
-        expr = expression_bit::construct(tb, req, prop);
+        expr = expression_bit::construct(tb);
     } else if (tp->is<IR::Type_InfInt>()) {
         big_int max_size = ((big_int)1U << 32);
-        expr = baseType::gen_int_literal(max_size, req->not_zero);
+        expr = baseType::gen_int_literal(max_size, P4Scope::req.not_zero);
     } else if (tp->is<IR::Type_Boolean>()) {
-        expr = expression_boolean::construct(req, prop);
+        expr = expression_boolean::construct();
     } else if (auto tn = tp->to<IR::Type_Name>()) {
-        expr = expression_struct::construct(tn, req, prop);
+        expr = expression_struct::construct(tn);
     } else {
         BUG("Expression: Type %s not yet supported", tp->node_type_name());
     }
+    // reset the expression depth, just to be safe...
+    P4Scope::prop.depth = 0;
     return expr;
 }
 

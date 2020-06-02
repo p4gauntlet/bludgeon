@@ -18,9 +18,9 @@ IR::MethodCallExpression *gen_actioncall_expression(cstring method_name,
         } else {
             IR::Argument *arg;
             if (par->direction == IR::Direction::In) {
-                Requirements *req = new Requirements();
-                req->compile_time_known = true;
-                arg = new IR::Argument(expression::gen_expr(par->type, req));
+                // the generated expression needs to be compile-time known
+                P4Scope::req.compile_time_known = true;
+                arg = new IR::Argument(expression::gen_expr(par->type));
             } else {
                 cstring lval = P4Scope::pick_lval(par->type, true);
                 arg = new IR::Argument(new IR::PathExpression(lval));

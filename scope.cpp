@@ -13,6 +13,8 @@ const IR::Type_Struct *P4Scope::sys_hdr;
 
 // TODO: This should be set by the backend
 std::set<cstring> P4Scope::not_initialized_structs;
+Properties P4Scope::prop;
+Requirements P4Scope::req;
 
 void P4Scope::add_to_scope(const IR::Node *node) {
     auto l_scope = P4Scope::scope.back();

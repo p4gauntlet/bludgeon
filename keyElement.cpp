@@ -12,10 +12,10 @@ IR::KeyElement *keyElement::gen(cstring match_kind) {
         printf("Could not find key lval for key matches\n");
         return nullptr;
     }
-    Requirements * req = new Requirements();
-    req->require_scalar = true;
-    req->compile_time_known = true;
-    auto expr = expression::gen_expr(bit_type, req);
+    // this expression cannot be an infinite precision integer
+    P4Scope::req.require_scalar = true;
+    P4Scope::req.compile_time_known = true;
+    auto expr = expression::gen_expr(bit_type);
     auto key = new IR::KeyElement(annotations, expr, match);
 
     return key;

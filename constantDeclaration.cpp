@@ -29,13 +29,12 @@ IR::Declaration_Constant *constantDeclaration::gen() {
     IR::Type *type = gen_constant_type();
 
     IR::Declaration_Constant *ret = nullptr;
-    auto req = new Requirements();
-    req->compile_time_known = true;
+    // constant declarations need to be compile-time known
+    P4Scope::req.compile_time_known = true;
 
-    // Tao: construct list expression
     if (type->is<IR::Type_Bits>() || type->is<IR::Type_InfInt>() ||
         type->is<IR::Type_Boolean>()) {
-        auto expr = expression::gen_expr(type, req);
+        auto expr = expression::gen_expr(type);
         ret = new IR::Declaration_Constant(name, type, expr);
     } else {
         BUG("Type %s not supported!", type->node_type_name());
