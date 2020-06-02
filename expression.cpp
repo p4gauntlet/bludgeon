@@ -32,29 +32,36 @@ expression::gen_functioncall(cstring method_name, IR::ParameterList params) {
     }
 }
 
-template <typename T>
-IR::MethodCallExpression *expression::pick_function(Requirements *req) {
-    auto p4_functions = P4Scope::get_decls<IR::Function>();
-
-    IR::IndexedVector<IR::Declaration> viable_functions;
-    for (auto fun : p4_functions) {
-        if (fun->type->returnType->to<T>()) {
-            viable_functions.push_back(fun);
-        }
-    }
-
+IR::MethodCallExpression *
+expression::pick_function(IR::IndexedVector<IR::Declaration> viable_functions,
+                          const IR::Type **ret_type, Requirements *req) {
     // TODO: Make this more sophisticated
     if (viable_functions.size() == 0 || req->compile_time_known) {
         return nullptr;
     }
 
     size_t idx = rand() % viable_functions.size();
-    auto p4_fun = viable_functions[idx]->to<IR::Function>();
-    cstring fun_name = p4_fun->name.name;
-    auto params = p4_fun->getParameters();
+    cstring fun_name;
+    const IR::ParameterList *params;
+    if (auto p4_fun = viable_functions[idx]->to<IR::Function>()) {
+        fun_name = p4_fun->name.name;
+        params = p4_fun->getParameters();
+        *ret_type = p4_fun->type->returnType;
+    } else if (auto p4_extern = viable_functions[idx]->to<IR::Method>()) {
+        fun_name = p4_extern->name.name;
+        params = p4_extern->getParameters();
+        *ret_type = p4_extern->type->returnType;
+    } else {
+        BUG("Unknown callable: Type %s not yet supported",
+            viable_functions[idx]->node_type_name());
+    }
+    auto expr = expression::gen_functioncall(fun_name, *params);
     // sometimes, functions may not be callable
     // because we do not have the right return values
-    return expression::gen_functioncall(fun_name, *params);
+    if (not expr || not ret_type) {
+        return nullptr;
+    }
+    return expr;
 }
 
 IR::Expression *expression::gen_expr(const IR::Type *tp, Requirements *req) {

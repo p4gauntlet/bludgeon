@@ -4,6 +4,7 @@
 #include "controlDeclaration.h"
 #include "frontends/p4/toP4/toP4.h"
 #include "functionDeclaration.h"
+#include "externDeclaration.h"
 #include "headerTypeDeclaration.h"
 #include "p4parser.h"
 #include "scope.h"
@@ -97,7 +98,6 @@ static IR::P4Control *gen_ingress() {
     return p4ctrl;
 }
 
-
 static IR::Declaration_Instance *gen_main() {
     IR::Vector<IR::Argument> *args = new IR::Vector<IR::Argument>();
 
@@ -129,8 +129,7 @@ static IR::Type_Control *gen_ingress_type() {
 
 static IR::Type_Package *gen_package() {
     IR::IndexedVector<IR::Parameter> params;
-    params.push_back(
-        parameter::gen_param(IR::Direction::None, "p", "Parser"));
+    params.push_back(parameter::gen_param(IR::Direction::None, "p", "Parser"));
     params.push_back(
         parameter::gen_param(IR::Direction::None, "ig", "Ingress"));
     auto par_list = new IR::ParameterList(params);
@@ -153,15 +152,23 @@ IR::P4Program *Top::gen() {
     // generate struct Headers
     objects->push_back(structTypeDeclaration::gen_Headers());
 
-
     // generate some callables
     int max_callable_decls = get_rnd_int(MIN_CALLABLES, MAX_CALLABLES);
     for (int i = 0; i < max_callable_decls; ++i) {
-        std::vector<int64_t> percent = {80, 20};
-        if (randind(percent)) {
-            objects->push_back(actionDeclaration::gen());
-        } else {
+        std::vector<int64_t> percent = {70, 20, 10};
+        switch (randind(percent)) {
+        case 0: {
             objects->push_back(functionDeclaration::gen());
+            break;
+        }
+        case 1: {
+            objects->push_back(actionDeclaration::gen());
+            break;
+        }
+        case 2: {
+            objects->push_back(externDeclaration::gen());
+            break;
+        }
         }
     }
 

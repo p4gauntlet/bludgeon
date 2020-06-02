@@ -56,6 +56,8 @@ set (CODEGEN_SRCS
     errorDeclaration.h
     exitStatement.cpp
     exitStatement.h
+    externDeclaration.cpp
+    externDeclaration.h
     expression.cpp
     expression.h
     expression_boolean.cpp

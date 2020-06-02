@@ -33,8 +33,9 @@ class expression {
     static IR::Expression *gen_expr(const IR::Type *tp,
                                     Requirements *req = nullptr);
 
-    template <typename T>
-    static IR::MethodCallExpression *pick_function(Requirements *req);
+    static IR::MethodCallExpression *
+    pick_function(IR::IndexedVector<IR::Declaration> viable_functions,
+                  const IR::Type **ret_type, Requirements *req);
 };
 } // namespace CODEGEN
 

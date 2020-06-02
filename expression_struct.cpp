@@ -75,6 +75,7 @@ IR::Expression *expression_struct::construct(const IR::Type_Name *tn,
     case 2: {
         // run a function call
         auto p4_functions = P4Scope::get_decls<IR::Function>();
+        auto p4_externs = P4Scope::get_decls<IR::Method>();
 
         IR::IndexedVector<IR::Declaration> viable_functions;
         for (auto fun : p4_functions) {
@@ -82,21 +83,16 @@ IR::Expression *expression_struct::construct(const IR::Type_Name *tn,
                 viable_functions.push_back(fun);
             }
         }
-        // TODO: Make this more sophisticated
-        if (viable_functions.size() == 0 || req->compile_time_known) {
-            use_default_expr = true;
-            break;
+        for (auto fun : p4_externs) {
+            if (fun->type->returnType == tn) {
+                viable_functions.push_back(fun);
+            }
         }
 
-        size_t idx = rand() % viable_functions.size();
-        auto p4_fun = viable_functions[idx]->to<IR::Function>();
-        cstring fun_name = p4_fun->name.name;
-        auto params = p4_fun->getParameters();
-        auto ret_type = p4_fun->type->returnType;
-        expr = expression::gen_functioncall(fun_name, *params);
-        // sometimes, functions may not be callable
-        // because we do not have the right return values
-        if (not expr || not ret_type) {
+        const IR::Type *ret_type;
+        expr = expression::pick_function(viable_functions, &ret_type, req);
+        // can not find a suitable function, generate a default value
+        if (not expr) {
             use_default_expr = true;
             break;
         }
