@@ -56,7 +56,8 @@ IR::Expression *expression_struct::construct(const IR::Type_Name *tn) {
     switch (randind(percent)) {
     case 0:
         // pick a type from the available list
-        if (P4Scope::check_lval(tn)) {
+        // do not pick, if the requirement is to be a compile time known value
+        if (P4Scope::check_lval(tn) and not P4Scope::req.compile_time_known) {
             cstring lval = P4Scope::pick_lval(tn);
             expr = new IR::TypeNameExpression(lval);
         } else {

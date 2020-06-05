@@ -15,6 +15,10 @@ IR::MethodCallExpression *gen_actioncall_expression(cstring method_name,
     for (auto par : params) {
         if (not argument::check_input_arg(par)) {
             can_call = false;
+        } else if (par->direction == IR::Direction::None) {
+            // do nothing; in tables directionless parameters are
+            // set by the control plane
+            continue;
         } else {
             IR::Argument *arg;
             if (par->direction == IR::Direction::In) {
@@ -35,7 +39,7 @@ IR::MethodCallExpression *gen_actioncall_expression(cstring method_name,
         delete args;
         return nullptr;
     }
-}
+} // namespace CODEGEN
 
 IR::ActionList *actionList::gen(size_t len) {
     IR::IndexedVector<IR::ActionListElement> act_list;

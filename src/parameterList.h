@@ -14,7 +14,7 @@ class parameterList {
 
     parameterList() {}
 
-    static IR::ParameterList *gen(bool if_none_dir = false);
+    static IR::ParameterList *gen();
 };
 } // namespace CODEGEN
 

@@ -47,7 +47,7 @@ IR::Function *functionDeclaration::gen() {
     IR::Type_Method *tm = nullptr;
     IR::BlockStatement *blk = nullptr;
     P4Scope::start_local_scope();
-    IR::ParameterList *params = parameterList::gen(false);
+    IR::ParameterList *params = parameterList::gen();
 
     IR::Type *r_tp = gen_return_type();
     tm = new IR::Type_Method(r_tp, params);

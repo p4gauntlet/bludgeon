@@ -46,7 +46,7 @@ IR::Method *externDeclaration::gen() {
     cstring name = randstr(7);
     IR::Type_Method *tm = nullptr;
     P4Scope::start_local_scope();
-    IR::ParameterList *params = parameterList::gen(false);
+    IR::ParameterList *params = parameterList::gen();
 
     IR::Type *r_tp = gen_return_type();
     tm = new IR::Type_Method(r_tp, params);

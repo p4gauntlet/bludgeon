@@ -14,6 +14,7 @@ namespace CODEGEN {
 
 void TNA::generate_includes(std::ostream *ostream) {
     *ostream << "#include <core.p4>\n";
+    *ostream << "#define __TARGET_TOFINO__ 1\n";
     *ostream << "#include <tna.p4>\n\n";
 }
 
