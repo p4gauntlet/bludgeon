@@ -37,7 +37,7 @@ IR::Expression *expression_boolean::construct() {
     IR::Expression *left;
     IR::Expression *right;
 
-    std::vector<int64_t> percent = {15, 20, 40, 5, 5, 10, 5};
+    std::vector<int64_t> percent = {15, 20, 35, 5, 5, 10, 5, 5};
 
     switch (randind(percent)) {
     case 0: {
@@ -98,8 +98,26 @@ IR::Expression *expression_boolean::construct() {
         // can not find a suitable function, generate a default value
         if (not expr) {
             expr = baseType::gen_bool_literal();
+        }
+    } break;
+    case 7: {
+        // get the expression
+        auto tbl_set = P4Scope::get_callable_tables();
+
+        // just generate a literal if there are no tables left
+        if (tbl_set->size() == 0 || P4Scope::req.compile_time_known) {
+            expr = baseType::gen_bool_literal();
             break;
         }
+        auto idx = rand() % tbl_set->size();
+        auto tbl_iter = std::begin(*tbl_set);
+
+        std::advance(tbl_iter, idx);
+        const IR::P4Table *tbl = *tbl_iter;
+        expr = new IR::Member(new IR::MethodCallExpression(new IR::Member(
+                                  new IR::PathExpression(tbl->name), "apply")),
+                              "hit");
+        tbl_set->erase(tbl_iter);
     }
     }
     return expr;

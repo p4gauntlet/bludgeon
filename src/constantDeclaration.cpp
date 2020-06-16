@@ -39,6 +39,7 @@ IR::Declaration_Constant *constantDeclaration::gen() {
     } else {
         BUG("Type %s not supported!", type->node_type_name());
     }
+    P4Scope::req.compile_time_known = false;
 
     P4Scope::add_to_scope(ret);
 

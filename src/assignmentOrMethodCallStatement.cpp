@@ -45,9 +45,9 @@ IR::Statement *gen_methodcall_expression(cstring method_name,
 
     for (auto par : params) {
         IR::Argument *arg;
-        // TODO: Fix the int issue here.
+        // TODO: Fix the direction none issue here.
         if (not argument::check_input_arg(par) &&
-            not par->type->is<IR::Type_InfInt>()) {
+            par->direction != IR::Direction::None) {
             auto name = randstr(6);
             auto expr = expression::gen_expr(par->type);
             // all this boilerplate should be somewhere else...
