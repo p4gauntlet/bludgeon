@@ -8,7 +8,8 @@
 namespace CODEGEN {
 
 IR::Type *gen_constant_type() {
-    std::vector<int64_t> percent = {80, 20};
+    std::vector<int64_t> percent = {PCT.CONSTANTDECLARATION_TYPE_BASE,
+                                    PCT.CONSTANTDECLARATION_TYPE_INT};
     IR::Type *tp = nullptr;
     switch (randind(percent)) {
     case 0: {

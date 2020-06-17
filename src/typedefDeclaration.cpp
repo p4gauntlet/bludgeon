@@ -5,7 +5,9 @@
 namespace CODEGEN {
 
 IR::Type *gen_t() {
-    std::vector<int64_t> percent = {75, 25, 0};
+    std::vector<int64_t> percent = {PCT.TYPEDEFDECLARATION_BASE,
+                                    PCT.TYPEDEFDECLARATION_STRUCTLIKE,
+                                    PCT.TYPEDEFDECLARATION_STACK};
     IR::Type *tp = nullptr;
     switch (randind(percent)) {
     case 0: {
@@ -34,7 +36,7 @@ void typedefDeclaration::gen_base_t() {}
 
 IR::Type_Typedef *typedefDeclaration::gen_typedef() {
     cstring name = randstr(5);
-    IR::Type *type =  gen_t();
+    IR::Type *type = gen_t();
     auto ret = new IR::Type_Typedef(name, type);
     P4Scope::add_to_scope(ret);
     return ret;

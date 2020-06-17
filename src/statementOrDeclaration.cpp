@@ -7,7 +7,9 @@
 
 namespace CODEGEN {
 IR::StatOrDecl *statementOrDeclaration::gen_rnd(bool is_in_func = false) {
-    std::vector<int64_t> percent = {10, 10, 80};
+    std::vector<int64_t> percent = {PCT.STATEMENTORDECLARATION_VAR,
+                                    PCT.STATEMENTORDECLARATION_CONSTANT,
+                                    PCT.STATEMENTORDECLARATION_STATEMENT};
     auto val = randind(percent);
     if (val == 0) {
         auto stmt = variableDeclaration::gen();

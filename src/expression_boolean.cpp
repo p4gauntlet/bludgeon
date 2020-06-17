@@ -12,12 +12,13 @@ IR::Expression *expression_boolean::construct_cmp_expr() {
     // gen some random type
     // can be either bits, int, bool, or structlike
     // for now it is just bits
-    auto new_type_size = rand() % 128 + 1;
+    auto new_type_size = get_rnd_int(1, 128);
     auto new_type = new IR::Type_Bits(new_type_size, false);
     IR::Expression *left = expression_bit::construct(new_type);
     IR::Expression *right = expression_bit::construct(new_type);
 
-    std::vector<int64_t> percent = {50, 50};
+    std::vector<int64_t> percent = {PCT.EXPRESSION_BOOLEAN_CMP_EQU,
+                                    PCT.EXPRESSION_BOOLEAN_CMP_NEQ};
 
     switch (randind(percent)) {
     case 0: {
@@ -37,7 +38,11 @@ IR::Expression *expression_boolean::construct() {
     IR::Expression *left;
     IR::Expression *right;
 
-    std::vector<int64_t> percent = {15, 20, 35, 5, 5, 10, 5, 5};
+    std::vector<int64_t> percent = {
+        PCT.EXPRESSION_BOOLEAN_VAR,      PCT.EXPRESSION_BOOLEAN_LITERAL,
+        PCT.EXPRESSION_BOOLEAN_NOT,      PCT.EXPRESSION_BOOLEAN_LAND,
+        PCT.EXPRESSION_BOOLEAN_LOR,      PCT.EXPRESSION_BOOLEAN_CMP,
+        PCT.EXPRESSION_BOOLEAN_FUNCTION, PCT.EXPRESSION_BOOLEAN_BUILT_IN};
 
     switch (randind(percent)) {
     case 0: {
@@ -109,7 +114,7 @@ IR::Expression *expression_boolean::construct() {
             expr = baseType::gen_bool_literal();
             break;
         }
-        auto idx = rand() % tbl_set->size();
+        auto idx = get_rnd_int(0, tbl_set->size() - 1);
         auto tbl_iter = std::begin(*tbl_set);
 
         std::advance(tbl_iter, idx);

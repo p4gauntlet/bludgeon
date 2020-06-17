@@ -12,7 +12,7 @@ IR::Type_HeaderUnion *headerUnionDeclaration::gen() {
         BUG("Creating a header union assumes at least two headers!");
     }
     // not sure if this correct...
-    size_t len = 2 + rand() % (l_types.size() - 1);
+    size_t len = get_rnd_int(2, l_types.size() - 2);
     std::set<cstring> visited_headers;
     // we need to guarantee correct execution so try as long as we can
     // this is a bit dicey... do not like it
@@ -23,7 +23,7 @@ IR::Type_HeaderUnion *headerUnionDeclaration::gen() {
         }
         attempts++;
         cstring field_name = randstr(4);
-        auto hdr_tp = l_types.at(rand() % l_types.size());
+        auto hdr_tp = l_types.at(get_rnd_int(0, l_types.size() - 1));
         // check if we have already added this header
         if (visited_headers.find(hdr_tp->name) != visited_headers.end()) {
             continue;

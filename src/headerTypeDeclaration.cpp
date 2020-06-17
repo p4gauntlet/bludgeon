@@ -5,7 +5,8 @@
 namespace CODEGEN {
 
 IR::Type *pick_field() {
-    std::vector<int64_t> percent = {75, 0, 0};
+    std::vector<int64_t> percent = {PCT.HEADERTYPEDECLARATION_FIELD_BASE,
+                                    PCT.HEADERTYPEDECLARATION_FIELD_STRUCT};
     IR::Type *tp = nullptr;
     bool fallback = false;
     switch (randind(percent)) {
@@ -21,7 +22,7 @@ IR::Type *pick_field() {
             fallback = true;
             break;
         }
-        auto candidate_type = l_types.at(rand() % l_types.size());
+        auto candidate_type = l_types.at(get_rnd_int(0, l_types.size() - 1));
         tp = new IR::Type_Name(candidate_type->name.name);
         break;
     }
@@ -36,7 +37,7 @@ IR::Type *pick_field() {
 IR::Type_Header *headerTypeDeclaration::gen() {
     cstring name = randstr(6);
     IR::IndexedVector<IR::StructField> fields;
-    size_t len = rand() % 5 + 1;
+    size_t len = get_rnd_int(1, 5);
     for (size_t i = 0; i < len; i++) {
         cstring field_name = randstr(4);
         IR::Type *field_tp = pick_field();

@@ -2,7 +2,9 @@
 #define _COMMON_H_
 
 #include "ir/ir.h"
+#include "probabilities.h"
 
+#define INTEGER_WIDTH 32
 // minimum and maximum number of type declarations
 #define MIN_T_DECLS 1
 #define MAX_T_DECLS 8
@@ -25,6 +27,8 @@ namespace CODEGEN {
 cstring randstr(size_t len);
 int64_t randind(const std::vector<int64_t> &percent);
 int64_t get_rnd_int(int64_t min, int64_t max);
+big_int get_rnd_big_int(big_int min, big_int max);
+
 
 } // namespace CODEGEN
 

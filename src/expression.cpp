@@ -40,7 +40,7 @@ expression::pick_function(IR::IndexedVector<IR::Declaration> viable_functions,
         return nullptr;
     }
 
-    size_t idx = rand() % viable_functions.size();
+    size_t idx = get_rnd_int(0, viable_functions.size() - 1);
     cstring fun_name;
     const IR::ParameterList *params;
     if (auto p4_fun = viable_functions[idx]->to<IR::Function>()) {
@@ -73,8 +73,7 @@ IR::Expression *expression::gen_expr(const IR::Type *tp) {
     if (auto tb = tp->to<IR::Type_Bits>()) {
         expr = expression_bit::construct(tb);
     } else if (tp->is<IR::Type_InfInt>()) {
-        big_int max_size = ((big_int)1U << 32);
-        expr = baseType::gen_int_literal(max_size, P4Scope::req.not_zero);
+        expr = baseType::gen_int_literal(INTEGER_WIDTH, P4Scope::req.not_zero);
     } else if (tp->is<IR::Type_Boolean>()) {
         expr = expression_boolean::construct();
     } else if (auto tn = tp->to<IR::Type_Name>()) {

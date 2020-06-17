@@ -6,7 +6,9 @@ namespace CODEGEN {
 
 IR::StructField *structTypeDeclaration::pick_field() {
     cstring field_name = randstr(4);
-    std::vector<int64_t> percent = {75, 20, 0};
+    std::vector<int64_t> percent = {PCT.STRUCTTYPEDECLARATION_FIELD_BASE,
+                                    PCT.STRUCTTYPEDECLARATION_FIELD_STRUCT,
+                                    PCT.STRUCTTYPEDECLARATION_FIELD_STACK};
 
     IR::Type *tp = nullptr;
     bool fallback = false;

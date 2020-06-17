@@ -2,27 +2,29 @@
 #include <cstring>
 #include <random>
 #include <string>
-
+#include <boost/random.hpp>
 #include "common.h"
 #include "scope.h"
 
 const std::vector<cstring> str_keywords = {"if", "else", "key", "actions"};
 
-static const char alphanum[] =
-
-    // "0123456789"
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    "abcdefghijklmnopqrstuvwxyz";
+static const char alphanum[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                               "abcdefghijklmnopqrstuvwxyz";
+// "0123456789"
 
 namespace CODEGEN {
+static boost::random::mt19937 rng;
+
 int64_t get_rnd_int(int64_t min, int64_t max) {
-    // Will be used to obtain a seed for the random number engine
-    std::random_device rd;
-    // Standard mersenne_twister_engine seeded with rd()
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<int64_t> distribution(min, max);
-    return distribution(rd);
+    boost::random::uniform_int_distribution<int64_t> distribution(min, max);
+    return distribution(rng);
 }
+
+big_int get_rnd_big_int(big_int min, big_int max) {
+    boost::random::uniform_int_distribution<big_int> distribution(min, max);
+    return distribution(rng);
+}
+
 
 cstring randstr(size_t len) {
     cstring ret;
@@ -50,10 +52,8 @@ cstring randstr(size_t len) {
     return ret;
 }
 
-
 int64_t randind(const std::vector<int64_t> &percent) {
     int sum = accumulate(percent.begin(), percent.end(), 0);
-
 
     // do not pick zero since that conflicts with zero percentage values
     auto rand_num = get_rnd_int(1, sum);

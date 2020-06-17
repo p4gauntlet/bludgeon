@@ -3,17 +3,18 @@
 #include "typeDeclaration.h"
 
 #include "common.h"
-#include "structTypeDeclaration.h"
-#include "headerUnionDeclaration.h"
-#include "headerTypeDeclaration.h"
-#include "headerStackType.h"
 #include "enumDeclaration.h"
-
+#include "headerStackType.h"
+#include "headerTypeDeclaration.h"
+#include "headerUnionDeclaration.h"
+#include "structTypeDeclaration.h"
 
 namespace CODEGEN {
 
 IR::Type_Declaration *typeDeclaration::gen() {
-    std::vector<int64_t> percent = {50, 50, 0};
+    std::vector<int64_t> percent = {PCT.TYPEDECLARATION_HEADER,
+                                    PCT.TYPEDECLARATION_STRUCT,
+                                    PCT.TYPEDECLARATION_UNION};
     IR::Type_Declaration *decl = nullptr;
     bool use_default_decl = false;
     switch (randind(percent)) {
@@ -45,6 +46,5 @@ IR::Type_Declaration *typeDeclaration::gen() {
 
     return decl;
 }
-
 
 } // namespace CODEGEN

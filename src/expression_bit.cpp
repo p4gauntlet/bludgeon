@@ -14,7 +14,9 @@ IR::Expression *expression_bit::construct_unary_expr(const IR::Type_Bits *tb) {
     }
     P4Scope::prop.depth++;
 
-    std::vector<int64_t> percent = {20, 20, 10, 50};
+    std::vector<int64_t> percent = {
+        PCT.EXPRESSION_BIT_UNARY_NEG, PCT.EXPRESSION_BIT_UNARY_CMPL,
+        PCT.EXPRESSION_BIT_UNARY_CAST, PCT.EXPRESSION_BIT_UNARY_FUNCTION};
 
     switch (randind(percent)) {
     case 0: {
@@ -74,8 +76,14 @@ IR::Expression *expression_bit::construct_binary_expr(const IR::Type_Bits *tb) {
         return baseType::gen_bit_literal(tb);
     }
     P4Scope::prop.depth++;
-    std::vector<int64_t> percent = {5, 5, 5,  10, 10, 10, 10,
-                                    5, 5, 10, 10, 10, 5};
+    std::vector<int64_t> percent = {
+        PCT.EXPRESSION_BIT_BINARY_MUL,    PCT.EXPRESSION_BIT_BINARY_DIV,
+        PCT.EXPRESSION_BIT_BINARY_MOD,    PCT.EXPRESSION_BIT_BINARY_ADD,
+        PCT.EXPRESSION_BIT_BINARY_SUB,    PCT.EXPRESSION_BIT_BINARY_ADDSAT,
+        PCT.EXPRESSION_BIT_BINARY_SUBSAT, PCT.EXPRESSION_BIT_BINARY_LSHIFT,
+        PCT.EXPRESSION_BIT_BINARY_RSHIFT, PCT.EXPRESSION_BIT_BINARY_BAND,
+        PCT.EXPRESSION_BIT_BINARY_BOR,    PCT.EXPRESSION_BIT_BINARY_BXOR,
+        PCT.EXPRESSION_BIT_BINARY_CONCAT};
 
     switch (randind(percent)) {
     case 0: {
@@ -205,7 +213,7 @@ IR::Expression *expression_bit::construct_binary_expr(const IR::Type_Bits *tb) {
     case 12: {
         // pick an concatenation that matches the type
         size_t type_width = tb->width_bits();
-        size_t split = (rand() % type_width) + 1;
+        size_t split = get_rnd_int(0, type_width);
         // TODO: lazy fallback
         if (split >= type_width) {
             return baseType::gen_bit_literal(tb);
@@ -238,7 +246,8 @@ expression_bit::construct_ternary_expr(const IR::Type_Bits *tb) {
         return baseType::gen_bit_literal(tb);
     }
     P4Scope::prop.depth++;
-    std::vector<int64_t> percent = {50, 50};
+    std::vector<int64_t> percent = {PCT.EXPRESSION_BIT_BINARY_SLICE,
+                                    PCT.EXPRESSION_BIT_BINARY_MUX};
 
     switch (randind(percent)) {
     case 0: {
@@ -246,7 +255,7 @@ expression_bit::construct_ternary_expr(const IR::Type_Bits *tb) {
         // pick a slice that matches the type
         auto type_width = tb->width_bits();
         // TODO this is some arbitrary value...
-        auto new_type_size = rand() % 128 + type_width + 1;
+        auto new_type_size = get_rnd_int(0, 127) + type_width + 1;
         auto slice_type = new IR::Type_Bits(new_type_size, false);
         auto slice_expr = construct(slice_type);
         if (P4Scope::prop.width_unknown) {
@@ -254,7 +263,7 @@ expression_bit::construct_ternary_expr(const IR::Type_Bits *tb) {
             P4Scope::prop.width_unknown = false;
         }
         auto margin = new_type_size - type_width;
-        size_t high = (rand() % margin) + type_width;
+        size_t high = get_rnd_int(0, margin - 1) + type_width;
         size_t low = high - type_width + 1;
         expr = new IR::Slice(slice_expr, high, low);
         break;
@@ -297,7 +306,10 @@ IR::Expression *pick_var(const IR::Type_Bits *tb) {
 
 IR::Expression *expression_bit::construct(const IR::Type_Bits *tb) {
     IR::Expression *expr = nullptr;
-    std::vector<int64_t> percent = {20, 5, 25, 10, 20, 10};
+    std::vector<int64_t> percent = {
+        PCT.EXPRESSION_BIT_VAR,         PCT.EXPRESSION_BIT_INT_LITERAL,
+        PCT.EXPRESSION_BIT_BIT_LITERAL, PCT.EXPRESSION_BIT_UNARY,
+        PCT.EXPRESSION_BIT_BINARY,      PCT.EXPRESSION_BIT_TERNARY};
 
     switch (randind(percent)) {
     case 0: {
@@ -316,10 +328,10 @@ IR::Expression *expression_bit::construct(const IR::Type_Bits *tb) {
             expr = baseType::gen_bit_literal(tb, P4Scope::req.not_zero);
         } else {
             bool has_int = P4Scope::check_lval(new IR::Type_InfInt());
-            if (rand() % 2 || not has_int) {
-                big_int max_size = ((big_int)1U << tb->width_bits());
-                expr =
-                    baseType::gen_int_literal(max_size, P4Scope::req.not_zero);
+
+            if (get_rnd_int(0, 1) || not has_int) {
+                expr = baseType::gen_int_literal(tb->width_bits(),
+                                                 P4Scope::req.not_zero);
             } else {
                 cstring name = P4Scope::pick_lval(new IR::Type_InfInt());
                 expr = new IR::PathExpression(name);

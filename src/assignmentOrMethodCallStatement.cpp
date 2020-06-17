@@ -11,7 +11,9 @@ IR::Statement *assignmentOrMethodCallStatement::gen_assign() {
     IR::AssignmentStatement *assignstat = nullptr;
     IR::Expression *left = nullptr, *right = nullptr;
 
-    std::vector<int64_t> percent = {100, 0};
+    std::vector<int64_t> percent = {
+        PCT.ASSIGNMENTORMETHODCALLSTATEMENT_ASSIGN_BIT,
+        PCT.ASSIGNMENTORMETHODCALLSTATEMENT_ASSIGN_STRUCTLIKE};
 
     switch (randind(percent)) {
     case 0: {
@@ -74,16 +76,18 @@ IR::Statement *gen_methodcall_expression(cstring method_name,
 IR::Statement *gen_methodcall(bool is_in_func) {
     IR::MethodCallExpression *mce = nullptr;
 
-    int64_t fun_pct = 45;
-    int64_t action_pct = 44;
-    int64_t tbl_pct = 15;
-    int64_t built_in = 1;
     // functions cannot call actions or tables so set their chance to zero
+    short tmp_action_pct = PCT.ASSIGNMENTORMETHODCALLSTATEMENT_METHOD_ACTION;
+    short tmp_tbl_pct = PCT.ASSIGNMENTORMETHODCALLSTATEMENT_METHOD_TABLE;
     if (is_in_func) {
-        action_pct = 0;
-        tbl_pct = 0;
+        PCT.ASSIGNMENTORMETHODCALLSTATEMENT_METHOD_ACTION = 0;
+        PCT.ASSIGNMENTORMETHODCALLSTATEMENT_METHOD_TABLE = 0;
     }
-    std::vector<int64_t> percent = {action_pct, fun_pct, tbl_pct, built_in};
+    std::vector<int64_t> percent = {
+        PCT.ASSIGNMENTORMETHODCALLSTATEMENT_METHOD_ACTION,
+        PCT.ASSIGNMENTORMETHODCALLSTATEMENT_METHOD_FUNCTION,
+        PCT.ASSIGNMENTORMETHODCALLSTATEMENT_METHOD_TABLE,
+        PCT.ASSIGNMENTORMETHODCALLSTATEMENT_METHOD_BUILT_IN};
 
     switch (randind(percent)) {
     case 0: {
@@ -138,7 +142,7 @@ IR::Statement *gen_methodcall(bool is_in_func) {
         std::advance(hdr_lval_iter, idx);
         cstring hdr_lval = *hdr_lval_iter;
         cstring call;
-        if (rand() % 2) {
+        if (get_rnd_int(0, 1)) {
             call = "setValid";
         } else {
             call = "setInvalid";
@@ -148,6 +152,9 @@ IR::Statement *gen_methodcall(bool is_in_func) {
         break;
     }
     }
+    // restore previous probabilities
+    PCT.ASSIGNMENTORMETHODCALLSTATEMENT_METHOD_ACTION = tmp_action_pct;
+    PCT.ASSIGNMENTORMETHODCALLSTATEMENT_METHOD_TABLE = tmp_tbl_pct;
     if (mce) {
         return new IR::MethodCallStatement(mce);
     } else {
@@ -157,7 +164,9 @@ IR::Statement *gen_methodcall(bool is_in_func) {
 }
 
 IR::Statement *assignmentOrMethodCallStatement::gen(bool is_in_func) {
-    std::vector<int64_t> percent = {75, 25};
+    std::vector<int64_t> percent = {
+        PCT.ASSIGNMENTORMETHODCALLSTATEMENT_ASSIGN,
+        PCT.ASSIGNMENTORMETHODCALLSTATEMENT_METHOD_CALL};
     auto val = randind(percent);
     if (val == 0) {
         return assignmentOrMethodCallStatement::gen_assign();

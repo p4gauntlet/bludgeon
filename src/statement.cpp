@@ -9,9 +9,20 @@
 
 namespace CODEGEN {
 IR::Statement *statement::gen_rnd(bool is_in_func = false) {
-    std::vector<int64_t> percent = {5, 85, 3, 2, 3, 2};
+    // functions cannot have exit statements so set their probability to zero
+    int64_t pct_exit = PCT.STATEMENT_EXIT;
+    if (is_in_func) {
+        pct_exit = 0;
+    }
+    std::vector<int64_t> percent = {PCT.STATEMENT_SWITCH,
+                                    PCT.STATEMENT_ASSIGNMENTORMETHODCALL,
+                                    PCT.STATEMENT_IF,
+                                    PCT.STATEMENT_RETURN,
+                                    pct_exit,
+                                    PCT.STATEMENT_BLOCK};
     IR::Statement *stmt = nullptr;
     bool use_default_stmt = false;
+
     switch (randind(percent)) {
     case 0: {
         stmt = switchStatement::gen();
@@ -33,11 +44,7 @@ IR::Statement *statement::gen_rnd(bool is_in_func = false) {
         break;
     }
     case 4: {
-        if (is_in_func) {
-            use_default_stmt = true;
-        } else{
-            stmt = exitStatement::gen();
-        }
+        stmt = exitStatement::gen();
         break;
     }
     case 5: {

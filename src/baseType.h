@@ -2,6 +2,7 @@
 #define _BASETYPE_H_
 
 #include "ir/ir.h"
+#include "common.h"
 
 namespace CODEGEN {
 
@@ -30,7 +31,7 @@ class baseType {
     static IR::Type_Bits *gen_bit_type(bool isSigned);
 
     static IR::BoolLiteral *gen_bool_literal();
-    static IR::Constant *gen_int_literal(big_int max_size = INT_MAX,
+    static IR::Constant *gen_int_literal(size_t bit_width = INTEGER_WIDTH,
                                          bool not_zero = false);
     static IR::Constant *gen_bit_literal(const IR::Type *tb,
                                          bool not_zero = false);

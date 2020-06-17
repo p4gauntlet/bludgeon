@@ -1,4 +1,5 @@
 #include "baseType.h"
+#include "common.h"
 
 namespace CODEGEN {
 
@@ -9,7 +10,7 @@ IR::Type_Base *baseType::pick_rnd_base_type(std::vector<int> &type) {
         BUG("pick_rnd_base_type: Type list cannot be empty");
     }
     IR::Type_Base *tb = nullptr;
-    int t = type.at(rand() % type.size());
+    int t = type.at(get_rnd_int(0, type.size() - 1));
     if (t > 3) {
         BUG("pick_rnd_base_type: Invalid value");
     }
@@ -35,7 +36,7 @@ IR::Type_Base *baseType::pick_rnd_base_type(std::vector<int> &type) {
 }
 
 IR::BoolLiteral *baseType::gen_bool_literal() {
-    if (rand() % 2 == 0) {
+    if (get_rnd_int(0, 1)) {
         return new IR::BoolLiteral(false);
     } else {
         return new IR::BoolLiteral(true);
@@ -45,16 +46,18 @@ IR::BoolLiteral *baseType::gen_bool_literal() {
 // isSigned, true -> int<>, false -> bit<>
 // Tao: we only use false here
 IR::Type_Bits *baseType::gen_bit_type(bool isSigned) {
-    int size = rand() % (sizeof(bit_widths) / sizeof(int));
+    auto size = get_rnd_int(0, sizeof(bit_widths) / sizeof(int) - 1);
 
     return new IR::Type_Bits(bit_widths[size], isSigned);
 }
 
-IR::Constant *baseType::gen_int_literal(big_int max_size, bool no_zero) {
-    big_int value;
+IR::Constant *baseType::gen_int_literal(size_t bit_width, bool no_zero) {
+    big_int min = -(((big_int)1 << bit_width - 1));
+    big_int max = (((big_int)1 << bit_width - 1) - 1);
+    big_int value = get_rnd_big_int(min, max);
     while (true) {
-        value = rand() % max_size;
         if (no_zero && value == 0) {
+            value = get_rnd_big_int(min, max);
             // retry until we generate a value that is not zero
             continue;
         }
@@ -65,12 +68,12 @@ IR::Constant *baseType::gen_int_literal(big_int max_size, bool no_zero) {
 
 IR::Constant *baseType::gen_bit_literal(const IR::Type *tb, bool no_zero) {
     big_int max_size = ((big_int)1U << tb->width_bits());
-    big_int value = rand() % max_size;
+    big_int value = get_rnd_big_int(0, max_size);
 
     while (true) {
         if (no_zero && value == 0) {
             // retry until we generate a value that is not zero
-            value = rand() % max_size;
+            value = get_rnd_big_int(0, max_size);
             continue;
         }
         break;

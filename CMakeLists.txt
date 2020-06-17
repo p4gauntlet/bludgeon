@@ -69,6 +69,7 @@ set (CODEGEN_SRCS
     src/parameterList.cpp
     src/prefixedNonTypeName.cpp
     src/prefixedType.cpp
+    src/probabilities.cpp
     src/realTypeArg.cpp
     src/realTypeArgumentList.cpp
     src/returnStatement.cpp
@@ -152,6 +153,7 @@ set (CODEGEN_HDRS
     src/parameterList.h
     src/prefixedNonTypeName.h
     src/prefixedType.h
+    src/probabilities.h
     src/realTypeArg.h
     src/realTypeArgumentList.h
     src/returnStatement.h

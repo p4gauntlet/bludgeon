@@ -8,7 +8,7 @@ namespace CODEGEN {
 
 IR::IndexedVector<IR::StatOrDecl> gen_sth(bool is_in_func) {
     // randomize the total number of statements
-    int max_statements = MIN_STAT + (rand() % (MAX_STAT - MIN_STAT + 1));
+    int max_statements = get_rnd_int(MIN_STAT, MAX_STAT);
     IR::IndexedVector<IR::StatOrDecl> stat_or_decls;
 
     // put tab_name .apply() after some initializations

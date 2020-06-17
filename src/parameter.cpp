@@ -7,7 +7,8 @@
 namespace CODEGEN {
 
 IR::Type *gen_param_type() {
-    std::vector<int64_t> percent = {90, 10};
+    std::vector<int64_t> percent = {PCT.PARAMETER_TYPE_BASE,
+                                    PCT.PARAMETER_TYPE_STRUCT};
     IR::Type *tp = nullptr;
     switch (randind(percent)) {
     case 0: {
@@ -31,7 +32,6 @@ IR::Type *gen_param_type() {
         }
         break;
     }
-
     }
     return tp;
 }
@@ -46,9 +46,9 @@ IR::Parameter *parameter::gen(bool if_none_dir) {
     if (if_none_dir) {
         dir = IR::Direction::None;
     } else {
-        int64_t pct_in = 33;
-        int64_t pct_out = 33;
-        int64_t pct_inout = 33;
+        int64_t pct_in = PCT.PARAMETER_DIR_IN;
+        int64_t pct_out = PCT.PARAMETER_DIR_OUT;
+        int64_t pct_inout = PCT.PARAMETER_DIR_INOUT;
         // It is not possible to have a writable int parameter right now
         if (tp->is<IR::Type_InfInt>()) {
             pct_out = 0;

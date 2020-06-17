@@ -4,10 +4,10 @@ namespace CODEGEN {
 IR::BlockStatement *controlDeclaration::gen_ctrl_components(
     IR::IndexedVector<IR::Declaration> &local_decls) {
 
-    auto max_vars = rand() % MAX_VAR_DECL;
-    auto max_decls = rand() % MAX_DECL_INS_DECL;
-    auto max_actions = rand() % MAX_ACTION_DECL;
-    auto max_tables = rand() % MAX_TABLE_DECL;
+    auto max_vars = get_rnd_int(0, MAX_VAR_DECL);
+    auto max_decls = get_rnd_int(0, MAX_DECL_INS_DECL);
+    auto max_actions = get_rnd_int(0, MAX_ACTION_DECL);
+    auto max_tables = get_rnd_int(0, MAX_TABLE_DECL);
 
     // variableDeclarations
     for (int i = 0; i <= max_vars; i++) {
@@ -49,11 +49,11 @@ IR::Declaration_Instance *controlDeclaration::gen_decl_instance() {
     size_t size = p4_ctrls.size();
 
     if (size == 0) {
-        //FIXME: Figure out a better way to handle this nullptr
+        // FIXME: Figure out a better way to handle this nullptr
         return nullptr;
     }
     IR::Vector<IR::Argument> *args = new IR::Vector<IR::Argument>();
-    const IR::P4Control *p4ctrl = p4_ctrls.at(rand() % size);
+    const IR::P4Control *p4ctrl = p4_ctrls.at(get_rnd_int(0, size - 1));
     IR::Type *tp = new IR::Type_Name(p4ctrl->name);
 
     return new IR::Declaration_Instance(randstr(6), tp, args);

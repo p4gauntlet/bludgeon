@@ -48,7 +48,9 @@ IR::ListExpression *gen_struct_list(const IR::Type_Name *tn) {
 
 IR::Expression *expression_struct::construct(const IR::Type_Name *tn) {
     IR::Expression *expr = nullptr;
-    std::vector<int64_t> percent = {50, 30, 20};
+    std::vector<int64_t> percent = {PCT.EXPRESSION_STRUCT_VAR,
+                                    PCT.EXPRESSION_STRUCT_LITERAL,
+                                    PCT.EXPRESSION_STRUCT_FUNCTION};
 
     // because fallthrough is not very portable...
     bool use_default_expr = false;
