@@ -9,7 +9,7 @@ IR::SwitchStatement *switchStatement::gen() {
     if (tbl_set->size() == 0) {
         return nullptr;
     }
-    auto idx = rand() % tbl_set->size();
+    auto idx = get_rnd_int(0, tbl_set->size() - 1);
     auto tbl_iter = std::begin(*tbl_set);
 
     std::advance(tbl_iter, idx);

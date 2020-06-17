@@ -73,7 +73,7 @@ IR::Expression *expression::gen_expr(const IR::Type *tp) {
     if (auto tb = tp->to<IR::Type_Bits>()) {
         expr = expression_bit::construct(tb);
     } else if (tp->is<IR::Type_InfInt>()) {
-        expr = baseType::gen_int_literal(INTEGER_WIDTH, P4Scope::req.not_zero);
+        expr = baseType::gen_int_literal(INTEGER_WIDTH);
     } else if (tp->is<IR::Type_Boolean>()) {
         expr = expression_boolean::construct();
     } else if (auto tn = tp->to<IR::Type_Name>()) {

@@ -1,5 +1,6 @@
 #include "baseType.h"
 #include "common.h"
+#include "scope.h"
 
 namespace CODEGEN {
 
@@ -51,12 +52,15 @@ IR::Type_Bits *baseType::gen_bit_type(bool isSigned) {
     return new IR::Type_Bits(bit_widths[size], isSigned);
 }
 
-IR::Constant *baseType::gen_int_literal(size_t bit_width, bool no_zero) {
+IR::Constant *baseType::gen_int_literal(size_t bit_width) {
     big_int min = -(((big_int)1 << bit_width - 1));
+    if (P4Scope::req.not_negative) {
+        min = 0;
+    }
     big_int max = (((big_int)1 << bit_width - 1) - 1);
     big_int value = get_rnd_big_int(min, max);
     while (true) {
-        if (no_zero && value == 0) {
+        if (P4Scope::req.not_zero && value == 0) {
             value = get_rnd_big_int(min, max);
             // retry until we generate a value that is not zero
             continue;
@@ -66,17 +70,14 @@ IR::Constant *baseType::gen_int_literal(size_t bit_width, bool no_zero) {
     return new IR::Constant(value);
 }
 
-IR::Constant *baseType::gen_bit_literal(const IR::Type *tb, bool no_zero) {
+IR::Constant *baseType::gen_bit_literal(const IR::Type *tb) {
     big_int max_size = ((big_int)1U << tb->width_bits());
-    big_int value = get_rnd_big_int(0, max_size);
 
-    while (true) {
-        if (no_zero && value == 0) {
-            // retry until we generate a value that is not zero
-            value = get_rnd_big_int(0, max_size);
-            continue;
-        }
-        break;
+    big_int value;
+    if (P4Scope::req.not_zero) {
+        value = get_rnd_big_int(1, max_size - 1);
+    } else {
+        value = get_rnd_big_int(0, max_size - 1);
     }
     return new IR::Constant(tb, value);
 }

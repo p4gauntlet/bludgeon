@@ -21,7 +21,7 @@ IR::Type *gen_param_type() {
         if (l_types.size() == 0) {
             return nullptr;
         }
-        auto candidate_type = l_types.at(rand() % l_types.size());
+        auto candidate_type = l_types.at(get_rnd_int(0, l_types.size() - 1));
         auto type_name = candidate_type->name.name;
         // check if struct is forbidden
         if (P4Scope::not_initialized_structs.count(type_name) == 0) {

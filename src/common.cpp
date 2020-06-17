@@ -15,6 +15,10 @@ static const char alphanum[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 namespace CODEGEN {
 static boost::random::mt19937 rng;
 
+void set_seed(int64_t seed) {
+    rng = boost::mt19937(seed);
+}
+
 int64_t get_rnd_int(int64_t min, int64_t max) {
     boost::random::uniform_int_distribution<int64_t> distribution(min, max);
     return distribution(rng);

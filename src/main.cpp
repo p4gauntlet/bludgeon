@@ -69,7 +69,8 @@ void gen_p4_code(cstring output_file, cstring target) {
 
 int main(int argc, char **argv) {
 
-    srand(good_seed());
+    CODEGEN::set_seed(good_seed());
+
     setup_gc_logging();
     setup_signals();
 

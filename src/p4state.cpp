@@ -15,16 +15,16 @@ IR::MethodCallStatement *gen_methodcall_stat(
     if (field_type->is<IR::Type_Stack>()) {
         IR::Argument *arg;
         auto tp_stack = field_type->to<IR::Type_Stack>();
-        auto size = tp_stack->size->to<IR::Constant>()->value;
-        auto arr_index =
-            new IR::ArrayIndex(mem, new IR::Constant(rand() % size));
+        auto size =
+            get_rnd_int(0, tp_stack->size->to<IR::Constant>()->asInt() - 1);
+        auto arr_index = new IR::ArrayIndex(mem, new IR::Constant(size));
 
         if (tp_stack->elementType->is<IR::Type_Name>()) {
             auto tp_name = tp_stack->elementType->to<IR::Type_Name>();
             auto real_tp = P4Scope::get_type_by_name(tp_name->path->name.name);
             if (real_tp->is<IR::Type_HeaderUnion>()) {
                 auto tp_hdr_union = real_tp->to<IR::Type_HeaderUnion>();
-                auto rand_ind = rand() % (tp_hdr_union->fields.size());
+                auto rand_ind = get_rnd_int(0, tp_hdr_union->fields.size() - 1);
                 auto sf = tp_hdr_union->fields.at(rand_ind);
                 arg = new IR::Argument(
                     new IR::Member(arr_index, IR::ID(sf->name.name)));
@@ -47,7 +47,7 @@ IR::MethodCallStatement *gen_methodcall_stat(
             auto real_tp = P4Scope::get_type_by_name(tp_name->path->name.name);
             if (real_tp->is<IR::Type_HeaderUnion>()) {
                 auto tp_hdr_union = real_tp->to<IR::Type_HeaderUnion>();
-                auto rand_ind = rand() % (tp_hdr_union->fields.size());
+                auto rand_ind = get_rnd_int(0, tp_hdr_union->fields.size() - 1);
                 auto sf = tp_hdr_union->fields.at(rand_ind);
                 arg = new IR::Argument(
                     new IR::Member(mem, IR::ID(sf->name.name)));
@@ -193,7 +193,11 @@ IR::ParserState *gen_state(cstring state_name) {
     IR::Vector<IR::SelectCase> cases;
     std::vector<const IR::Type *> types;
 
-    switch (rand() % 3) {
+    std::vector<int64_t> percent = {
+        PCT.P4STATE_TRANSITION_ACCEPT, PCT.P4STATE_TRANSITION_REJECT,
+        PCT.P4STATE_TRANSITION_STATE, PCT.P4STATE_TRANSITION_SELECT};
+
+    switch (randind(percent)) {
     case 0: {
         transition = new IR::PathExpression("accept");
         break;
@@ -203,32 +207,35 @@ IR::ParserState *gen_state(cstring state_name) {
         break;
     }
     case 2: {
-        transition = new IR::PathExpression(states.at(rand() % states.size()));
+        transition = new IR::PathExpression(
+            states.at(get_rnd_int(0, states.size() - 1)));
         break;
     }
     case 3: {
-        size_t num = rand() % 3 + 1;
+        // size_t num = get_rnd_int(1, 3);
         auto get_le_flag = false;
         // auto get_le_flag = expression::get_list_expressions(exprs,
         // types,
         // num);
-        if (get_le_flag == true) {
-            for (int i = 0; i < rand() % 3 + 1; i++) {
+        if (get_le_flag) {
+            size_t num_transitions = get_rnd_int(1, 3);
+            for (size_t i = 0; i < num_transitions; i++) {
                 IR::Expression *keyset;
                 IR::Vector<IR::Expression> args;
                 for (size_t i = 0; i < types.size(); i++) {
                     auto tp = types.at(i)->to<IR::Type_Bits>();
                     int size = tp->size > 4 ? 4 : tp->size;
-                    int val = rand() % (1 << size);
+                    int val = get_rnd_int(0, 1 << size);
                     args.push_back(new IR::Constant(val));
                 }
                 keyset = new IR::ListExpression(args);
-                auto states_at_rnd = states.at(rand() % states.size());
+                auto states_at_rnd =
+                    states.at(get_rnd_int(0, states.size() - 1));
                 auto sw_case = new IR::SelectCase(
                     keyset, new IR::PathExpression(states_at_rnd));
                 cases.push_back(sw_case);
             }
-            if (rand() % 2 == 0) {
+            if (get_rnd_int(0, 1)) {
                 cases.push_back(
                     new IR::SelectCase(new IR::DefaultExpression,
                                        new IR::PathExpression("accept")));
@@ -241,8 +248,8 @@ IR::ParserState *gen_state(cstring state_name) {
             transition =
                 new IR::SelectExpression(new IR::ListExpression(exprs), cases);
         } else {
-            transition =
-                new IR::PathExpression(states.at(rand() % states.size()));
+            transition = new IR::PathExpression(
+                states.at(get_rnd_int(0, states.size() - 1)));
         }
         break;
     }

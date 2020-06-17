@@ -15,9 +15,11 @@ struct Requirements {
     bool compile_time_known;
     bool no_methodcalls;
     bool not_zero;
+    bool not_negative;
     Requirements()
         : require_scalar(false),
-          compile_time_known(false), no_methodcalls{false}, not_zero(false){};
+          compile_time_known(false), no_methodcalls{false}, not_zero(false),
+          not_negative(false){};
 };
 
 struct Properties {
@@ -52,7 +54,6 @@ class P4Scope {
     static Properties prop;
     // back-end or node-specific restrictions
     static Requirements req;
-
 
     P4Scope() {}
 

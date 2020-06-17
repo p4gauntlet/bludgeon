@@ -76,14 +76,27 @@ IR::Expression *expression_bit::construct_binary_expr(const IR::Type_Bits *tb) {
         return baseType::gen_bit_literal(tb);
     }
     P4Scope::prop.depth++;
-    std::vector<int64_t> percent = {
-        PCT.EXPRESSION_BIT_BINARY_MUL,    PCT.EXPRESSION_BIT_BINARY_DIV,
-        PCT.EXPRESSION_BIT_BINARY_MOD,    PCT.EXPRESSION_BIT_BINARY_ADD,
-        PCT.EXPRESSION_BIT_BINARY_SUB,    PCT.EXPRESSION_BIT_BINARY_ADDSAT,
-        PCT.EXPRESSION_BIT_BINARY_SUBSAT, PCT.EXPRESSION_BIT_BINARY_LSHIFT,
-        PCT.EXPRESSION_BIT_BINARY_RSHIFT, PCT.EXPRESSION_BIT_BINARY_BAND,
-        PCT.EXPRESSION_BIT_BINARY_BOR,    PCT.EXPRESSION_BIT_BINARY_BXOR,
-        PCT.EXPRESSION_BIT_BINARY_CONCAT};
+
+    auto pct_sub = PCT.EXPRESSION_BIT_BINARY_SUB;
+    auto pct_subsat = PCT.EXPRESSION_BIT_BINARY_SUBSAT;
+    // we want to avoid subtraction when we require no negative values
+    if (P4Scope::req.not_negative) {
+        pct_sub = 0;
+        pct_subsat = 0;
+    }
+    std::vector<int64_t> percent = {PCT.EXPRESSION_BIT_BINARY_MUL,
+                                    PCT.EXPRESSION_BIT_BINARY_DIV,
+                                    PCT.EXPRESSION_BIT_BINARY_MOD,
+                                    PCT.EXPRESSION_BIT_BINARY_ADD,
+                                    pct_sub,
+                                    PCT.EXPRESSION_BIT_BINARY_ADDSAT,
+                                    pct_subsat,
+                                    PCT.EXPRESSION_BIT_BINARY_LSHIFT,
+                                    PCT.EXPRESSION_BIT_BINARY_RSHIFT,
+                                    PCT.EXPRESSION_BIT_BINARY_BAND,
+                                    PCT.EXPRESSION_BIT_BINARY_BOR,
+                                    PCT.EXPRESSION_BIT_BINARY_BXOR,
+                                    PCT.EXPRESSION_BIT_BINARY_CONCAT};
 
     switch (randind(percent)) {
     case 0: {
@@ -96,11 +109,9 @@ IR::Expression *expression_bit::construct_binary_expr(const IR::Type_Bits *tb) {
         // pick a division that matches the type
         // TODO: Make more sophisticated
         // this requires only compile time known values
-        IR::Expression *left =
-            baseType::gen_bit_literal(tb, P4Scope::req.not_zero);
+        IR::Expression *left = baseType::gen_bit_literal(tb);
         P4Scope::req.not_zero = true;
-        IR::Expression *right =
-            baseType::gen_bit_literal(tb, P4Scope::req.not_zero);
+        IR::Expression *right = baseType::gen_bit_literal(tb);
         P4Scope::req.not_zero = false;
         expr = new IR::Div(tb, left, right);
     } break;
@@ -108,11 +119,9 @@ IR::Expression *expression_bit::construct_binary_expr(const IR::Type_Bits *tb) {
         // pick a modulo that matches the type
         // TODO: Make more sophisticated
         // this requires only compile time known values
-        IR::Expression *left =
-            baseType::gen_bit_literal(tb, P4Scope::req.not_zero);
+        IR::Expression *left = baseType::gen_bit_literal(tb);
         P4Scope::req.not_zero = true;
-        IR::Expression *right =
-            baseType::gen_bit_literal(tb, P4Scope::req.not_zero);
+        IR::Expression *right = baseType::gen_bit_literal(tb);
         P4Scope::req.not_zero = false;
         expr = new IR::Mod(tb, left, right);
     } break;
@@ -166,7 +175,9 @@ IR::Expression *expression_bit::construct_binary_expr(const IR::Type_Bits *tb) {
             P4Scope::prop.width_unknown = false;
         }
         // TODO: Make this more sophisticated,
+        P4Scope::req.not_negative = true;
         IR::Expression *right = construct(tb);
+        P4Scope::req.not_negative = false;
         // TODO: Make this more sophisticated
         // shifts are limited to 8 bits
         if (tb->width_bits() > 8) {
@@ -184,7 +195,9 @@ IR::Expression *expression_bit::construct_binary_expr(const IR::Type_Bits *tb) {
         }
 
         // TODO: Make this more sophisticated,
+        P4Scope::req.not_negative = true;
         IR::Expression *right = construct(tb);
+        P4Scope::req.not_negative = false;
         // shifts are limited to 8 bits
         if (tb->width_bits() > 8) {
             right = new IR::Cast(new IR::Type_Bits(8, false), right);
@@ -213,7 +226,7 @@ IR::Expression *expression_bit::construct_binary_expr(const IR::Type_Bits *tb) {
     case 12: {
         // pick an concatenation that matches the type
         size_t type_width = tb->width_bits();
-        size_t split = get_rnd_int(0, type_width);
+        size_t split = get_rnd_int(1, type_width - 1);
         // TODO: lazy fallback
         if (split >= type_width) {
             return baseType::gen_bit_literal(tb);
@@ -255,7 +268,7 @@ expression_bit::construct_ternary_expr(const IR::Type_Bits *tb) {
         // pick a slice that matches the type
         auto type_width = tb->width_bits();
         // TODO this is some arbitrary value...
-        auto new_type_size = get_rnd_int(0, 127) + type_width + 1;
+        auto new_type_size = get_rnd_int(1, 128) + type_width;
         auto slice_type = new IR::Type_Bits(new_type_size, false);
         auto slice_expr = construct(slice_type);
         if (P4Scope::prop.width_unknown) {
@@ -317,7 +330,7 @@ IR::Expression *expression_bit::construct(const IR::Type_Bits *tb) {
         // do not pick, if the requirement is to be a compile time known value
         // TODO: This is lazy, we can easily check
         if (P4Scope::req.compile_time_known) {
-            expr = baseType::gen_bit_literal(tb, P4Scope::req.not_zero);
+            expr = baseType::gen_bit_literal(tb);
         } else {
             expr = pick_var(tb);
         }
@@ -325,13 +338,12 @@ IR::Expression *expression_bit::construct(const IR::Type_Bits *tb) {
     case 1: {
         // pick an int literal, if allowed
         if (P4Scope::req.require_scalar) {
-            expr = baseType::gen_bit_literal(tb, P4Scope::req.not_zero);
+            expr = baseType::gen_bit_literal(tb);
         } else {
             bool has_int = P4Scope::check_lval(new IR::Type_InfInt());
 
             if (get_rnd_int(0, 1) || not has_int) {
-                expr = baseType::gen_int_literal(tb->width_bits(),
-                                                 P4Scope::req.not_zero);
+                expr = baseType::gen_int_literal(tb->width_bits());
             } else {
                 cstring name = P4Scope::pick_lval(new IR::Type_InfInt());
                 expr = new IR::PathExpression(name);
@@ -341,7 +353,7 @@ IR::Expression *expression_bit::construct(const IR::Type_Bits *tb) {
     } break;
     case 2: {
         // pick a bit literal that matches the type
-        expr = baseType::gen_bit_literal(tb, P4Scope::req.not_zero);
+        expr = baseType::gen_bit_literal(tb);
     } break;
     case 3: {
         // pick a unary expression that matches the type

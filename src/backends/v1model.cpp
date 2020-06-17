@@ -205,7 +205,7 @@ IR::Type_Struct *gen_meta() {
     // Do not emit meta fields for now, no need
     // FIXME: Design a way to emit these that plays nicely with all targets
     // auto   sfl   = new structFieldList(STRUCT, name->name);
-    // IR::IndexedVector< IR::StructField > fields = sfl->gen(rand()%5+1);
+    // IR::IndexedVector< IR::StructField > fields = sfl->gen(get_rnd_int(1, 5));
     IR::IndexedVector<IR::StructField> fields;
 
     auto ret = new IR::Type_Struct("Meta", fields);

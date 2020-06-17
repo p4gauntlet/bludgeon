@@ -7,13 +7,10 @@ std::map<cstring, std::map<int, std::set<cstring>>> P4Scope::lval_map;
 std::map<cstring, std::map<int, std::set<cstring>>> P4Scope::lval_map_rw;
 std::set<const IR::P4Table *> P4Scope::callable_tables;
 
-
 // TODO: This should be set by the back end
 std::set<cstring> P4Scope::not_initialized_structs;
 Properties P4Scope::prop;
 Requirements P4Scope::req;
-
-
 
 void P4Scope::add_to_scope(const IR::Node *node) {
     auto l_scope = P4Scope::scope.back();
@@ -268,7 +265,7 @@ cstring P4Scope::pick_lval(const IR::Type *tp, bool must_write) {
     if (candidates.empty()) {
         BUG("Invalid Type Query, %s not found", tp->toString());
     }
-    size_t idx = rand() % candidates.size();
+    size_t idx = get_rnd_int(0, candidates.size() - 1);
     auto lval = std::begin(candidates);
     // "advance" the iterator idx times
     std::advance(lval, idx);
@@ -290,7 +287,7 @@ IR::Type_Bits *P4Scope::pick_declared_bit_type(bool must_write) {
         return nullptr;
     }
     auto key_types = lookup_map[bit_key];
-    size_t idx = rand() % key_types.size();
+    size_t idx = get_rnd_int(0, key_types.size() - 1);
     int bit_width = next(key_types.begin(), idx)->first;
     return new IR::Type_Bits(bit_width, false);
 }

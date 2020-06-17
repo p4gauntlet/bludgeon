@@ -76,6 +76,12 @@ struct probabilities {
     short HEADERTYPEDECLARATION_FIELD_BASE = 100;
     short HEADERTYPEDECLARATION_FIELD_STRUCT = 0;
 
+    // probabilities for state transitions in the parser
+    short P4STATE_TRANSITION_ACCEPT = 50;
+    short P4STATE_TRANSITION_REJECT = 10;
+    short P4STATE_TRANSITION_STATE = 30;
+    short P4STATE_TRANSITION_SELECT = 10;
+
     // probabilities for the parameter type
     short PARAMETER_TYPE_BASE = 90;
     short PARAMETER_TYPE_STRUCT = 10;
@@ -101,6 +107,9 @@ struct probabilities {
     short STRUCTTYPEDECLARATION_FIELD_BASE = 75;
     short STRUCTTYPEDECLARATION_FIELD_STRUCT = 25;
     short STRUCTTYPEDECLARATION_FIELD_STACK = 0;
+    // probabilities for the headers struct type
+    short STRUCTTYPEDECLARATION_HEADERS_HEADER = 90;
+    short STRUCTTYPEDECLARATION_HEADERS_STACK = 10;
 
     // probabilities for types in struct structures
     short TYPEDECLARATION_HEADER = 75;

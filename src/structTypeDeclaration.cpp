@@ -25,7 +25,7 @@ IR::StructField *structTypeDeclaration::pick_field() {
             fallback = true;
             break;
         }
-        auto candidate_type = l_types.at(rand() % l_types.size());
+        auto candidate_type = l_types.at(get_rnd_int(0, l_types.size() - 1));
         tp = new IR::Type_Name(candidate_type->name.name);
         break;
     }
@@ -52,7 +52,7 @@ IR::Type_Struct *structTypeDeclaration::gen() {
     if (l_types.size() == 0) {
         return nullptr;
     }
-    size_t len = rand() % 5 + 1;
+    size_t len = get_rnd_int(1, 5);
 
     for (size_t i = 0; i < len; i++) {
         auto *field = pick_field();
@@ -78,10 +78,11 @@ IR::Type_Struct *structTypeDeclaration::gen_Headers() {
     auto eth_sf = new IR::StructField(ETH_HDR, new IR::Type_Name(ETH_HEADER_T));
     fields.push_back(eth_sf);
 
-    size_t len = rand() % 5 + 1;
+    size_t len = get_rnd_int(1, 5);
     // we can only generate very specific types for headers
     // header, header stack, header union
-    std::vector<int64_t> percent = {90, 10};
+    std::vector<int64_t> percent = {PCT.STRUCTTYPEDECLARATION_HEADERS_HEADER,
+                                    PCT.STRUCTTYPEDECLARATION_HEADERS_STACK};
     for (size_t i = 0; i < len; i++) {
         cstring field_name = randstr(4);
         IR::Type *tp = nullptr;
@@ -92,7 +93,8 @@ IR::Type_Struct *structTypeDeclaration::gen_Headers() {
             if (l_types.size() == 0) {
                 BUG("structTypeDeclaration: No available header for Headers!");
             }
-            auto candidate_type = l_types.at(rand() % l_types.size());
+            auto candidate_type =
+                l_types.at(get_rnd_int(0, l_types.size() - 1));
             tp = new IR::Type_Name(candidate_type->name.name);
             break;
         }
