@@ -3,11 +3,12 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <random>
 
 #include "frontends/p4/toP4/toP4.h"
 #include "ir/ir.h"
-#include "lib/gc.h"
 #include "lib/crash.h"
+#include "lib/gc.h"
 #include "lib/nullstream.h"
 
 #include "backends/tna.h"
@@ -17,11 +18,10 @@
 #include "scope.h"
 #include "version.h"
 
-
-unsigned int good_seed() {
-    unsigned int random_seed, random_seed_a, random_seed_b;
+// https://stackoverflow.com/questions/2640717/c-generate-a-good-random-seed-for-psudo-random-number-generators
+uint64_t generate_seed() {
+    uint64_t random_seed, random_seed_a, random_seed_b;
     std::ifstream file("/dev/urandom", std::ios::binary);
-
     if (file.is_open()) {
         char *memblock;
         int size = sizeof(int);
@@ -65,11 +65,7 @@ void gen_p4_code(cstring output_file, cstring target) {
 }
 } // namespace CODEGEN
 
-
-
 int main(int argc, char **argv) {
-
-    CODEGEN::set_seed(good_seed());
 
     setup_gc_logging();
     setup_signals();
@@ -82,7 +78,7 @@ int main(int argc, char **argv) {
 
     options.process(argc, argv);
     if (::errorCount() > 0) {
-        return 1;
+        exit(EXIT_FAILURE);
     }
     // use a default name if no specific output name is provided
     if (options.output_file == nullptr) {
@@ -92,17 +88,33 @@ int main(int argc, char **argv) {
     if (options.arch == nullptr) {
         ::error("--arch is required. Possible options: v1model, tna, or top");
         options.usage();
-        return 1;
+        exit(EXIT_FAILURE);
     }
 
     auto ostream = openFile(options.output_file, false);
     if (ostream == nullptr) {
         ::error("must have --output [file]");
-        return 1;
+        exit(EXIT_FAILURE);
     }
+    uint64_t seed;
+    if (options.seed) {
+        std::cerr << "Using provided seed.\n";
+        try {
+            seed = boost::lexical_cast<uint64_t>(options.seed);
+        } catch (boost::bad_lexical_cast &) {
+            ::error("invalid seed %s", options.seed);
+            exit(EXIT_FAILURE);
+        }
+    } else {
+        // no seed provided, we generate our own
+        std::cerr << "Using generated seed.\n";
+        std::random_device r;
+        seed = r();
+    }
+    std::cerr << "Seed:" << seed << "\n";
+    CODEGEN::set_seed(seed);
 
     CODEGEN::gen_p4_code(options.output_file, options.arch);
 
-    return 0;
+    return EXIT_SUCCESS;
 }
-

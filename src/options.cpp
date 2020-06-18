@@ -36,6 +36,13 @@ BludgeonOptions::BludgeonOptions() : Util::Options(defaultMessage) {
             return true;
         },
         "Generate code for the specified architecture.");
+    registerOption(
+        "--seed", "seed",
+        [this](const char *arg) {
+            seed = arg;
+            return true;
+        },
+        "The seed for the random program. If no seed is provided we generate our own.");
 }
 
 

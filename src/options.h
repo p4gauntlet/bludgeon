@@ -18,6 +18,7 @@ class BludgeonOptions : public Util::Options {
     cstring arch = nullptr;
     // the current version of the compiler
     cstring compiler_version;
+    cstring seed;
 };
 
 /// A compilation context which exposes compiler options.
