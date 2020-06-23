@@ -4,19 +4,19 @@ namespace CODEGEN {
 IR::BlockStatement *controlDeclaration::gen_ctrl_components(
     IR::IndexedVector<IR::Declaration> &local_decls) {
 
-    auto max_vars = get_rnd_int(0, MAX_VAR_DECL);
-    auto max_decls = get_rnd_int(0, MAX_DECL_INS_DECL);
-    auto max_actions = get_rnd_int(0, MAX_ACTION_DECL);
-    auto max_tables = get_rnd_int(0, MAX_TABLE_DECL);
+    auto vars = get_rnd_int(DECL.MIN_VAR, DECL.MAX_VAR);
+    auto decls = get_rnd_int(DECL.MIN_INSTANCE, DECL.MAX_INSTANCE);
+    auto actions = get_rnd_int(DECL.MIN_ACTION, DECL.MAX_ACTION);
+    auto tables = get_rnd_int(DECL.MIN_TABLE, DECL.MAX_TABLE);
 
     // variableDeclarations
-    for (int i = 0; i <= max_vars; i++) {
+    for (int i = 0; i <= vars; i++) {
         auto var_decl = variableDeclaration::gen();
         local_decls.push_back(var_decl);
     }
 
     // declaration_instance
-    for (int i = 0; i <= max_decls; i++) {
+    for (int i = 0; i <= decls; i++) {
         auto decl_ins = gen_decl_instance();
 
         if (decl_ins == nullptr) {
@@ -26,12 +26,12 @@ IR::BlockStatement *controlDeclaration::gen_ctrl_components(
     }
 
     // actionDeclarations
-    for (int i = 0; i <= max_actions; i++) {
+    for (int i = 0; i <= actions; i++) {
         auto act_decl = actionDeclaration::gen();
         local_decls.push_back(act_decl);
     }
 
-    for (int i = 0; i <= max_tables; i++) {
+    for (int i = 0; i <= tables; i++) {
         auto tab_decl = tableDeclaration::gen();
         local_decls.push_back(tab_decl);
     }

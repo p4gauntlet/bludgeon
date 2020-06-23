@@ -6,33 +6,45 @@ namespace CODEGEN {
 
 const int baseType::bit_widths[5];
 
-IR::Type_Base *baseType::pick_rnd_base_type(std::vector<int> &type) {
-    if (type.size() == 0) {
-        BUG("pick_rnd_base_type: Type list cannot be empty");
+IR::Type *baseType::pick_rnd_base_type(const std::vector<int64_t> &type_probs) {
+    if (type_probs.size() != 7) {
+        BUG("pick_rnd_base_type: Type probabilities must be exact");
     }
-    IR::Type_Base *tb = nullptr;
-    int t = type.at(get_rnd_int(0, type.size() - 1));
-    if (t > 3) {
-        BUG("pick_rnd_base_type: Invalid value");
-    }
-    switch (t) {
+    IR::Type *tb = nullptr;
+    switch (randind(type_probs)) {
     case 0: {
         // bool
         tb = gen_bool_type();
         break;
     }
     case 1: {
+        // error, this is not supported right now
+        break;
+    }
+    case 2: {
+        // int, this is not supported right now
+        tb = gen_int_type();
+        break;
+    }
+    case 3: {
+        // string, this is not supported right now
+        break;
+    }
+    case 4: {
         // bit<>
         tb = gen_bit_type(false);
         break;
     }
-    case 2: {
+    case 5: {
         // int<>, this is not supported right now
         tb = gen_bit_type(true);
         break;
     }
+    case 6: {
+        // varbit<>, this is not supported right now
+        break;
     }
-
+    }
     return tb;
 }
 

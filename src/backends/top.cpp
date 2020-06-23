@@ -143,8 +143,8 @@ IR::P4Program *Top::gen() {
     objects->push_back(headerTypeDeclaration::gen_eth());
 
     // generate some declarations
-    int max_type_decls = get_rnd_int(MIN_T_DECLS, MAX_T_DECLS);
-    for (int i = 0; i < max_type_decls; ++i) {
+    int type_decls = get_rnd_int(DECL.MIN_TYPE, DECL.MAX_TYPE);
+    for (int i = 0; i < type_decls; ++i) {
         objects->push_back(typeDeclaration::gen());
     }
 
@@ -152,8 +152,8 @@ IR::P4Program *Top::gen() {
     objects->push_back(structTypeDeclaration::gen_Headers());
 
     // generate some callables
-    int max_callable_decls = get_rnd_int(MIN_CALLABLES, MAX_CALLABLES);
-    for (int i = 0; i < max_callable_decls; ++i) {
+    int callable_decls = get_rnd_int(DECL.MIN_CALLABLES, DECL.MAX_CALLABLES);
+    for (int i = 0; i < callable_decls; ++i) {
         std::vector<int64_t> percent = {70, 20, 10};
         switch (randind(percent)) {
         case 0: {

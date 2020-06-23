@@ -9,7 +9,14 @@ IR::StructField *structTypeDeclaration::pick_field() {
     std::vector<int64_t> percent = {PCT.STRUCTTYPEDECLARATION_FIELD_BASE,
                                     PCT.STRUCTTYPEDECLARATION_FIELD_STRUCT,
                                     PCT.STRUCTTYPEDECLARATION_FIELD_STACK};
-
+    std::vector<int64_t> type_probs = {
+        PCT.STRUCTTYPEDECLARATION_BASETYPE_BOOL,
+        PCT.STRUCTTYPEDECLARATION_BASETYPE_ERROR,
+        PCT.STRUCTTYPEDECLARATION_BASETYPE_INT,
+        PCT.STRUCTTYPEDECLARATION_BASETYPE_STRING,
+        PCT.STRUCTTYPEDECLARATION_BASETYPE_BIT,
+        PCT.STRUCTTYPEDECLARATION_BASETYPE_SIGNED_BIT,
+        PCT.STRUCTTYPEDECLARATION_BASETYPE_VARBIT};
     IR::Type *tp = nullptr;
     bool fallback = false;
     switch (randind(percent)) {
@@ -34,8 +41,7 @@ IR::StructField *structTypeDeclaration::pick_field() {
     }
     }
     if (fallback) {
-        std::vector<int> b_types = {0, 1}; // only bit<> and bool for now
-        tp = baseType::pick_rnd_base_type(b_types);
+        tp = baseType::pick_rnd_base_type(type_probs);
     }
 
     if (auto struct_tp = tp->to<IR::Type_StructLike>()) {

@@ -12,11 +12,6 @@
 #include "tableDeclaration.h"
 #include "variableDeclaration.h"
 
-#define MAX_VAR_DECL 5
-#define MAX_DECL_INS_DECL 5
-#define MAX_ACTION_DECL 2
-#define MAX_TABLE_DECL 3
-
 namespace CODEGEN {
 class controlDeclaration {
   public:

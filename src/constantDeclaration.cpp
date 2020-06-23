@@ -8,20 +8,16 @@
 namespace CODEGEN {
 
 IR::Type *gen_constant_type() {
-    std::vector<int64_t> percent = {PCT.CONSTANTDECLARATION_TYPE_BASE,
-                                    PCT.CONSTANTDECLARATION_TYPE_INT};
     IR::Type *tp = nullptr;
-    switch (randind(percent)) {
-    case 0: {
-        std::vector<int> b_types = {0, 1};
-        tp = baseType::pick_rnd_base_type(b_types);
-        break;
-    }
-    case 1: {
-        tp = new IR::Type_InfInt();
-        break;
-    }
-    }
+    std::vector<int64_t> type_probs = {
+        PCT.CONSTANTDECLARATION_BASETYPE_BOOL,
+        PCT.CONSTANTDECLARATION_BASETYPE_ERROR,
+        PCT.CONSTANTDECLARATION_BASETYPE_INT,
+        PCT.CONSTANTDECLARATION_BASETYPE_STRING,
+        PCT.CONSTANTDECLARATION_BASETYPE_BIT,
+        PCT.CONSTANTDECLARATION_BASETYPE_SIGNED_BIT,
+        PCT.CONSTANTDECLARATION_BASETYPE_VARBIT};
+    tp = baseType::pick_rnd_base_type(type_probs);
     return tp;
 }
 

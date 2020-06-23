@@ -12,10 +12,17 @@ IR::Type *gen_type() {
                                     PCT.VARIABLEDECLARATION_TYPE_STRUCT,
                                     PCT.VARIABLEDECLARATION_TYPE_STACK};
     IR::Type *tp = nullptr;
+    std::vector<int64_t> type_probs = {
+        PCT.VARIABLEDECLARATION_BASETYPE_BOOL,
+        PCT.VARIABLEDECLARATION_BASETYPE_ERROR,
+        PCT.VARIABLEDECLARATION_BASETYPE_INT,
+        PCT.VARIABLEDECLARATION_BASETYPE_STRING,
+        PCT.VARIABLEDECLARATION_BASETYPE_BIT,
+        PCT.VARIABLEDECLARATION_BASETYPE_SIGNED_BIT,
+        PCT.VARIABLEDECLARATION_BASETYPE_VARBIT};
     switch (randind(percent)) {
     case 0: {
-        std::vector<int> b_types = {0, 1};
-        tp = baseType::pick_rnd_base_type(b_types);
+        tp = baseType::pick_rnd_base_type(type_probs);
         break;
     }
     case 1: {
@@ -29,8 +36,7 @@ IR::Type *gen_type() {
         if (P4Scope::not_initialized_structs.count(type_name) == 0) {
             tp = new IR::Type_Name(candidate_type->name.name);
         } else {
-            std::vector<int> b_types = {0, 1};
-            tp = baseType::pick_rnd_base_type(b_types);
+            tp = baseType::pick_rnd_base_type(type_probs);
         }
         break;
     }

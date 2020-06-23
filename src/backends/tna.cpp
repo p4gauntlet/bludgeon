@@ -181,7 +181,8 @@ static IR::P4Parser *gen_switch_egress_parser() {
     IR::IndexedVector<IR::Parameter> params;
     params.push_back(
         parameter::gen_param(IR::Direction::None, "pkt", "packet_in"));
-    params.push_back(parameter::gen_param(IR::Direction::Out, "h", SYS_HDR_NAME));
+    params.push_back(
+        parameter::gen_param(IR::Direction::Out, "h", SYS_HDR_NAME));
     params.push_back(
         parameter::gen_param(IR::Direction::Out, "eg_md", "egress_metadata_t"));
     params.push_back(parameter::gen_param(IR::Direction::Out, "eg_intr_md",
@@ -338,7 +339,6 @@ IR::Type_Struct *gen_egress_metadata_t() {
 
 IR::P4Program *TNA::gen() {
 
-
     // insert banned structures
     P4Scope::not_initialized_structs.insert("ingress_intrinsic_metadata_t");
     P4Scope::not_initialized_structs.insert(
@@ -364,8 +364,8 @@ IR::P4Program *TNA::gen() {
     objects->push_back(headerTypeDeclaration::gen_eth());
 
     // generate some declarations
-    int max_type_decls = get_rnd_int(MIN_T_DECLS, MAX_T_DECLS);
-    for (int i = 0; i < max_type_decls; ++i) {
+    int type_decls = get_rnd_int(DECL.MIN_TYPE, DECL.MAX_TYPE);
+    for (int i = 0; i < type_decls; ++i) {
         objects->push_back(typeDeclaration::gen());
     }
 
@@ -377,7 +377,8 @@ IR::P4Program *TNA::gen() {
     objects->push_back(gen_egress_metadata_t());
 
     // generate some callables
-    int max_callable_decls = get_rnd_int(MIN_CALLABLES, MAX_CALLABLES);
+    int max_callable_decls =
+        get_rnd_int(DECL.MIN_CALLABLES, DECL.MAX_CALLABLES);
     for (int i = 0; i < max_callable_decls; ++i) {
         std::vector<int64_t> percent = {50, 50};
         if (randind(percent)) {

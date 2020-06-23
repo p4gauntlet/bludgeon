@@ -7,6 +7,14 @@ namespace CODEGEN {
 IR::Type *pick_field() {
     std::vector<int64_t> percent = {PCT.HEADERTYPEDECLARATION_FIELD_BASE,
                                     PCT.HEADERTYPEDECLARATION_FIELD_STRUCT};
+    std::vector<int64_t> type_probs = {
+        PCT.HEADERTYPEDECLARATION_BASETYPE_BOOL,
+        PCT.HEADERTYPEDECLARATION_BASETYPE_ERROR,
+        PCT.HEADERTYPEDECLARATION_BASETYPE_INT,
+        PCT.HEADERTYPEDECLARATION_BASETYPE_STRING,
+        PCT.HEADERTYPEDECLARATION_BASETYPE_BIT,
+        PCT.HEADERTYPEDECLARATION_BASETYPE_SIGNED_BIT,
+        PCT.HEADERTYPEDECLARATION_BASETYPE_VARBIT};
     IR::Type *tp = nullptr;
     bool fallback = false;
     switch (randind(percent)) {
@@ -29,7 +37,7 @@ IR::Type *pick_field() {
     }
     if (fallback) {
         std::vector<int> b_types = {1}; // only bit<>
-        tp = baseType::pick_rnd_base_type(b_types);
+        tp = baseType::pick_rnd_base_type(type_probs);
     }
     return tp;
 }

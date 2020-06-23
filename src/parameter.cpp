@@ -10,10 +10,14 @@ IR::Type *gen_param_type() {
     std::vector<int64_t> percent = {PCT.PARAMETER_TYPE_BASE,
                                     PCT.PARAMETER_TYPE_STRUCT};
     IR::Type *tp = nullptr;
+    std::vector<int64_t> type_probs = {
+        PCT.PARAMETER_BASETYPE_BOOL,  PCT.PARAMETER_BASETYPE_ERROR,
+        PCT.PARAMETER_BASETYPE_INT,   PCT.PARAMETER_BASETYPE_STRING,
+        PCT.PARAMETER_BASETYPE_BIT,   PCT.PARAMETER_BASETYPE_SIGNED_BIT,
+        PCT.PARAMETER_BASETYPE_VARBIT};
     switch (randind(percent)) {
     case 0: {
-        std::vector<int> b_types = {0, 1};
-        tp = baseType::pick_rnd_base_type(b_types);
+        tp = baseType::pick_rnd_base_type(type_probs);
         break;
     }
     case 1: {
@@ -27,8 +31,7 @@ IR::Type *gen_param_type() {
         if (P4Scope::not_initialized_structs.count(type_name) == 0) {
             tp = new IR::Type_Name(candidate_type->name.name);
         } else {
-            std::vector<int> b_types = {0, 1};
-            tp = baseType::pick_rnd_base_type(b_types);
+            tp = baseType::pick_rnd_base_type(type_probs);
         }
         break;
     }

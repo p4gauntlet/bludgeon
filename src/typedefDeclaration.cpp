@@ -8,11 +8,19 @@ IR::Type *gen_t() {
     std::vector<int64_t> percent = {PCT.TYPEDEFDECLARATION_BASE,
                                     PCT.TYPEDEFDECLARATION_STRUCTLIKE,
                                     PCT.TYPEDEFDECLARATION_STACK};
+    std::vector<int64_t> type_probs = {
+        PCT.TYPEDEFDECLARATION_BASETYPE_BOOL,
+        PCT.TYPEDEFDECLARATION_BASETYPE_ERROR,
+        PCT.TYPEDEFDECLARATION_BASETYPE_INT,
+        PCT.TYPEDEFDECLARATION_BASETYPE_STRING,
+        PCT.TYPEDEFDECLARATION_BASETYPE_BIT,
+        PCT.TYPEDEFDECLARATION_BASETYPE_SIGNED_BIT,
+        PCT.TYPEDEFDECLARATION_BASETYPE_VARBIT};
     IR::Type *tp = nullptr;
     switch (randind(percent)) {
     case 0: {
         std::vector<int> b_types = {1}; // only bit<>
-        tp = baseType::pick_rnd_base_type(b_types);
+        tp = baseType::pick_rnd_base_type(type_probs);
         break;
     }
     case 1: {

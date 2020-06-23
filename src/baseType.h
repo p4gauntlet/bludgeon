@@ -24,7 +24,7 @@ class baseType {
     baseType() {}
     static constexpr int bit_widths[5] = {8, 16, 32, 64, 128};
 
-    static IR::Type_Base *pick_rnd_base_type(std::vector<int> &type);
+    static IR::Type *pick_rnd_base_type(const std::vector<int64_t> &type);
 
     static IR::Type_Boolean *gen_bool_type() { return new IR::Type_Boolean(); }
     static IR::Type_InfInt *gen_int_type() { return new IR::Type_InfInt(); }
