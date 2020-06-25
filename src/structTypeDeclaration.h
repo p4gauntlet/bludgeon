@@ -3,11 +3,6 @@
 
 #include "ir/ir.h"
 
-#include "annotations.h"
-#include "common.h"
-#include "scope.h"
-#include "structFieldList.h"
-
 namespace CODEGEN {
 class structTypeDeclaration {
   public:

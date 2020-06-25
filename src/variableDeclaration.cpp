@@ -4,6 +4,8 @@
 #include "expression.h"
 #include "scope.h"
 #include "typeRef.h"
+#include "baseType.h"
+#include "headerStackType.h"
 
 namespace CODEGEN {
 

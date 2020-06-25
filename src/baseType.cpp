@@ -4,7 +4,7 @@
 
 namespace CODEGEN {
 
-const int baseType::bit_widths[5];
+const int baseType::bit_widths[8];
 
 IR::Type *baseType::pick_rnd_base_type(const std::vector<int64_t> &type_probs) {
     if (type_probs.size() != 7) {
@@ -36,7 +36,7 @@ IR::Type *baseType::pick_rnd_base_type(const std::vector<int64_t> &type_probs) {
         break;
     }
     case 5: {
-        // int<>, this is not supported right now
+        // int<>
         tb = gen_bit_type(true);
         break;
     }
@@ -57,7 +57,6 @@ IR::BoolLiteral *baseType::gen_bool_literal() {
 }
 
 // isSigned, true -> int<>, false -> bit<>
-// Tao: we only use false here
 IR::Type_Bits *baseType::gen_bit_type(bool isSigned) {
     auto size = get_rnd_int(0, sizeof(bit_widths) / sizeof(int) - 1);
 

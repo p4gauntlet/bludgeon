@@ -3,11 +3,6 @@
 
 #include "ir/ir.h"
 
-#include "scope.h"
-#include "structFieldList.h"
-
-#include "common.h"
-
 namespace CODEGEN {
 
 class headerTypeDeclaration {

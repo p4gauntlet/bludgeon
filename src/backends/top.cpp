@@ -8,6 +8,7 @@
 #include "headerTypeDeclaration.h"
 #include "p4parser.h"
 #include "scope.h"
+#include "structFieldList.h"
 #include "structTypeDeclaration.h"
 #include "typeDeclaration.h"
 

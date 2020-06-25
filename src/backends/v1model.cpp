@@ -7,6 +7,7 @@
 #include "headerTypeDeclaration.h"
 #include "p4parser.h"
 #include "scope.h"
+#include "structFieldList.h"
 #include "structTypeDeclaration.h"
 #include "typeDeclaration.h"
 
@@ -205,7 +206,8 @@ IR::Type_Struct *gen_meta() {
     // Do not emit meta fields for now, no need
     // FIXME: Design a way to emit these that plays nicely with all targets
     // auto   sfl   = new structFieldList(STRUCT, name->name);
-    // IR::IndexedVector< IR::StructField > fields = sfl->gen(get_rnd_int(1, 5));
+    // IR::IndexedVector< IR::StructField > fields = sfl->gen(get_rnd_int(1,
+    // 5));
     IR::IndexedVector<IR::StructField> fields;
 
     auto ret = new IR::Type_Struct("Meta", fields);
@@ -225,9 +227,20 @@ IR::Type_Struct *gen_standard_metadata_t() {
     return ret;
 }
 
+void set_probabilities() {
+    PCT.PARAMETER_NONEDIR_DERIVED_STRUCT = 0;
+    PCT.PARAMETER_NONEDIR_DERIVED_HEADER = 0;
+    PCT.PARAMETER_NONEDIR_BASETYPE_BOOL = 0;
+    PCT.PARAMETER_NONEDIR_BASETYPE_ERROR = 0;
+    PCT.PARAMETER_NONEDIR_BASETYPE_STRING = 0;
+    PCT.PARAMETER_NONEDIR_BASETYPE_VARBIT = 0;
+}
+
 IR::P4Program *V1Model::gen() {
     // insert banned structures
     P4Scope::not_initialized_structs.insert("standard_metadata_t");
+    // set v1model-specific probabilities
+    set_probabilities();
 
     // start to assemble the model
     auto objects = new IR::Vector<IR::Node>();

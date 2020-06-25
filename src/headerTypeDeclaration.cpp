@@ -1,6 +1,9 @@
-
-
 #include "headerTypeDeclaration.h"
+
+#include "scope.h"
+#include "structFieldList.h"
+#include "common.h"
+#include "baseType.h"
 
 namespace CODEGEN {
 

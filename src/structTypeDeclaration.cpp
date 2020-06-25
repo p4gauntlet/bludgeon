@@ -1,6 +1,11 @@
-
-
 #include "structTypeDeclaration.h"
+
+#include "annotations.h"
+#include "common.h"
+#include "scope.h"
+#include "structFieldList.h"
+#include "headerStackType.h"
+#include "baseType.h"
 
 namespace CODEGEN {
 
