@@ -13,7 +13,6 @@ class functionDeclaration {
     ~functionDeclaration() { }
 
     static IR::Function *gen();
-    static IR::Type *gen_return_type();
 };
 } // namespace CODEGEN
 

@@ -108,7 +108,8 @@ IR::Type *typeRef::pick_rnd_type(typeref_probs type_probs) {
         break;
     }
     case 13: {
-        // void, this is not supported right now
+        // void
+        tp = new IR::Type_Void();
         break;
     }
     case 14: {

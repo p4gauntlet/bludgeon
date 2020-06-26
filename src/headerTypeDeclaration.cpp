@@ -1,57 +1,38 @@
 #include "headerTypeDeclaration.h"
 
+#include "baseType.h"
+#include "common.h"
 #include "scope.h"
 #include "structFieldList.h"
-#include "common.h"
-#include "baseType.h"
+#include "typeRef.h"
 
 namespace CODEGEN {
-
-IR::Type *pick_field() {
-    std::vector<int64_t> percent = {PCT.HEADERTYPEDECLARATION_FIELD_BASE,
-                                    PCT.HEADERTYPEDECLARATION_FIELD_STRUCT};
-    std::vector<int64_t> type_probs = {
-        PCT.HEADERTYPEDECLARATION_BASETYPE_BOOL,
-        PCT.HEADERTYPEDECLARATION_BASETYPE_ERROR,
-        PCT.HEADERTYPEDECLARATION_BASETYPE_INT,
-        PCT.HEADERTYPEDECLARATION_BASETYPE_STRING,
-        PCT.HEADERTYPEDECLARATION_BASETYPE_BIT,
-        PCT.HEADERTYPEDECLARATION_BASETYPE_SIGNED_BIT,
-        PCT.HEADERTYPEDECLARATION_BASETYPE_VARBIT};
-    IR::Type *tp = nullptr;
-    bool fallback = false;
-    switch (randind(percent)) {
-    case 0: {
-        fallback = true;
-        break;
-    }
-    case 1: {
-        // This is buggy right now, headers should be able to have structs...
-        // TODO: Take a closer look
-        auto l_types = P4Scope::get_decls<IR::Type_Struct>();
-        if (l_types.size() == 0) {
-            fallback = true;
-            break;
-        }
-        auto candidate_type = l_types.at(get_rnd_int(0, l_types.size() - 1));
-        tp = new IR::Type_Name(candidate_type->name.name);
-        break;
-    }
-    }
-    if (fallback) {
-        std::vector<int> b_types = {1}; // only bit<>
-        tp = baseType::pick_rnd_base_type(type_probs);
-    }
-    return tp;
-}
 
 IR::Type_Header *headerTypeDeclaration::gen() {
     cstring name = randstr(6);
     IR::IndexedVector<IR::StructField> fields;
+    typeref_probs type_percent = {
+        PCT.HEADERTYPEDECLARATION_BASETYPE_BIT,
+        PCT.HEADERTYPEDECLARATION_BASETYPE_SIGNED_BIT,
+        PCT.HEADERTYPEDECLARATION_BASETYPE_VARBIT,
+        PCT.HEADERTYPEDECLARATION_BASETYPE_INT,
+        PCT.HEADERTYPEDECLARATION_BASETYPE_ERROR,
+        PCT.HEADERTYPEDECLARATION_BASETYPE_BOOL,
+        PCT.HEADERTYPEDECLARATION_BASETYPE_STRING,
+        PCT.HEADERTYPEDECLARATION_DERIVED_ENUM,
+        PCT.HEADERTYPEDECLARATION_DERIVED_HEADER,
+        PCT.HEADERTYPEDECLARATION_DERIVED_HEADER_STACK,
+        PCT.HEADERTYPEDECLARATION_DERIVED_STRUCT,
+        PCT.HEADERTYPEDECLARATION_DERIVED_HEADER_UNION,
+        PCT.HEADERTYPEDECLARATION_DERIVED_TUPLE,
+        PCT.HEADERTYPEDECLARATION_TYPE_VOID,
+        PCT.HEADERTYPEDECLARATION_TYPE_MATCH_KIND,
+    };
+
     size_t len = get_rnd_int(1, 5);
     for (size_t i = 0; i < len; i++) {
         cstring field_name = randstr(4);
-        IR::Type *field_tp = pick_field();
+        IR::Type *field_tp = typeRef::pick_rnd_type(type_percent);
 
         if (auto struct_tp = field_tp->to<IR::Type_Struct>()) {
             field_tp = new IR::Type_Name(struct_tp->name);

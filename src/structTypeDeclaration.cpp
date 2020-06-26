@@ -9,56 +9,28 @@
 
 namespace CODEGEN {
 
-IR::StructField *structTypeDeclaration::pick_field() {
-    cstring field_name = randstr(4);
-    std::vector<int64_t> percent = {PCT.STRUCTTYPEDECLARATION_FIELD_BASE,
-                                    PCT.STRUCTTYPEDECLARATION_FIELD_STRUCT,
-                                    PCT.STRUCTTYPEDECLARATION_FIELD_STACK};
-    std::vector<int64_t> type_probs = {
-        PCT.STRUCTTYPEDECLARATION_BASETYPE_BOOL,
-        PCT.STRUCTTYPEDECLARATION_BASETYPE_ERROR,
-        PCT.STRUCTTYPEDECLARATION_BASETYPE_INT,
-        PCT.STRUCTTYPEDECLARATION_BASETYPE_STRING,
-        PCT.STRUCTTYPEDECLARATION_BASETYPE_BIT,
-        PCT.STRUCTTYPEDECLARATION_BASETYPE_SIGNED_BIT,
-        PCT.STRUCTTYPEDECLARATION_BASETYPE_VARBIT};
-    IR::Type *tp = nullptr;
-    bool fallback = false;
-    switch (randind(percent)) {
-    case 0: {
-        fallback = true;
-        break;
-    }
-    case 1: {
-        // This is buggy right now, headers should be able to have structs...
-        // TODO: Take a closer look
-        auto l_types = P4Scope::get_decls<IR::Type_Struct>();
-        if (l_types.size() == 0) {
-            fallback = true;
-            break;
-        }
-        auto candidate_type = l_types.at(get_rnd_int(0, l_types.size() - 1));
-        tp = new IR::Type_Name(candidate_type->name.name);
-        break;
-    }
-    case 2: {
-        tp = headerStackType::gen();
-    }
-    }
-    if (fallback) {
-        tp = baseType::pick_rnd_base_type(type_probs);
-    }
-
-    if (auto struct_tp = tp->to<IR::Type_StructLike>()) {
-        tp = new IR::Type_Name(struct_tp->name);
-    }
-    return new IR::StructField(field_name, tp);
-}
 
 IR::Type_Struct *structTypeDeclaration::gen() {
     cstring name = randstr(6);
 
     IR::IndexedVector<IR::StructField> fields;
+    typeref_probs type_percent = {
+        PCT.STRUCTTYPEDECLARATION_BASETYPE_BIT,
+        PCT.STRUCTTYPEDECLARATION_BASETYPE_SIGNED_BIT,
+        PCT.STRUCTTYPEDECLARATION_BASETYPE_VARBIT,
+        PCT.STRUCTTYPEDECLARATION_BASETYPE_INT,
+        PCT.STRUCTTYPEDECLARATION_BASETYPE_ERROR,
+        PCT.STRUCTTYPEDECLARATION_BASETYPE_BOOL,
+        PCT.STRUCTTYPEDECLARATION_BASETYPE_STRING,
+        PCT.STRUCTTYPEDECLARATION_DERIVED_ENUM,
+        PCT.STRUCTTYPEDECLARATION_DERIVED_HEADER,
+        PCT.STRUCTTYPEDECLARATION_DERIVED_HEADER_STACK,
+        PCT.STRUCTTYPEDECLARATION_DERIVED_STRUCT,
+        PCT.STRUCTTYPEDECLARATION_DERIVED_HEADER_UNION,
+        PCT.STRUCTTYPEDECLARATION_DERIVED_TUPLE,
+        PCT.STRUCTTYPEDECLARATION_TYPE_VOID,
+        PCT.STRUCTTYPEDECLARATION_TYPE_MATCH_KIND,
+    };
     auto l_types = P4Scope::get_decls<IR::Type_Header>();
     if (l_types.size() == 0) {
         return nullptr;
@@ -66,13 +38,16 @@ IR::Type_Struct *structTypeDeclaration::gen() {
     size_t len = get_rnd_int(1, 5);
 
     for (size_t i = 0; i < len; i++) {
-        auto *field = pick_field();
-        if (field->type->to<IR::Type_Stack>()) {
+        IR::Type *field_tp = typeRef::pick_rnd_type(type_percent);
+        cstring field_name = randstr(4);
+        if (field_tp->to<IR::Type_Stack>()) {
             // Right now there is now way to initialize a header stack
             // So we have to add the entire structure to the banned expressions
             P4Scope::not_initialized_structs.insert(name);
+
         }
-        fields.push_back(field);
+        IR::StructField *sf = new IR::StructField(field_name, field_tp);
+        fields.push_back(sf);
     }
 
     auto ret = new IR::Type_Struct(name, fields);
