@@ -18,6 +18,7 @@ set (CODEGEN_SRCS
     src/annotations.cpp
     src/argument.cpp
     src/assignmentOrMethodCallStatement.cpp
+    src/backends/psa.cpp
     src/backends/top.cpp
     src/backends/tna.cpp
     src/backends/v1model.cpp
@@ -104,6 +105,7 @@ set (CODEGEN_HDRS
     src/annotations.h
     src/argument.h
     src/assignmentOrMethodCallStatement.h
+    src/backends/psa.h
     src/backends/top.h
     src/backends/tna.h
     src/backends/v1model.h

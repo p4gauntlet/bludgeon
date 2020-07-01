@@ -2,8 +2,8 @@
 #include <cstring>
 #include <fstream>
 #include <iostream>
-#include <string>
 #include <random>
+#include <string>
 
 #include "frontends/p4/toP4/toP4.h"
 #include "ir/ir.h"
@@ -11,32 +11,13 @@
 #include "lib/gc.h"
 #include "lib/nullstream.h"
 
+#include "backends/psa.h"
 #include "backends/tna.h"
 #include "backends/top.h"
 #include "backends/v1model.h"
 #include "options.h"
 #include "scope.h"
 #include "version.h"
-
-// https://stackoverflow.com/questions/2640717/c-generate-a-good-random-seed-for-psudo-random-number-generators
-uint64_t generate_seed() {
-    uint64_t random_seed, random_seed_a, random_seed_b;
-    std::ifstream file("/dev/urandom", std::ios::binary);
-    if (file.is_open()) {
-        char *memblock;
-        int size = sizeof(int);
-        memblock = new char[size];
-        file.read(memblock, size);
-        file.close();
-        random_seed_a = *reinterpret_cast<int *>(memblock);
-        delete[] memblock;
-    } else {
-        random_seed_a = 0;
-    }
-    random_seed_b = std::time(0);
-    random_seed = random_seed_a xor random_seed_b;
-    return random_seed;
-}
 
 namespace CODEGEN {
 void gen_p4_code(cstring output_file, cstring target) {
@@ -53,6 +34,9 @@ void gen_p4_code(cstring output_file, cstring target) {
     } else if (target == "top") {
         Top::generate_includes(ostream);
         program = Top::gen();
+    } else if (target == "psa") {
+        PSA::generate_includes(ostream);
+        program = PSA::gen();
     } else {
         ::error("Architecture must be v1model, tna, or top");
         return;
