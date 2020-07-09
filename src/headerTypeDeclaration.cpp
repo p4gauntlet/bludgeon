@@ -41,6 +41,16 @@ IR::Type_Header *headerTypeDeclaration::gen() {
         fields.push_back(sf);
     }
     auto ret = new IR::Type_Header(name, fields);
+    if (P4Scope::req.byte_align_headers) {
+        auto remainder = ret->width_bits() % 8;
+        if (remainder) {
+            auto pad_bit = new IR::Type_Bits(8 - remainder, false);
+            auto pad_field = new IR::StructField("padding", pad_bit);
+            ret->fields.push_back(pad_field);
+        }
+    }
+
+    printf("%d\n", ret->width_bits());
 
     P4Scope::add_to_scope(ret);
 

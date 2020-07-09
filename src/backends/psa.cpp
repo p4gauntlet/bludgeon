@@ -324,6 +324,16 @@ void gen_psa_md_t() {
     P4Scope::add_to_scope(ret);
 }
 
+void PSA::set_probabilities() {
+    PCT.PARAMETER_NONEDIR_DERIVED_STRUCT = 0;
+    PCT.PARAMETER_NONEDIR_DERIVED_HEADER = 0;
+    PCT.PARAMETER_NONEDIR_BASETYPE_BOOL = 0;
+    PCT.PARAMETER_NONEDIR_BASETYPE_ERROR = 0;
+    PCT.PARAMETER_NONEDIR_BASETYPE_STRING = 0;
+    PCT.PARAMETER_NONEDIR_BASETYPE_VARBIT = 0;
+}
+
+
 IR::P4Program *PSA::gen() {
     // insert banned structures
     P4Scope::not_initialized_structs.insert(
@@ -332,7 +342,8 @@ IR::P4Program *PSA::gen() {
     P4Scope::not_initialized_structs.insert("psa_ingress_output_metadata_t");
     P4Scope::not_initialized_structs.insert("psa_egress_input_metadata_t");
     P4Scope::not_initialized_structs.insert("psa_egress_output_metadata_t");
-
+    // set psa-specific probabilities
+    set_probabilities();
     // insert some dummy metadata
     gen_psa_md_t();
 

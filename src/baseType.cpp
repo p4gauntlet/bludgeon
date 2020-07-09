@@ -4,7 +4,7 @@
 
 namespace CODEGEN {
 
-const int baseType::bit_widths[8];
+const int baseType::bit_widths[6];
 
 IR::Type *baseType::pick_rnd_base_type(const std::vector<int64_t> &type_probs) {
     if (type_probs.size() != 7) {

@@ -11,6 +11,9 @@ class V1Model {
 
     static void generate_includes(std::ostream *ostream);
     static IR::P4Program *gen();
+
+  private:
+    static void set_probabilities();
 };
 } // namespace CODEGEN
 

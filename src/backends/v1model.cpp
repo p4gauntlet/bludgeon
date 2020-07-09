@@ -227,13 +227,17 @@ IR::Type_Struct *gen_standard_metadata_t() {
     return ret;
 }
 
-void set_probabilities() {
+void V1Model::set_probabilities() {
     PCT.PARAMETER_NONEDIR_DERIVED_STRUCT = 0;
     PCT.PARAMETER_NONEDIR_DERIVED_HEADER = 0;
     PCT.PARAMETER_NONEDIR_BASETYPE_BOOL = 0;
     PCT.PARAMETER_NONEDIR_BASETYPE_ERROR = 0;
     PCT.PARAMETER_NONEDIR_BASETYPE_STRING = 0;
     PCT.PARAMETER_NONEDIR_BASETYPE_VARBIT = 0;
+    // V1Model does not support headers that are not multiples of 8
+    PCT.STRUCTTYPEDECLARATION_BASETYPE_BOOL = 0;
+    // V1Model requires headers to be byte-aligned
+    P4Scope::req.byte_align_headers = true;
 }
 
 IR::P4Program *V1Model::gen() {

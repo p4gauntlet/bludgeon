@@ -16,10 +16,11 @@ struct Requirements {
     bool no_methodcalls;
     bool not_zero;
     bool not_negative;
+    bool byte_align_headers;
     Requirements()
         : require_scalar(false),
           compile_time_known(false), no_methodcalls{false}, not_zero(false),
-          not_negative(false){};
+          not_negative(false), byte_align_headers(false){};
 };
 
 struct Properties {

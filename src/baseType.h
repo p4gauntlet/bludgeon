@@ -22,7 +22,8 @@ class baseType {
     };
 
     baseType() {}
-    static constexpr int bit_widths[8] = {1, 2, 4, 8, 16, 32, 64, 128};
+    static constexpr int bit_widths[6] = {4, 8, 16, 32, 64, 128};
+    // static constexpr int bit_widths[8] = {1, 2, 4, 8, 16, 32, 64, 128};
 
     static IR::Type *pick_rnd_base_type(const std::vector<int64_t> &type);
 
