@@ -1,15 +1,16 @@
 #include "v1model.h"
 
-#include "actionDeclaration.h"
-#include "controlDeclaration.h"
 #include "frontends/p4/toP4/toP4.h"
-#include "functionDeclaration.h"
-#include "headerTypeDeclaration.h"
-#include "p4parser.h"
-#include "scope.h"
-#include "structFieldList.h"
-#include "structTypeDeclaration.h"
-#include "typeDeclaration.h"
+
+#include "bludgeon/src/actionDeclaration.h"
+#include "bludgeon/src/controlDeclaration.h"
+#include "bludgeon/src/functionDeclaration.h"
+#include "bludgeon/src/headerTypeDeclaration.h"
+#include "bludgeon/src/p4parser.h"
+#include "bludgeon/src/scope.h"
+#include "bludgeon/src/structFieldList.h"
+#include "bludgeon/src/structTypeDeclaration.h"
+#include "bludgeon/src/typeDeclaration.h"
 
 namespace CODEGEN {
 
@@ -18,7 +19,7 @@ void V1Model::generate_includes(std::ostream *ostream) {
     *ostream << "#include <v1model.p4>\n\n";
 }
 
-static IR::P4Parser *gen_p() {
+IR::P4Parser *V1Model::gen_p() {
     IR::IndexedVector<IR::Declaration> parserLocals;
 
     P4Scope::start_local_scope();
@@ -65,7 +66,7 @@ static IR::P4Parser *gen_p() {
     return p4parser;
 }
 
-static IR::P4Control *gen_ingress() {
+IR::P4Control *V1Model::gen_ingress() {
     // start of new scope
     P4Scope::start_local_scope();
 
@@ -104,7 +105,7 @@ static IR::P4Control *gen_ingress() {
     return p4ctrl;
 }
 
-static IR::P4Control *gen_vrfy() {
+IR::P4Control *V1Model::gen_vrfy() {
     // start of new scope
     P4Scope::start_local_scope();
 
@@ -120,7 +121,7 @@ static IR::P4Control *gen_vrfy() {
     return new IR::P4Control("vrfy", type_ctrl, local_decls, blk_stat);
 }
 
-static IR::P4Control *gen_update() {
+IR::P4Control *V1Model::gen_update() {
     // start of new scope
     P4Scope::start_local_scope();
 
@@ -136,7 +137,7 @@ static IR::P4Control *gen_update() {
     return new IR::P4Control("update", type_ctrl, local_decls, blk_stat);
 }
 
-static IR::P4Control *gen_egress() {
+IR::P4Control *V1Model::gen_egress() {
     // start of new scope
     P4Scope::start_local_scope();
 
@@ -154,7 +155,7 @@ static IR::P4Control *gen_egress() {
     return new IR::P4Control("egress", type_ctrl, local_decls, blk_stat);
 }
 
-static IR::MethodCallStatement *gen_deparser_emit_call() {
+IR::MethodCallStatement *V1Model::gen_deparser_emit_call() {
     auto call = new IR::PathExpression("pkt.emit");
     IR::Vector<IR::Argument> *args = new IR::Vector<IR::Argument>();
 
@@ -165,7 +166,7 @@ static IR::MethodCallStatement *gen_deparser_emit_call() {
     return mst;
 }
 
-static IR::P4Control *gen_deparser() {
+IR::P4Control *V1Model::gen_deparser() {
     // start of new scope
     P4Scope::start_local_scope();
 
@@ -183,7 +184,7 @@ static IR::P4Control *gen_deparser() {
     return new IR::P4Control("deparser", type_ctrl, local_decls, blk_stat);
 }
 
-static IR::Declaration_Instance *gen_main() {
+IR::Declaration_Instance *V1Model::gen_main() {
     IR::Vector<IR::Argument> *args = new IR::Vector<IR::Argument>();
 
     args->push_back(new IR::Argument(
@@ -202,7 +203,7 @@ static IR::Declaration_Instance *gen_main() {
     return new IR::Declaration_Instance("main", package_name, args);
 }
 
-IR::Type_Struct *gen_meta() {
+IR::Type_Struct *V1Model::gen_meta() {
     // Do not emit meta fields for now, no need
     // FIXME: Design a way to emit these that plays nicely with all targets
     // auto   sfl   = new structFieldList(STRUCT, name->name);
@@ -217,7 +218,7 @@ IR::Type_Struct *gen_meta() {
     return ret;
 }
 
-IR::Type_Struct *gen_standard_metadata_t() {
+IR::Type_Struct *V1Model::gen_standard_metadata_t() {
     auto fields = structFieldList::gen_sm();
 
     auto ret = new IR::Type_Struct("standard_metadata_t", fields);

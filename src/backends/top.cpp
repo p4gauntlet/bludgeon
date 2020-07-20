@@ -1,16 +1,17 @@
 #include "top.h"
 
-#include "actionDeclaration.h"
-#include "controlDeclaration.h"
-#include "externDeclaration.h"
 #include "frontends/p4/toP4/toP4.h"
-#include "functionDeclaration.h"
-#include "headerTypeDeclaration.h"
-#include "p4parser.h"
-#include "scope.h"
-#include "structFieldList.h"
-#include "structTypeDeclaration.h"
-#include "typeDeclaration.h"
+
+#include "bludgeon/src/actionDeclaration.h"
+#include "bludgeon/src/controlDeclaration.h"
+#include "bludgeon/src/externDeclaration.h"
+#include "bludgeon/src/functionDeclaration.h"
+#include "bludgeon/src/headerTypeDeclaration.h"
+#include "bludgeon/src/p4parser.h"
+#include "bludgeon/src/scope.h"
+#include "bludgeon/src/structFieldList.h"
+#include "bludgeon/src/structTypeDeclaration.h"
+#include "bludgeon/src/typeDeclaration.h"
 
 namespace CODEGEN {
 
@@ -18,7 +19,7 @@ void Top::generate_includes(std::ostream *ostream) {
     *ostream << "#include <core.p4>\n";
 }
 
-static IR::P4Parser *gen_p() {
+IR::P4Parser *Top::gen_p() {
     IR::IndexedVector<IR::Declaration> parserLocals;
 
     P4Scope::start_local_scope();
@@ -62,7 +63,7 @@ static IR::P4Parser *gen_p() {
     return p4parser;
 }
 
-static IR::P4Control *gen_ingress() {
+IR::P4Control *Top::gen_ingress() {
     // start of new scope
     P4Scope::start_local_scope();
 
@@ -98,7 +99,7 @@ static IR::P4Control *gen_ingress() {
     return p4ctrl;
 }
 
-static IR::Declaration_Instance *gen_main() {
+IR::Declaration_Instance *Top::gen_main() {
     IR::Vector<IR::Argument> *args = new IR::Vector<IR::Argument>();
 
     args->push_back(new IR::Argument(
@@ -109,7 +110,7 @@ static IR::Declaration_Instance *gen_main() {
     return new IR::Declaration_Instance("main", package_name, args);
 }
 
-static IR::Type_Parser *gen_parser_type() {
+IR::Type_Parser *Top::gen_parser_type() {
     IR::IndexedVector<IR::Parameter> params;
     params.push_back(
         parameter::gen_param(IR::Direction::None, "b", "packet_in"));
@@ -119,7 +120,7 @@ static IR::Type_Parser *gen_parser_type() {
     return new IR::Type_Parser("Parser", par_list);
 }
 
-static IR::Type_Control *gen_ingress_type() {
+IR::Type_Control *Top::gen_ingress_type() {
     IR::IndexedVector<IR::Parameter> params;
     params.push_back(
         parameter::gen_param(IR::Direction::InOut, "hdr", SYS_HDR_NAME));
@@ -127,7 +128,7 @@ static IR::Type_Control *gen_ingress_type() {
     return new IR::Type_Control("Ingress", par_list);
 }
 
-static IR::Type_Package *gen_package() {
+IR::Type_Package *Top::gen_package() {
     IR::IndexedVector<IR::Parameter> params;
     params.push_back(parameter::gen_param(IR::Direction::None, "p", "Parser"));
     params.push_back(
@@ -137,7 +138,6 @@ static IR::Type_Package *gen_package() {
 }
 
 IR::P4Program *Top::gen() {
-
     // start to assemble the model
     auto objects = new IR::Vector<IR::Node>();
 

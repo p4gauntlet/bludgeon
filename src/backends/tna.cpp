@@ -1,15 +1,16 @@
 #include "tna.h"
 
-#include "actionDeclaration.h"
-#include "controlDeclaration.h"
 #include "frontends/p4/toP4/toP4.h"
-#include "functionDeclaration.h"
-#include "headerTypeDeclaration.h"
-#include "p4parser.h"
-#include "scope.h"
-#include "structFieldList.h"
-#include "structTypeDeclaration.h"
-#include "typeDeclaration.h"
+
+#include "bludgeon/src/actionDeclaration.h"
+#include "bludgeon/src/controlDeclaration.h"
+#include "bludgeon/src/functionDeclaration.h"
+#include "bludgeon/src/headerTypeDeclaration.h"
+#include "bludgeon/src/p4parser.h"
+#include "bludgeon/src/scope.h"
+#include "bludgeon/src/structFieldList.h"
+#include "bludgeon/src/structTypeDeclaration.h"
+#include "bludgeon/src/typeDeclaration.h"
 
 namespace CODEGEN {
 
@@ -19,7 +20,7 @@ void TNA::generate_includes(std::ostream *ostream) {
     *ostream << "#include <tna.p4>\n\n";
 }
 
-static IR::P4Parser *gen_switch_ingress_parser() {
+IR::P4Parser *TNA::gen_switch_ingress_parser() {
     IR::IndexedVector<IR::Declaration> parserLocals;
     P4Scope::start_local_scope();
 
@@ -84,7 +85,7 @@ static IR::P4Parser *gen_switch_ingress_parser() {
     return p4parser;
 }
 
-static IR::P4Control *gen_switch_ingress() {
+IR::P4Control *TNA::gen_switch_ingress() {
     // start of new scope
     P4Scope::start_local_scope();
 
@@ -140,7 +141,7 @@ static IR::P4Control *gen_switch_ingress() {
     return p4ctrl;
 }
 
-static IR::MethodCallStatement *gen_deparser_emit_call() {
+IR::MethodCallStatement *TNA::gen_deparser_emit_call() {
     auto call = new IR::PathExpression("pkt.emit");
     IR::Vector<IR::Argument> *args = new IR::Vector<IR::Argument>();
 
@@ -151,7 +152,7 @@ static IR::MethodCallStatement *gen_deparser_emit_call() {
     return mst;
 }
 
-static IR::P4Control *gen_switch_ingress_deparser() {
+IR::P4Control *TNA::gen_switch_ingress_deparser() {
     // start of new scope
     P4Scope::start_local_scope();
 
@@ -175,7 +176,7 @@ static IR::P4Control *gen_switch_ingress_deparser() {
                              blk_stat);
 }
 
-static IR::P4Parser *gen_switch_egress_parser() {
+IR::P4Parser *TNA::gen_switch_egress_parser() {
     // start of new scope
     P4Scope::start_local_scope();
 
@@ -208,7 +209,7 @@ static IR::P4Parser *gen_switch_egress_parser() {
                             states);
 }
 
-static IR::P4Control *gen_switch_egress_deparser() {
+IR::P4Control *TNA::gen_switch_egress_deparser() {
     // start of new scope
     P4Scope::start_local_scope();
 
@@ -232,7 +233,7 @@ static IR::P4Control *gen_switch_egress_deparser() {
                              blk_stat);
 }
 
-static IR::P4Control *gen_switch_egress() {
+IR::P4Control *TNA::gen_switch_egress() {
     // start of new scope
     P4Scope::start_local_scope();
 
@@ -260,7 +261,7 @@ static IR::P4Control *gen_switch_egress() {
     return new IR::P4Control("SwitchEgress", type_ctrl, local_decls, blk_stat);
 }
 
-static IR::Declaration_Instance *gen_package_decl() {
+IR::Declaration_Instance *TNA::gen_package_decl() {
     IR::Vector<IR::Argument> *args = new IR::Vector<IR::Argument>();
 
     args->push_back(new IR::Argument(new IR::MethodCallExpression(
@@ -279,14 +280,14 @@ static IR::Declaration_Instance *gen_package_decl() {
     return new IR::Declaration_Instance("pipe", package_name, args);
 }
 
-static IR::Declaration_Instance *gen_main() {
+IR::Declaration_Instance *TNA::gen_main() {
     IR::Vector<IR::Argument> *args = new IR::Vector<IR::Argument>();
     args->push_back(new IR::Argument(new IR::TypeNameExpression("pipe")));
     auto package_name = new IR::Type_Name("Switch");
     return new IR::Declaration_Instance("main", package_name, args);
 }
 
-void gen_tf_md_t() {
+void TNA::gen_tf_md_t() {
     IR::ID *name;
     // IR::IndexedVector<IR::StructField> fields;
     IR::Type_Struct *ret;
@@ -322,7 +323,7 @@ void gen_tf_md_t() {
     P4Scope::add_to_scope(ret);
 }
 
-IR::Type_Struct *gen_ingress_metadata_t() {
+IR::Type_Struct *TNA::gen_ingress_metadata_t() {
     // Do not emit meta fields for now, no need
     IR::IndexedVector<IR::StructField> fields;
     auto ret = new IR::Type_Struct("ingress_metadata_t", fields);
@@ -330,7 +331,7 @@ IR::Type_Struct *gen_ingress_metadata_t() {
     return ret;
 }
 
-IR::Type_Struct *gen_egress_metadata_t() {
+IR::Type_Struct *TNA::gen_egress_metadata_t() {
     // Do not emit meta fields for now, no need
     IR::IndexedVector<IR::StructField> fields;
     auto ret = new IR::Type_Struct("egress_metadata_t", fields);
@@ -339,7 +340,6 @@ IR::Type_Struct *gen_egress_metadata_t() {
 }
 
 IR::P4Program *TNA::gen() {
-
     // insert banned structures
     P4Scope::not_initialized_structs.insert("ingress_intrinsic_metadata_t");
     P4Scope::not_initialized_structs.insert(

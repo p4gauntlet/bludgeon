@@ -1,13 +1,11 @@
-
-# Makefile for the codegen
+# Makefile for codegen
 
 
 
 # sources for codegen
-
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/version.h.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/version.h" @ONLY)
 
-  "${CMAKE_CURRENT_BINARY_DIR}/src/version.h" @ONLY)
 
 
 set (CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -52,7 +50,6 @@ set (CODEGEN_SRCS
     src/identifierList.cpp
     src/keyElement.cpp
     src/keyElementList.cpp
-    src/main.cpp
     src/main.cpp
     src/matchKindDeclaration.cpp
     src/member.cpp
@@ -185,17 +182,19 @@ set (CODEGEN_HDRS
     src/variableDeclaration.h
 )
 
-add_cpplint_files (${CMAKE_CURRENT_SOURCE_DIR} "${CODEGEN_SRCS}")
+add_cpplint_files (${CMAKE_CURRENT_SOURCE_DIR} "${CODEGEN_SRCS}" "${CODEGEN_HDRS}")
 
 # extensions are unpleasant with unified builds
-#build_unified(CODEGEN_SRCS)
+build_unified(CODEGEN_SRCS)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
-include_directories(${CMAKE_CURRENT_BINARY_DIR}/src)
+
+#[[include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/src)]]
 
 add_executable(p4bludgeon ${CODEGEN_SRCS})
 target_link_libraries (p4bludgeon ${P4C_LIBRARIES} ${P4C_LIB_DEPS})
 add_dependencies(p4bludgeon genIR frontend)
+
 
 install(TARGETS p4bludgeon RUNTIME DESTINATION ${P4C_RUNTIME_OUTPUT_DIRECTORY})
 

@@ -1,15 +1,16 @@
 #include "psa.h"
 
-#include "actionDeclaration.h"
-#include "controlDeclaration.h"
 #include "frontends/p4/toP4/toP4.h"
-#include "functionDeclaration.h"
-#include "headerTypeDeclaration.h"
-#include "p4parser.h"
-#include "scope.h"
-#include "structFieldList.h"
-#include "structTypeDeclaration.h"
-#include "typeDeclaration.h"
+
+#include "bludgeon/src/actionDeclaration.h"
+#include "bludgeon/src/controlDeclaration.h"
+#include "bludgeon/src/functionDeclaration.h"
+#include "bludgeon/src/headerTypeDeclaration.h"
+#include "bludgeon/src/p4parser.h"
+#include "bludgeon/src/scope.h"
+#include "bludgeon/src/structFieldList.h"
+#include "bludgeon/src/structTypeDeclaration.h"
+#include "bludgeon/src/typeDeclaration.h"
 
 namespace CODEGEN {
 
@@ -18,7 +19,7 @@ void PSA::generate_includes(std::ostream *ostream) {
     *ostream << "#include <psa.p4>\n\n";
 }
 
-static IR::P4Parser *gen_switch_ingress_parser() {
+IR::P4Parser *PSA::gen_switch_ingress_parser() {
     IR::IndexedVector<IR::Declaration> parserLocals;
     P4Scope::start_local_scope();
 
@@ -75,7 +76,7 @@ static IR::P4Parser *gen_switch_ingress_parser() {
     return p4parser;
 }
 
-static IR::P4Control *gen_switch_ingress() {
+IR::P4Control *PSA::gen_switch_ingress() {
     // start of new scope
     P4Scope::start_local_scope();
 
@@ -125,7 +126,7 @@ static IR::P4Control *gen_switch_ingress() {
     return p4ctrl;
 }
 
-static IR::MethodCallStatement *gen_deparser_emit_call() {
+IR::MethodCallStatement *PSA::gen_deparser_emit_call() {
     auto call = new IR::PathExpression("pkt.emit");
     IR::Vector<IR::Argument> *args = new IR::Vector<IR::Argument>();
 
@@ -136,7 +137,7 @@ static IR::MethodCallStatement *gen_deparser_emit_call() {
     return mst;
 }
 
-static IR::P4Control *gen_switch_ingress_deparser() {
+IR::P4Control *PSA::gen_switch_ingress_deparser() {
     // start of new scope
     P4Scope::start_local_scope();
 
@@ -165,7 +166,7 @@ static IR::P4Control *gen_switch_ingress_deparser() {
                              blk_stat);
 }
 
-static IR::P4Parser *gen_switch_egress_parser() {
+IR::P4Parser *PSA::gen_switch_egress_parser() {
     // start of new scope
     P4Scope::start_local_scope();
 
@@ -198,7 +199,7 @@ static IR::P4Parser *gen_switch_egress_parser() {
                             states);
 }
 
-static IR::P4Control *gen_switch_egress() {
+IR::P4Control *PSA::gen_switch_egress() {
     // start of new scope
     P4Scope::start_local_scope();
 
@@ -219,7 +220,7 @@ static IR::P4Control *gen_switch_egress() {
     return new IR::P4Control("egress", type_ctrl, local_decls, blk_stat);
 }
 
-static IR::P4Control *gen_switch_egress_deparser() {
+IR::P4Control *PSA::gen_switch_egress_deparser() {
     // start of new scope
     P4Scope::start_local_scope();
 
@@ -248,7 +249,7 @@ static IR::P4Control *gen_switch_egress_deparser() {
                              blk_stat);
 }
 
-static IR::Declaration_Instance *gen_ingress_pipe_decl() {
+IR::Declaration_Instance *PSA::gen_ingress_pipe_decl() {
     IR::Vector<IR::Argument> *args = new IR::Vector<IR::Argument>();
 
     args->push_back(new IR::Argument(new IR::MethodCallExpression(
@@ -261,7 +262,7 @@ static IR::Declaration_Instance *gen_ingress_pipe_decl() {
     return new IR::Declaration_Instance("ip", package_name, args);
 }
 
-static IR::Declaration_Instance *gen_egress_pipe_decl() {
+IR::Declaration_Instance *PSA::gen_egress_pipe_decl() {
     IR::Vector<IR::Argument> *args = new IR::Vector<IR::Argument>();
 
     args->push_back(new IR::Argument(new IR::MethodCallExpression(
@@ -274,7 +275,7 @@ static IR::Declaration_Instance *gen_egress_pipe_decl() {
     return new IR::Declaration_Instance("ep", package_name, args);
 }
 
-static IR::Declaration_Instance *gen_main() {
+IR::Declaration_Instance *PSA::gen_main() {
     IR::Vector<IR::Argument> *args = new IR::Vector<IR::Argument>();
     args->push_back(new IR::Argument(new IR::TypeNameExpression("ip")));
     args->push_back(new IR::Argument(new IR::MethodCallExpression(
@@ -286,7 +287,7 @@ static IR::Declaration_Instance *gen_main() {
     return new IR::Declaration_Instance("main", package_name, args);
 }
 
-IR::Type_Struct *gen_metadata_t() {
+IR::Type_Struct *PSA::gen_metadata_t() {
     // Do not emit meta fields for now, no need
     IR::IndexedVector<IR::StructField> fields;
     auto ret = new IR::Type_Struct("metadata_t", fields);
@@ -294,7 +295,7 @@ IR::Type_Struct *gen_metadata_t() {
     return ret;
 }
 
-IR::Type_Struct *gen_empty_t() {
+IR::Type_Struct *PSA::gen_empty_t() {
     // Do not emit meta fields for now, no need
     IR::IndexedVector<IR::StructField> fields;
     auto ret = new IR::Type_Struct("empty_t", fields);
@@ -302,7 +303,7 @@ IR::Type_Struct *gen_empty_t() {
     return ret;
 }
 
-void gen_psa_md_t() {
+void PSA::gen_psa_md_t() {
     IR::ID *name;
     IR::Type_Struct *ret;
     IR::IndexedVector<IR::StructField> fields;
@@ -332,7 +333,6 @@ void PSA::set_probabilities() {
     PCT.PARAMETER_NONEDIR_BASETYPE_STRING = 0;
     PCT.PARAMETER_NONEDIR_BASETYPE_VARBIT = 0;
 }
-
 
 IR::P4Program *PSA::gen() {
     // insert banned structures
