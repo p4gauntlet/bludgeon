@@ -11,6 +11,7 @@ namespace CODEGEN {
 
 class expression_struct {
     friend class expression_bit;
+    friend class expression_int;
     friend class expression_boolean;
     friend class expression;
 

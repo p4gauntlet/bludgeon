@@ -5,6 +5,7 @@
 #include "expression_bit.h"
 #include "expression_boolean.h"
 #include "expression_struct.h"
+#include "expression_int.h"
 
 namespace CODEGEN {
 
@@ -73,7 +74,7 @@ IR::Expression *expression::gen_expr(const IR::Type *tp) {
     if (auto tb = tp->to<IR::Type_Bits>()) {
         expr = expression_bit::construct(tb);
     } else if (tp->is<IR::Type_InfInt>()) {
-        expr = baseType::gen_int_literal(INTEGER_WIDTH);
+        expr = expression_int::construct();
     } else if (tp->is<IR::Type_Boolean>()) {
         expr = expression_boolean::construct();
     } else if (auto tn = tp->to<IR::Type_Name>()) {

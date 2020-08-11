@@ -41,6 +41,7 @@ set (CODEGEN_SRCS
     src/expression.cpp
     src/expression_boolean.cpp
     src/expression_bit.cpp
+    src/expression_int.cpp
     src/expression_struct.cpp
     src/expressionList.cpp
     src/functionDeclaration.cpp
@@ -127,6 +128,7 @@ set (CODEGEN_HDRS
     src/expression.h
     src/expression_boolean.h
     src/expression_bit.h
+    src/expression_int.h
     src/expression_struct.h
     src/expressionList.h
     src/functionDeclaration.h

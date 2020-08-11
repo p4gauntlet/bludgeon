@@ -2,6 +2,7 @@
 
 #include "argument.h"
 #include "baseType.h"
+#include "expression_int.h"
 #include "scope.h"
 
 namespace CODEGEN {
@@ -14,9 +15,14 @@ IR::Expression *expression_bit::construct_unary_expr(const IR::Type_Bits *tb) {
     }
     P4Scope::prop.depth++;
 
-    std::vector<int64_t> percent = {
-        PCT.EXPRESSION_BIT_UNARY_NEG, PCT.EXPRESSION_BIT_UNARY_CMPL,
-        PCT.EXPRESSION_BIT_UNARY_CAST, PCT.EXPRESSION_BIT_UNARY_FUNCTION};
+    // we want to avoid negation when we require no negative values
+    int64_t neg_pct = PCT.EXPRESSION_BIT_UNARY_NEG;
+    if (P4Scope::req.not_negative) {
+        neg_pct = 0;
+    }
+    std::vector<int64_t> percent = {neg_pct, PCT.EXPRESSION_BIT_UNARY_CMPL,
+                                    PCT.EXPRESSION_BIT_UNARY_CAST,
+                                    PCT.EXPRESSION_BIT_UNARY_FUNCTION};
 
     switch (randind(percent)) {
     case 0: {
@@ -340,14 +346,7 @@ IR::Expression *expression_bit::construct(const IR::Type_Bits *tb) {
         if (P4Scope::req.require_scalar) {
             expr = baseType::gen_bit_literal(tb);
         } else {
-            bool has_int = P4Scope::check_lval(new IR::Type_InfInt());
-
-            if (get_rnd_int(0, 1) || not has_int) {
-                expr = baseType::gen_int_literal(tb->width_bits());
-            } else {
-                cstring name = P4Scope::pick_lval(new IR::Type_InfInt());
-                expr = new IR::PathExpression(name);
-            }
+            expr = expression_int::construct();
             P4Scope::prop.width_unknown = true;
         }
     } break;
