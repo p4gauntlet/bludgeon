@@ -68,6 +68,7 @@ class P4Scope {
                          bool read_only = false);
     static bool check_lval(const IR::Type *tp, bool must_write = false);
     static cstring pick_lval(const IR::Type *tp, bool must_write = false);
+    static IR::Expression *pick_lval_or_slice(const IR::Type *tp);
     static void delete_lval(const IR::Type *tp, cstring name);
     static std::set<cstring> get_candidate_lvals(const IR::Type *tp,
                                                  bool must_write = true);

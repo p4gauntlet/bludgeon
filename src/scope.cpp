@@ -273,6 +273,55 @@ cstring P4Scope::pick_lval(const IR::Type *tp, bool must_write) {
     return *lval;
 }
 
+IR::Expression *P4Scope::pick_lval_or_slice(const IR::Type *tp) {
+    IR::Expression *expr = nullptr;
+    if (auto tb = tp->to<IR::Type_Bits>()) {
+        std::vector<int64_t> percent = {PCT.SCOPE_LVAL_PATH,
+                                        PCT.SCOPE_LVAL_SLICE};
+        switch (randind(percent)) {
+        case 0: {
+            expr = new IR::PathExpression(pick_lval(tb, true));
+            break;
+        }
+        case 1: {
+            cstring type_key = IR::Type_Bits::static_type_name();
+            if (lval_map_rw.count(type_key) == 0) {
+                expr = new IR::PathExpression(pick_lval(tb, true));
+                break;
+            }
+            auto key_types = lval_map_rw[type_key];
+            size_t target_width = tb->width_bits();
+            std::vector<std::pair<size_t, cstring>> candidates;
+
+            for (auto bit_bucket : key_types) {
+                size_t key_size = bit_bucket.first;
+                if (key_size > target_width) {
+                    for (cstring lval : key_types[key_size]) {
+                        candidates.emplace_back(key_size, lval);
+                    }
+                }
+            }
+            if (candidates.empty()) {
+                expr = new IR::PathExpression(pick_lval(tb, true));
+                break;
+            }
+            size_t idx = get_rnd_int(0, candidates.size() - 1);
+            auto lval = std::begin(candidates);
+            // "advance" the iterator idx times
+            std::advance(lval, idx);
+            size_t candidate_size = lval->first;
+            auto slice_expr = new IR::PathExpression(lval->second);
+            size_t low = get_rnd_int(0, candidate_size - target_width);
+            size_t high = low + target_width - 1;
+            expr = new IR::Slice(slice_expr, high, low);
+        } break;
+        }
+    } else {
+        expr = new IR::PathExpression(P4Scope::pick_lval(tp, true));
+    }
+    return expr;
+}
+
 IR::Type_Bits *P4Scope::pick_declared_bit_type(bool must_write) {
     std::map<cstring, std::map<int, std::set<cstring>>> lookup_map;
 

@@ -22,6 +22,10 @@ struct probabilities {
     uint16_t STATEMENT_EXIT = 0;
     uint16_t STATEMENT_BLOCK = 2;
 
+    // probabilities to pick a slice when requesting an lval
+    uint16_t SCOPE_LVAL_PATH = 90;
+    uint16_t SCOPE_LVAL_SLICE = 10;
+
     // probabilities for statements or declarations
     uint16_t STATEMENTORDECLARATION_VAR = 10;
     uint16_t STATEMENTORDECLARATION_CONSTANT = 10;

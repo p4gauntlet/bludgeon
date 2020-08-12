@@ -17,8 +17,7 @@ IR::Expression *argument::gen_input_arg(const IR::Parameter *param) {
         return expr;
     } else {
         // for inout and out the value must be writeable
-        cstring lval = P4Scope::pick_lval(param->type, true);
-        return new IR::PathExpression(lval);
+        return P4Scope::pick_lval_or_slice(param->type);
     }
 }
 

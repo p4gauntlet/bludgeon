@@ -27,8 +27,7 @@ IR::MethodCallExpression *gen_actioncall_expression(cstring method_name,
                 arg = new IR::Argument(expression::gen_expr(par->type));
                 P4Scope::req.compile_time_known = false;
             } else {
-                cstring lval = P4Scope::pick_lval(par->type, true);
-                arg = new IR::Argument(new IR::PathExpression(lval));
+                arg = new IR::Argument(P4Scope::pick_lval_or_slice(par->type));
             }
             args->push_back(arg);
         }

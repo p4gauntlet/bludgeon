@@ -24,8 +24,7 @@ IR::Statement *assignmentOrMethodCallStatement::gen_assign() {
             // TODO: Find a more meaningful assignment statement
             return nullptr;
         }
-        cstring name = P4Scope::pick_lval(bit_type, true);
-        left = new IR::PathExpression(name);
+        left = P4Scope::pick_lval_or_slice(bit_type);
         right = expression::gen_expr(bit_type);
         return new IR::AssignmentStatement(left, right);
     }
