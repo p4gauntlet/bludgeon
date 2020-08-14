@@ -4,6 +4,7 @@
 
 #include "bludgeon/src/actionDeclaration.h"
 #include "bludgeon/src/controlDeclaration.h"
+#include "bludgeon/src/externDeclaration.h"
 #include "bludgeon/src/functionDeclaration.h"
 #include "bludgeon/src/headerTypeDeclaration.h"
 #include "bludgeon/src/p4parser.h"
@@ -105,23 +106,16 @@ IR::P4Control *PSA::gen_switch_ingress() {
         }
     }
 
-    IR::IndexedVector<IR::Declaration> local_decls;
+    IR::IndexedVector<IR::Declaration> local_decls =
+        controlDeclaration::gen_local_decls();
+    // apply body
+    auto apply_block = blockStatement::gen();
 
-    auto blk_stat = controlDeclaration::gen_ctrl_components(local_decls);
-    // hardcode the output port to be zero
-    /*    auto output_port = new IR::PathExpression("ostd.egress_port");
-        auto output_port_val = new IR::Constant(new IR::Type_InfInt(), 0);
-        auto assign = new IR::AssignmentStatement(output_port,
-       output_port_val);*/
-    // some hack to insert the expression at the beginning
-    // auto it = blk_stat->components.begin();
-    // blk_stat->components.insert(it, assign);
-    // end of scope
     P4Scope::end_local_scope();
 
     // add to the whole scope
     IR::P4Control *p4ctrl =
-        new IR::P4Control("ingress", type_ctrl, local_decls, blk_stat);
+        new IR::P4Control("ingress", type_ctrl, local_decls, apply_block);
     P4Scope::add_to_scope(p4ctrl);
     return p4ctrl;
 }
@@ -366,15 +360,26 @@ IR::P4Program *PSA::gen() {
     objects->push_back(gen_empty_t());
 
     // generate some callables
-    int max_callable_decls =
-        get_rnd_int(DECL.MIN_CALLABLES, DECL.MAX_CALLABLES);
-    for (int i = 0; i < max_callable_decls; ++i) {
-        std::vector<int64_t> percent = {50, 50};
-        if (randind(percent)) {
+    int callable_decls = get_rnd_int(DECL.MIN_CALLABLES, DECL.MAX_CALLABLES);
+    for (int i = 0; i < callable_decls; ++i) {
+        std::vector<int64_t> percent = {80, 15, 0, 5};
+        switch (randind(percent)) {
+        case 0: {
+            objects->push_back(functionDeclaration::gen());
+            break;
+        }
+        case 1: {
             objects->push_back(actionDeclaration::gen());
-        } else {
-            // functions do not work in tofino yet
-            // objects->push_back(functionDeclaration::gen());
+            break;
+        }
+        case 2: {
+            objects->push_back(externDeclaration::gen());
+            break;
+        }
+        case 3: {
+            objects->push_back(controlDeclaration::gen());
+            break;
+        }
         }
     }
 

@@ -11,7 +11,8 @@ struct probabilities {
     // probabilities of method calls
     uint16_t ASSIGNMENTORMETHODCALLSTATEMENT_METHOD_ACTION = 44;
     uint16_t ASSIGNMENTORMETHODCALLSTATEMENT_METHOD_FUNCTION = 45;
-    uint16_t ASSIGNMENTORMETHODCALLSTATEMENT_METHOD_TABLE = 15;
+    uint16_t ASSIGNMENTORMETHODCALLSTATEMENT_METHOD_TABLE = 10;
+    uint16_t ASSIGNMENTORMETHODCALLSTATEMENT_METHOD_CTRL = 5;
     uint16_t ASSIGNMENTORMETHODCALLSTATEMENT_METHOD_BUILT_IN = 1;
 
     // probabilities for statements
@@ -316,7 +317,7 @@ struct declarations {
     uint16_t MAX_VAR = 5;
 
     uint16_t MIN_INSTANCE = 0;
-    uint16_t MAX_INSTANCE = 5;
+    uint16_t MAX_INSTANCE = 2;
 
     uint16_t MIN_ACTION = 0;
     uint16_t MAX_ACTION = 2;

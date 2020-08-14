@@ -4,6 +4,7 @@
 
 #include "bludgeon/src/actionDeclaration.h"
 #include "bludgeon/src/controlDeclaration.h"
+#include "bludgeon/src/externDeclaration.h"
 #include "bludgeon/src/functionDeclaration.h"
 #include "bludgeon/src/headerTypeDeclaration.h"
 #include "bludgeon/src/p4parser.h"
@@ -91,16 +92,17 @@ IR::P4Control *V1Model::gen_ingress() {
         }
     }
 
-    IR::IndexedVector<IR::Declaration> local_decls;
-
-    auto blk_stat = controlDeclaration::gen_ctrl_components(local_decls);
+    IR::IndexedVector<IR::Declaration> local_decls =
+        controlDeclaration::gen_local_decls();
+    // apply body
+    auto apply_block = blockStatement::gen();
 
     // end of scope
     P4Scope::end_local_scope();
 
     // add to the whole scope
     IR::P4Control *p4ctrl =
-        new IR::P4Control("ingress", type_ctrl, local_decls, blk_stat);
+        new IR::P4Control("ingress", type_ctrl, local_decls, apply_block);
     P4Scope::add_to_scope(p4ctrl);
     return p4ctrl;
 }
@@ -269,11 +271,24 @@ IR::P4Program *V1Model::gen() {
     // generate some callables
     int callable_decls = get_rnd_int(DECL.MIN_CALLABLES, DECL.MAX_CALLABLES);
     for (int i = 0; i < callable_decls; ++i) {
-        std::vector<int64_t> percent = {80, 20};
-        if (randind(percent)) {
-            objects->push_back(actionDeclaration::gen());
-        } else {
+        std::vector<int64_t> percent = {80, 15, 0, 5};
+        switch (randind(percent)) {
+        case 0: {
             objects->push_back(functionDeclaration::gen());
+            break;
+        }
+        case 1: {
+            objects->push_back(actionDeclaration::gen());
+            break;
+        }
+        case 2: {
+            objects->push_back(externDeclaration::gen());
+            break;
+        }
+        case 3: {
+            objects->push_back(controlDeclaration::gen());
+            break;
+        }
         }
     }
 

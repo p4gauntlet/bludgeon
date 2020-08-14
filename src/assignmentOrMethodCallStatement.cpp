@@ -36,7 +36,7 @@ IR::Statement *assignmentOrMethodCallStatement::gen_assign() {
     return assignstat;
 }
 
-IR::Statement *gen_methodcall_expression(cstring method_name,
+IR::Statement *gen_methodcall_expression(IR::PathExpression *method_name,
                                          IR::ParameterList params) {
     IR::Vector<IR::Argument> *args = new IR::Vector<IR::Argument>();
     IR::IndexedVector<IR::StatOrDecl> decls;
@@ -59,8 +59,7 @@ IR::Statement *gen_methodcall_expression(cstring method_name,
         arg = new IR::Argument(argument::gen_input_arg(par));
         args->push_back(arg);
     }
-    auto path_expr = new IR::PathExpression(method_name);
-    auto mce = new IR::MethodCallExpression(path_expr, args);
+    auto mce = new IR::MethodCallExpression(method_name, args);
     auto mcs = new IR::MethodCallStatement(mce);
     P4Scope::end_local_scope();
     if (decls.size() == 0) {
@@ -86,6 +85,7 @@ IR::Statement *gen_methodcall(bool is_in_func) {
         PCT.ASSIGNMENTORMETHODCALLSTATEMENT_METHOD_ACTION,
         PCT.ASSIGNMENTORMETHODCALLSTATEMENT_METHOD_FUNCTION,
         PCT.ASSIGNMENTORMETHODCALLSTATEMENT_METHOD_TABLE,
+        PCT.ASSIGNMENTORMETHODCALLSTATEMENT_METHOD_CTRL,
         PCT.ASSIGNMENTORMETHODCALLSTATEMENT_METHOD_BUILT_IN};
 
     switch (randind(percent)) {
@@ -97,7 +97,8 @@ IR::Statement *gen_methodcall(bool is_in_func) {
         size_t idx = get_rnd_int(0, actions.size() - 1);
         auto p4_fun = actions.at(idx);
         auto params = p4_fun->getParameters()->parameters;
-        return gen_methodcall_expression(p4_fun->name, params);
+        auto method_name = new IR::PathExpression(p4_fun->name);
+        return gen_methodcall_expression(method_name, params);
     }
     case 1: {
         auto funcs = P4Scope::get_decls<IR::Function>();
@@ -107,7 +108,8 @@ IR::Statement *gen_methodcall(bool is_in_func) {
         size_t idx = get_rnd_int(0, funcs.size() - 1);
         auto p4_fun = funcs.at(idx);
         auto params = p4_fun->getParameters()->parameters;
-        return gen_methodcall_expression(p4_fun->name, params);
+        auto method_name = new IR::PathExpression(p4_fun->name);
+        return gen_methodcall_expression(method_name, params);
     }
     case 2: {
         auto tbl_set = P4Scope::get_callable_tables();
@@ -124,6 +126,33 @@ IR::Statement *gen_methodcall(bool is_in_func) {
         break;
     }
     case 3: {
+        auto decls = P4Scope::get_decls<IR::Declaration_Instance>();
+        if (decls.size() == 0) {
+            break;
+        }
+        auto idx = get_rnd_int(0, decls.size() - 1);
+        auto decl_iter = std::begin(decls);
+        std::advance(decl_iter, idx);
+        const IR::Declaration_Instance *decl_instance = *decl_iter;
+        // avoid member here
+        std::stringstream tmp_method_str;
+        tmp_method_str << decl_instance->name << ".apply";
+        cstring tmp_method_cstr(tmp_method_str.str());
+        auto method_name = new IR::PathExpression(tmp_method_cstr);
+        auto type_name = decl_instance->type->to<IR::Type_Name>();
+
+        auto resolved_type = P4Scope::get_type_by_name(type_name->path->name);
+        if (not resolved_type) {
+            BUG("Type Name %s not found", type_name->path->name);
+        }
+        if (auto ctrl = resolved_type->to<IR::P4Control>()) {
+            auto params = ctrl->getApplyParameters()->parameters;
+            return gen_methodcall_expression(method_name, params);
+        }
+        BUG("Declaration Instance type %s not yet supported",
+            decl_instance->type->node_type_name());
+    }
+    case 4: {
         auto hdrs = P4Scope::get_decls<IR::Type_Header>();
         if (hdrs.size() == 0) {
             break;

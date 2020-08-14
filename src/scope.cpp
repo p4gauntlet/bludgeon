@@ -38,6 +38,8 @@ void P4Scope::end_local_scope() {
             delete_lval(dc->type, dc->name.name);
         } else if (auto param = node->to<IR::Parameter>()) {
             delete_lval(param->type, param->name.name);
+        } else if (auto tbl = node->to<IR::P4Table>()) {
+            callable_tables.erase(tbl);
         }
     }
 

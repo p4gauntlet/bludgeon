@@ -21,8 +21,8 @@ class controlDeclaration {
 
     ~controlDeclaration() {}
 
-    static IR::BlockStatement *
-    gen_ctrl_components(IR::IndexedVector<IR::Declaration> &local_decls);
+    static IR::IndexedVector<IR::Declaration> gen_local_decls();
+    static IR::P4Control *gen();
 
     static IR::Declaration_Instance *gen_decl_instance();
 };

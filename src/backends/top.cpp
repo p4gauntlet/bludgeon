@@ -85,16 +85,17 @@ IR::P4Control *Top::gen_ingress() {
         }
     }
 
-    IR::IndexedVector<IR::Declaration> local_decls;
-
-    auto blk_stat = controlDeclaration::gen_ctrl_components(local_decls);
+    IR::IndexedVector<IR::Declaration> local_decls =
+        controlDeclaration::gen_local_decls();
+    // apply body
+    auto apply_block = blockStatement::gen();
 
     // end of scope
     P4Scope::end_local_scope();
 
     // add to the whole scope
     IR::P4Control *p4ctrl =
-        new IR::P4Control("ingress", type_ctrl, local_decls, blk_stat);
+        new IR::P4Control("ingress", type_ctrl, local_decls, apply_block);
     P4Scope::add_to_scope(p4ctrl);
     return p4ctrl;
 }
@@ -155,7 +156,7 @@ IR::P4Program *Top::gen() {
     // generate some callables
     int callable_decls = get_rnd_int(DECL.MIN_CALLABLES, DECL.MAX_CALLABLES);
     for (int i = 0; i < callable_decls; ++i) {
-        std::vector<int64_t> percent = {70, 20, 10};
+        std::vector<int64_t> percent = {70, 15, 10, 5};
         switch (randind(percent)) {
         case 0: {
             objects->push_back(functionDeclaration::gen());
@@ -167,6 +168,10 @@ IR::P4Program *Top::gen() {
         }
         case 2: {
             objects->push_back(externDeclaration::gen());
+            break;
+        }
+        case 3: {
+            objects->push_back(controlDeclaration::gen());
             break;
         }
         }
