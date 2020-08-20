@@ -3,10 +3,12 @@
 #include <random>
 #include <string>
 #include <boost/random.hpp>
+
 #include "common.h"
 #include "scope.h"
 
-const std::vector<cstring> str_keywords = {"if", "else", "key", "actions"};
+const std::vector<cstring> str_keywords = {"if", "void", "else", "key",
+                                           "actions"};
 
 static const char alphanum[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                                "abcdefghijklmnopqrstuvwxyz";
@@ -15,9 +17,7 @@ static const char alphanum[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 namespace CODEGEN {
 static boost::random::mt19937 rng;
 
-void set_seed(int64_t seed) {
-    rng = boost::mt19937(seed);
-}
+void set_seed(int64_t seed) { rng = boost::mt19937(seed); }
 
 int64_t get_rnd_int(int64_t min, int64_t max) {
     boost::random::uniform_int_distribution<int64_t> distribution(min, max);
@@ -28,7 +28,6 @@ big_int get_rnd_big_int(big_int min, big_int max) {
     boost::random::uniform_int_distribution<big_int> distribution(min, max);
     return distribution(rng);
 }
-
 
 cstring randstr(size_t len) {
     cstring ret;

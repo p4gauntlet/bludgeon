@@ -49,9 +49,6 @@ IR::Type_Header *headerTypeDeclaration::gen() {
             ret->fields.push_back(pad_field);
         }
     }
-
-    printf("%d\n", ret->width_bits());
-
     P4Scope::add_to_scope(ret);
 
     return ret;
