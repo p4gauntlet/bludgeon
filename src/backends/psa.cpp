@@ -110,7 +110,26 @@ IR::P4Control *PSA::gen_switch_ingress() {
         controlDeclaration::gen_local_decls();
     // apply body
     auto apply_block = blockStatement::gen();
-
+    // hardcode the output port to be zero
+    auto output_port = new IR::PathExpression("ostd.egress_port");
+    // PSA requires explicit casts of the output port variable
+    // actually not sure why this is required...
+    auto out_port_cast =
+        new IR::Cast(new IR::Type_Name("PortId_t"), new IR::Constant(0));
+    auto assign = new IR::AssignmentStatement(output_port, out_port_cast);
+    // some hack to insert the expression at the beginning
+    auto it = apply_block->components.begin();
+    apply_block->components.insert(it, assign);
+    // also make sure the packet isn't dropped...
+    output_port = new IR::PathExpression("ostd.drop");
+    // PSA requires explicit casts of the output port variable
+    // actually not sure why this is required...
+    assign =
+        new IR::AssignmentStatement(output_port, new IR::BoolLiteral(false));
+    // some hack to insert the expression at the beginning
+    it = apply_block->components.begin();
+    apply_block->components.insert(it, assign);
+    // end of scope
     P4Scope::end_local_scope();
 
     // add to the whole scope
