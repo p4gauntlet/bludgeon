@@ -15,6 +15,7 @@ class TNA {
     static IR::P4Program *gen();
 
   private:
+    static void set_probabilities();
     static IR::P4Parser *gen_p();
     static IR::Declaration_Instance *gen_main();
     static IR::P4Parser *gen_switch_ingress_parser();

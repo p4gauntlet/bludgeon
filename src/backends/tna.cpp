@@ -341,6 +341,19 @@ IR::Type_Struct *TNA::gen_egress_metadata_t() {
     return ret;
 }
 
+void TNA::set_probabilities() {
+    PCT.PARAMETER_NONEDIR_DERIVED_STRUCT = 0;
+    PCT.PARAMETER_NONEDIR_DERIVED_HEADER = 0;
+    PCT.PARAMETER_NONEDIR_BASETYPE_BOOL = 0;
+    PCT.PARAMETER_NONEDIR_BASETYPE_ERROR = 0;
+    PCT.PARAMETER_NONEDIR_BASETYPE_STRING = 0;
+    PCT.PARAMETER_NONEDIR_BASETYPE_VARBIT = 0;
+    // TNA does not support headers that are not multiples of 8
+    PCT.STRUCTTYPEDECLARATION_BASETYPE_BOOL = 0;
+    // TNA requires headers to be byte-aligned
+    P4Scope::req.byte_align_headers = true;
+}
+
 IR::P4Program *TNA::gen() {
     // insert banned structures
     P4Scope::not_initialized_structs.insert("ingress_intrinsic_metadata_t");
@@ -357,6 +370,9 @@ IR::P4Program *TNA::gen() {
         "egress_intrinsic_metadata_for_deparser_t");
     P4Scope::not_initialized_structs.insert(
         "egress_intrinsic_metadata_for_output_port_t");
+
+    // set tna-specific probabilities
+    set_probabilities();
 
     // start to assemble the model
     auto objects = new IR::Vector<IR::Node>();
