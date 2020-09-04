@@ -1,6 +1,8 @@
 #ifndef _PROBABILITIES_H_
 #define _PROBABILITIES_H_
 
+#include <stdint.h>
+
 struct probabilities {
     // assignment or method call
     uint16_t ASSIGNMENTORMETHODCALLSTATEMENT_ASSIGN = 75;
