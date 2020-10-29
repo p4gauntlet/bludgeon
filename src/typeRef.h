@@ -6,7 +6,7 @@
 #include "common.h"
 
 namespace CODEGEN {
-typedef struct typeref_probs{
+typedef struct typeref_probs {
     int64_t p4_bit;
     int64_t p4_signed_bit;
     int64_t p4_varbit;
@@ -26,7 +26,7 @@ typedef struct typeref_probs{
 } typeref_probs;
 
 class typeRef {
-  public:
+ public:
     const char *types[5] = {
         "baseType", "typeName",
         "specializedType", // not

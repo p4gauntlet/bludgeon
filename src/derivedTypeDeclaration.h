@@ -6,7 +6,7 @@
 namespace CODEGEN {
 
 class derivedTypeDeclaration {
-  public:
+ public:
     const char *types[4] = {"headerTypeDeclaration", "headerUnionDeclaration",
                             "structTypeDeclaration", "enumDeclaration"};
 

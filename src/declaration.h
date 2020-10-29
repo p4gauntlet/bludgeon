@@ -5,7 +5,7 @@
 
 namespace CODEGEN {
 class declaration {
-  public:
+ public:
     const char *types[10] = {"constantDeclaration",  "externDeclaration",
                              "actionDeclaration",    "parserDeclaration",
                              "typeDeclaration",      "controlDeclaration",

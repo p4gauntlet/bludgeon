@@ -10,11 +10,10 @@
 
 namespace CODEGEN {
 class switchStatement {
-  public:
+ public:
     switchStatement() {}
 
-    ~switchStatement() {
-    }
+    ~switchStatement() {}
 
     static IR::SwitchStatement *gen();
 };

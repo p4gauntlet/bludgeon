@@ -3,8 +3,6 @@
 
 namespace CODEGEN {
 
-IR::Type *derivedTypeDeclaration::gen() {
-    return headerTypeDeclaration::gen();
-}
+IR::Type *derivedTypeDeclaration::gen() { return headerTypeDeclaration::gen(); }
 
 } // namespace CODEGEN

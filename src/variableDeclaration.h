@@ -5,7 +5,7 @@
 
 namespace CODEGEN {
 class variableDeclaration {
-  public:
+ public:
     const char *types[0] = {};
 
     variableDeclaration() {}

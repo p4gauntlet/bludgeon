@@ -5,7 +5,7 @@
 
 namespace CODEGEN {
 class structTypeDeclaration {
-  public:
+ public:
     const char *types[0] = {};
 
     structTypeDeclaration() {}
@@ -13,7 +13,7 @@ class structTypeDeclaration {
     static IR::Type_Struct *gen();
     static IR::Type_Struct *gen_Headers();
 
-  private:
+ private:
     static IR::StructField *pick_field();
 };
 } // namespace CODEGEN

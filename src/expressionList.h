@@ -6,7 +6,7 @@
 namespace CODEGEN {
 
 class expressionList {
-  public:
+ public:
     const char *types[1] = {"expression"};
 
     expressionList() {}

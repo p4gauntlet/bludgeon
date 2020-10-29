@@ -7,7 +7,7 @@
 
 namespace CODEGEN {
 class keyElementList {
-  public:
+ public:
     keyElementList() {}
 
     ~keyElementList() {}

@@ -6,7 +6,7 @@
 namespace CODEGEN {
 
 class controlLocalDeclarations {
-  public:
+ public:
     const char *types[0] = {};
 
     controlLocalDeclarations() {}

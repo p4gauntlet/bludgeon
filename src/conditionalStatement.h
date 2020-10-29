@@ -5,7 +5,7 @@
 
 namespace CODEGEN {
 class conditionalStatement {
-  public:
+ public:
     const char *types[0] = {};
 
     conditionalStatement() {}

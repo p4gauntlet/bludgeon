@@ -6,7 +6,7 @@
 namespace CODEGEN {
 
 class typeArg {
-  public:
+ public:
     const char *types[3] = {"DONTCARE", "typeRef", "nonTypeName"};
 
     typeArg() {}

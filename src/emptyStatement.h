@@ -6,7 +6,7 @@
 namespace CODEGEN {
 
 class emptyStatement {
-  public:
+ public:
     const char *types[0] = {};
 
     emptyStatement() {}

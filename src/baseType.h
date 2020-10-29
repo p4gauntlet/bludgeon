@@ -7,7 +7,7 @@
 namespace CODEGEN {
 
 class baseType {
-  public:
+ public:
     const char *types[10] = {
         "BOOL",
         "ERROR", // not

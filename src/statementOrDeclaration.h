@@ -5,7 +5,7 @@
 
 namespace CODEGEN {
 class statementOrDeclaration {
-  public:
+ public:
     const char *types[4] = {"variableDeclaration", "constantDeclaration",
                             "statement", "instantiation"};
     statementOrDeclaration() {}

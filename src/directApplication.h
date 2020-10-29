@@ -6,7 +6,7 @@
 namespace CODEGEN {
 
 class directApplication {
-  public:
+ public:
     const char *types[0] = {};
 
     directApplication() {}

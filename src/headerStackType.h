@@ -12,7 +12,7 @@
 
 namespace CODEGEN {
 class headerStackType {
-  public:
+ public:
     const char *types[0] = {};
 
     headerStackType() {}

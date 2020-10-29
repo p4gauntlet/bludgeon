@@ -34,7 +34,7 @@ struct Properties {
 };
 
 class P4Scope {
-  public:
+ public:
     // the list of subscopes
     static std::vector<IR::Vector<IR::Node> *> scope;
     // avoid duplicates

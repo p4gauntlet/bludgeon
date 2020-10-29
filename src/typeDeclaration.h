@@ -6,7 +6,7 @@
 namespace CODEGEN {
 
 class typeDeclaration {
-  public:
+ public:
     const char *types[5] = {"derivedTypeDeclaration", "typedefDeclaration",
                             "parserTypeDeclaration", "controlTypeDeclaration",
                             "packageTypeDeclaration"};

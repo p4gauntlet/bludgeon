@@ -5,7 +5,7 @@
 
 namespace CODEGEN {
 class argument {
-  public:
+ public:
     const char *types[2] = {"expression", "DONTCARE"};
 
     argument() {}

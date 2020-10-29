@@ -6,7 +6,7 @@
 namespace CODEGEN {
 
 class identifierList {
-  public:
+ public:
     const char *types[1] = {"name"};
 
     identifierList() {}

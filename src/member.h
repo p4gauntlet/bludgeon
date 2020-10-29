@@ -6,7 +6,7 @@
 namespace CODEGEN {
 
 class member {
-  public:
+ public:
     const char *types[1] = {"name"};
 
     member() {}

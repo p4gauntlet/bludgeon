@@ -10,8 +10,7 @@
 
 namespace CODEGEN {
 class p4Parser {
-  public:
-
+ public:
     p4Parser() {}
 
     ~p4Parser() {}

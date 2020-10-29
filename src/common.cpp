@@ -1,8 +1,8 @@
+#include <boost/random.hpp>
 #include <cstdlib>
 #include <cstring>
 #include <random>
 #include <string>
-#include <boost/random.hpp>
 
 #include "common.h"
 #include "scope.h"

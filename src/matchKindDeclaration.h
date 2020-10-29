@@ -6,7 +6,7 @@
 namespace CODEGEN {
 
 class matchKindDeclaration {
-  public:
+ public:
     const char *types[1] = {"MATCH_KIND"};
 
     matchKindDeclaration() {}

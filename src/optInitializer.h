@@ -6,7 +6,7 @@
 namespace CODEGEN {
 
 class optInitializer {
-  public:
+ public:
     const char *types[0] = {};
 
     optInitializer() {}

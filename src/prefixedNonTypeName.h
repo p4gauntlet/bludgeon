@@ -6,7 +6,7 @@
 namespace CODEGEN {
 
 class prefixedNonTypeName {
-  public:
+ public:
     const char *types[1] = {"nonTypeName"};
 
     prefixedNonTypeName() {}

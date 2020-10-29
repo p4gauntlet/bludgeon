@@ -6,7 +6,7 @@
 namespace CODEGEN {
 
 class typeOrVoid {
-  public:
+ public:
     const char *types[3] = {"typeRef", "VOID", "IDENTIFIER"};
 
     typeOrVoid() {}

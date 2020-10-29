@@ -6,7 +6,7 @@
 namespace CODEGEN {
 
 class optTypeParameters {
-  public:
+ public:
     const char *types[0] = {};
 
     optTypeParameters() {}

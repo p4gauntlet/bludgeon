@@ -6,7 +6,7 @@
 namespace CODEGEN {
 
 class nonTableKwName {
-  public:
+ public:
     const char *types[5] = {"IDENTIFIER", "TYPE_IDENTIFIER", "APPLY", "STATE",
                             "TYPE"};
 

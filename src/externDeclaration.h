@@ -7,7 +7,7 @@
 
 namespace CODEGEN {
 class externDeclaration {
-  public:
+ public:
     const char *types[0] = {};
 
     externDeclaration() {}
@@ -16,7 +16,7 @@ class externDeclaration {
 
     static IR::Method *gen();
 
-  protected:
+ protected:
     static IR::Type *gen_return_type();
 };
 } // namespace CODEGEN

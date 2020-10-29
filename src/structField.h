@@ -7,7 +7,7 @@
 namespace CODEGEN {
 
 class structField {
-  public:
+ public:
     const char *types[0] = {};
 
     structField() {}

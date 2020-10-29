@@ -10,7 +10,7 @@ namespace CODEGEN {
 
 class BludgeonOptions : public Util::Options {
 
-  public:
+ public:
     BludgeonOptions();
     // name of the output file
     cstring output_file = nullptr;
@@ -23,7 +23,6 @@ class BludgeonOptions : public Util::Options {
 
 /// A compilation context which exposes compiler options.
 class P4CContext : public BaseCompileContext {};
-
 
 } // namespace CODEGEN
 

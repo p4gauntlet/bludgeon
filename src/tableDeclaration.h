@@ -7,7 +7,7 @@
 
 namespace CODEGEN {
 class tableDeclaration {
-  public:
+ public:
     const char *types[0] = {};
 
     tableDeclaration() {}

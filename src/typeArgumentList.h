@@ -6,7 +6,7 @@
 namespace CODEGEN {
 
 class typeArgumentList {
-  public:
+ public:
     const char *types[1] = {"typeArg"};
 
     typeArgumentList() {}

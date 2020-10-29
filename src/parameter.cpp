@@ -1,10 +1,9 @@
 #include "parameter.h"
 
 #include "baseType.h"
-#include "typeRef.h"
 #include "common.h"
 #include "scope.h"
-
+#include "typeRef.h"
 
 namespace CODEGEN {
 

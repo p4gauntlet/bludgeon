@@ -1,6 +1,5 @@
 #include "enumDeclaration.h"
 
-
 #include "scope.h"
 
 #include "baseType.h"

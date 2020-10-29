@@ -73,7 +73,7 @@ IR::Declaration_Instance *controlDeclaration::gen_decl_instance() {
     IR::Vector<IR::Argument> *args = new IR::Vector<IR::Argument>();
     const IR::P4Control *p4ctrl = p4_ctrls.at(get_rnd_int(0, size - 1));
     IR::Type *tp = new IR::Type_Name(p4ctrl->name);
-    auto decl =  new IR::Declaration_Instance(randstr(6), tp, args);
+    auto decl = new IR::Declaration_Instance(randstr(6), tp, args);
     P4Scope::add_to_scope(decl);
     return decl;
 }

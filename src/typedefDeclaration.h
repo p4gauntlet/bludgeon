@@ -15,7 +15,7 @@
 namespace CODEGEN {
 
 class typedefDeclaration {
-  public:
+ public:
     const char *types[2] = {"typedef", "type"};
 
     typedefDeclaration() {}

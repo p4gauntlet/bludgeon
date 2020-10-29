@@ -3,16 +3,14 @@
 
 #include "ir/ir.h"
 
-
 namespace CODEGEN {
 
 class enumDeclaration {
-  public:
+ public:
     const char *types[0] = {};
 
     enumDeclaration() {}
-    ~enumDeclaration() {
-    }
+    ~enumDeclaration() {}
 
     static IR::Type *gen(int type);
 };

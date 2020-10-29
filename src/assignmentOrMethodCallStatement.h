@@ -5,7 +5,7 @@
 
 namespace CODEGEN {
 class assignmentOrMethodCallStatement {
-  public:
+ public:
     const char *types[0] = {};
 
     assignmentOrMethodCallStatement() {}

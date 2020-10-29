@@ -1,14 +1,13 @@
 #include "structTypeDeclaration.h"
 
 #include "annotations.h"
+#include "baseType.h"
 #include "common.h"
+#include "headerStackType.h"
 #include "scope.h"
 #include "structFieldList.h"
-#include "headerStackType.h"
-#include "baseType.h"
 
 namespace CODEGEN {
-
 
 IR::Type_Struct *structTypeDeclaration::gen() {
     cstring name = randstr(6);
@@ -44,7 +43,6 @@ IR::Type_Struct *structTypeDeclaration::gen() {
             // Right now there is now way to initialize a header stack
             // So we have to add the entire structure to the banned expressions
             P4Scope::not_initialized_structs.insert(name);
-
         }
         IR::StructField *sf = new IR::StructField(field_name, field_tp);
         fields.push_back(sf);

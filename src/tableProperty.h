@@ -5,7 +5,7 @@
 
 namespace CODEGEN {
 class tableProperty {
-  public:
+ public:
     tableProperty() {}
 
     // Tao: note that we always tag the prperty as not const

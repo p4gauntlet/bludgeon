@@ -6,7 +6,7 @@
 namespace CODEGEN {
 
 class packageTypeDeclaration {
-  public:
+ public:
     const char *types[0] = {};
 
     packageTypeDeclaration() {}

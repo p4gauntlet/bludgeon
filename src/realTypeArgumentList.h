@@ -6,7 +6,7 @@
 namespace CODEGEN {
 
 class realTypeArgumentList {
-  public:
+ public:
     const char *types[1] = {"realTypeArg"};
 
     realTypeArgumentList() {}

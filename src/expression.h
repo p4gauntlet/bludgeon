@@ -10,7 +10,7 @@ namespace CODEGEN {
 
 class expression {
 
-  public:
+ public:
     expression() {}
 
     static IR::MethodCallExpression *gen_functioncall(cstring method_name,
@@ -20,7 +20,6 @@ class expression {
     static IR::MethodCallExpression *
     pick_function(IR::IndexedVector<IR::Declaration> viable_functions,
                   const IR::Type **ret_type);
-
 };
 } // namespace CODEGEN
 

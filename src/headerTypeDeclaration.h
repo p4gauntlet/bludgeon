@@ -6,7 +6,7 @@
 namespace CODEGEN {
 
 class headerTypeDeclaration {
-  public:
+ public:
     const char *types[0] = {};
 
     headerTypeDeclaration() {}

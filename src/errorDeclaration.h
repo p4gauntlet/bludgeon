@@ -6,7 +6,7 @@
 namespace CODEGEN {
 
 class errorDeclaration {
-  public:
+ public:
     const char *types[0] = {};
 
     errorDeclaration() {}

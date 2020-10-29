@@ -7,7 +7,7 @@
 
 namespace CODEGEN {
 class blockStatement {
-  public:
+ public:
     blockStatement() {}
     ~blockStatement() {}
 

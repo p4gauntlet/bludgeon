@@ -5,7 +5,7 @@
 
 namespace CODEGEN {
 class parameter {
-  public:
+ public:
     const char *types[0] = {};
 
     parameter() {}

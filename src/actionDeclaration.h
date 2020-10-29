@@ -7,13 +7,12 @@
 
 namespace CODEGEN {
 class actionDeclaration {
-  public:
+ public:
     const char *types[0] = {};
 
-    actionDeclaration() { }
+    actionDeclaration() {}
 
-    ~actionDeclaration() {
-    }
+    ~actionDeclaration() {}
 
     static IR::P4Action *gen();
 };

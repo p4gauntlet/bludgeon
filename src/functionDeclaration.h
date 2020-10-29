@@ -5,12 +5,12 @@
 
 namespace CODEGEN {
 class functionDeclaration {
-  public:
+ public:
     const char *types[0] = {};
 
-    functionDeclaration() { }
+    functionDeclaration() {}
 
-    ~functionDeclaration() { }
+    ~functionDeclaration() {}
 
     static IR::Function *gen();
 };

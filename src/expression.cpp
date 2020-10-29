@@ -4,8 +4,8 @@
 #include "baseType.h"
 #include "expression_bit.h"
 #include "expression_boolean.h"
-#include "expression_struct.h"
 #include "expression_int.h"
+#include "expression_struct.h"
 
 namespace CODEGEN {
 

@@ -8,7 +8,7 @@
 
 namespace CODEGEN {
 class keyElement {
-  public:
+ public:
     keyElement() {}
 
     ~keyElement() {}

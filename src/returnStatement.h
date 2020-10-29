@@ -8,7 +8,7 @@
 
 namespace CODEGEN {
 class returnStatement {
-  public:
+ public:
     const char *types[0] = {};
 
     returnStatement() {}

@@ -15,10 +15,10 @@ class expression_struct {
     friend class expression_boolean;
     friend class expression;
 
-  public:
+ public:
     expression_struct() {}
 
-  protected:
+ protected:
     static IR::Expression *construct(const IR::Type_Name *tn);
 };
 } // namespace CODEGEN

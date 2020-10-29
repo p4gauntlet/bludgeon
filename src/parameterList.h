@@ -9,7 +9,7 @@
 
 namespace CODEGEN {
 class parameterList {
-  public:
+ public:
     const char *types[1] = {"nonEmptyParameterList"};
 
     parameterList() {}

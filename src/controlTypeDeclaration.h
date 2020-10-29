@@ -9,13 +9,12 @@
 
 namespace CODEGEN {
 class controlTypeDeclaration {
-  public:
+ public:
     const char *types[0] = {};
 
     controlTypeDeclaration() {}
 
     ~controlTypeDeclaration() {}
-
 };
 } // namespace CODEGEN
 

@@ -42,8 +42,8 @@ BludgeonOptions::BludgeonOptions() : Util::Options(defaultMessage) {
             seed = arg;
             return true;
         },
-        "The seed for the random program. If no seed is provided we generate our own.");
+        "The seed for the random program. If no seed is provided we generate "
+        "our own.");
 }
-
 
 } // namespace CODEGEN

@@ -5,7 +5,7 @@
 
 namespace CODEGEN {
 class specifiedIdentifierList {
-  public:
+ public:
     const char *types[1] = {"specifiedIdentifier"};
 
     specifiedIdentifierList() {}

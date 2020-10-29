@@ -11,7 +11,7 @@
 namespace CODEGEN {
 
 class headerUnionDeclaration {
-  public:
+ public:
     const char *types[0] = {};
 
     headerUnionDeclaration() {}

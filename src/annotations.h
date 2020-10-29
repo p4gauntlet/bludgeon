@@ -5,11 +5,10 @@
 
 namespace CODEGEN {
 class Annotations {
-  public:
+ public:
     const char *types[0] = {};
 
-
-    Annotations() { }
+    Annotations() {}
 
     static IR::Annotations *gen();
 };

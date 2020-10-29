@@ -7,7 +7,7 @@
 
 namespace CODEGEN {
 class tablePropertyList {
-  public:
+ public:
     const char *types[1] = {"tableProperty"};
 
     tablePropertyList() {}

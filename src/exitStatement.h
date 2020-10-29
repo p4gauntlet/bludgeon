@@ -6,7 +6,7 @@
 namespace CODEGEN {
 
 class exitStatement {
-  public:
+ public:
     const char *types[0] = {};
 
     exitStatement() {}

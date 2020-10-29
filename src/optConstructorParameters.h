@@ -6,7 +6,7 @@
 namespace CODEGEN {
 
 class optConstructorParameters {
-  public:
+ public:
     const char *types[0] = {};
 
     optConstructorParameters() {}

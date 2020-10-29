@@ -14,10 +14,10 @@ class expression_int {
     friend class expression_bit;
     friend class expression;
 
-  public:
+ public:
     expression_int() {}
 
-  protected:
+ protected:
     static IR::Expression *construct();
     static IR::Expression *construct_unary_expr();
     static IR::Expression *construct_binary_expr();

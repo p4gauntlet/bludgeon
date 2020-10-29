@@ -5,7 +5,7 @@
 
 namespace CODEGEN {
 class statement {
-  public:
+ public:
     const char *types[8] = {"assignmentOrMethodCallStatement",
                             "directApplication",
                             "conditionalStatement",

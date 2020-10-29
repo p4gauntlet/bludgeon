@@ -7,7 +7,7 @@
 
 namespace CODEGEN {
 class typeName {
-  public:
+ public:
     const char *types[1] = {"prefixedType"};
 
     typeName() {}

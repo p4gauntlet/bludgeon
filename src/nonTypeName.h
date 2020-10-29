@@ -6,7 +6,7 @@
 namespace CODEGEN {
 
 class nonTypeName {
-  public:
+ public:
     const char *types[7] = {"IDENTIFIER", "APPLY",   "KEY", "ACTIONS",
                             "STATE",      "ENTRIES", "TYPE"};
 

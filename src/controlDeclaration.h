@@ -14,7 +14,7 @@
 
 namespace CODEGEN {
 class controlDeclaration {
-  public:
+ public:
     const char *types[0] = {};
 
     controlDeclaration() {}

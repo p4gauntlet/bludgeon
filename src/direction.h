@@ -6,7 +6,7 @@
 namespace CODEGEN {
 
 class direction {
-  public:
+ public:
     const char *types[3] = {"IN", "OUT", "INOUT"};
 
     direction() {}

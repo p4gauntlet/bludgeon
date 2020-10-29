@@ -15,9 +15,9 @@
 #include "backends/tna.h"
 #include "backends/top.h"
 #include "backends/v1model.h"
+#include "extensions/bludgeon/version.h"
 #include "options.h"
 #include "scope.h"
-#include "extensions/bludgeon/version.h"
 
 namespace CODEGEN {
 void gen_p4_code(cstring output_file, cstring target) {

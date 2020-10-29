@@ -6,7 +6,7 @@
 namespace CODEGEN {
 
 class typeParameterList {
-  public:
+ public:
     const char *types[1] = {"name"};
 
     typeParameterList() {}

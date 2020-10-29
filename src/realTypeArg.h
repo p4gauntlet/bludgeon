@@ -6,7 +6,7 @@
 namespace CODEGEN {
 
 class realTypeArg {
-  public:
+ public:
     const char *types[2] = {"DONTCARE", "typeRef"};
 
     realTypeArg() {}

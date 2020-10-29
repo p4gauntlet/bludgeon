@@ -87,7 +87,6 @@ struct probabilities {
     uint16_t EXPRESSION_INT_UNARY = 10;
     uint16_t EXPRESSION_INT_BINARY = 20;
 
-
     // probabilities for boolean expressions
     uint16_t EXPRESSION_BOOLEAN_VAR = 15;
     uint16_t EXPRESSION_BOOLEAN_LITERAL = 20;
@@ -183,7 +182,7 @@ struct probabilities {
     uint16_t HEADERTYPEDECLARATION_DERIVED_ENUM = DERIVED_ENUM;
     uint16_t HEADERTYPEDECLARATION_DERIVED_HEADER = 0;
     uint16_t HEADERTYPEDECLARATION_DERIVED_HEADER_STACK = 0;
-    //FIXME: Headers should be able to have structs?
+    // FIXME: Headers should be able to have structs?
     uint16_t HEADERTYPEDECLARATION_DERIVED_STRUCT = 0;
     uint16_t HEADERTYPEDECLARATION_DERIVED_HEADER_UNION = 0;
     uint16_t HEADERTYPEDECLARATION_DERIVED_TUPLE = 0;
@@ -213,7 +212,8 @@ struct probabilities {
     // probabilities for the directionless base types in parameter declarations
     // the value is coming from the control, back ends can adjust these probs
     uint16_t PARAMETER_NONEDIR_BASETYPE_BIT = PARAMETER_BASETYPE_BIT;
-    uint16_t PARAMETER_NONEDIR_BASETYPE_SIGNED_BIT = PARAMETER_BASETYPE_SIGNED_BIT;
+    uint16_t PARAMETER_NONEDIR_BASETYPE_SIGNED_BIT =
+        PARAMETER_BASETYPE_SIGNED_BIT;
     uint16_t PARAMETER_NONEDIR_BASETYPE_VARBIT = PARAMETER_BASETYPE_VARBIT;
     uint16_t PARAMETER_NONEDIR_BASETYPE_INT = PARAMETER_BASETYPE_INT;
     uint16_t PARAMETER_NONEDIR_BASETYPE_ERROR = PARAMETER_BASETYPE_ERROR;

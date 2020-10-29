@@ -11,7 +11,7 @@
 
 namespace CODEGEN {
 class p4State {
-  public:
+ public:
     p4State() {}
 
     ~p4State() {}

@@ -23,6 +23,7 @@ IR::IfStatement *conditionalStatement::gen_if_stat(bool is_in_func) {
         // this happens when there is now way to generate an assignment
         if_false = new IR::EmptyStatement();
     }
-    return  new IR::IfStatement(cond, if_true, if_false);;
+    return new IR::IfStatement(cond, if_true, if_false);
+    ;
 }
 } // namespace CODEGEN

@@ -16,10 +16,10 @@ class expression_boolean {
     friend class expression_int;
     friend class expression;
 
-  public:
+ public:
     expression_boolean() {}
 
-  protected:
+ protected:
     static IR::Expression *construct();
     static IR::Expression *construct_cmp_expr();
 };

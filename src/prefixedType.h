@@ -10,7 +10,7 @@
 
 namespace CODEGEN {
 class prefixedType {
-  public:
+ public:
     const char *types[2] = {
         "TYPE_IDENTIFIER",
         ". TYPE_IDENTIFIER" // not supported

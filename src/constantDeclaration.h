@@ -5,7 +5,7 @@
 
 namespace CODEGEN {
 class constantDeclaration {
-  public:
+ public:
     const char *types[0] = {};
 
     constantDeclaration() {}
