@@ -186,7 +186,7 @@ IR::Expression *expression_bit::construct_binary_expr(const IR::Type_Bits *tb) {
         P4Scope::req.not_negative = false;
         // TODO: Make this more sophisticated
         // shifts are limited to 8 bits
-        right = new IR::Cast(new IR::Type_Bits(11, false), right);
+        right = new IR::Cast(new IR::Type_Bits(8, false), right);
         // pick a left-shift that matches the type
         expr = new IR::Shl(tb, left, right);
     } break;
@@ -203,7 +203,7 @@ IR::Expression *expression_bit::construct_binary_expr(const IR::Type_Bits *tb) {
         IR::Expression *right = construct(tb);
         P4Scope::req.not_negative = false;
         // shifts are limited to 8 bits
-        right = new IR::Cast(new IR::Type_Bits(11, false), right);
+        right = new IR::Cast(new IR::Type_Bits(8, false), right);
         // pick a right-shift that matches the type
         expr = new IR::Shr(tb, left, right);
     } break;
