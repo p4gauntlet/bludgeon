@@ -127,8 +127,10 @@ IR::ListExpression *build_match_expr(IR::Vector<IR::Type> types) {
         case 1: {
             // Range
             big_int max_range =  (big_int)1U << tb->width_bits();
-            big_int lower = get_rnd_big_int(0, max_range);
-            big_int higher = get_rnd_big_int(lower, max_range);
+            // FIXME: disable large ranges for now
+            max_range = min((big_int)1U << 32, max_range);
+            big_int lower = get_rnd_big_int(0, max_range - 1);
+            big_int higher = get_rnd_big_int(lower, max_range - 1);
             auto lower_expr = new IR::Constant(lower);
             auto higher_expr = new IR::Constant(higher);
             expr = new IR::Range(tb, lower_expr, higher_expr);
