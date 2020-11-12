@@ -75,11 +75,15 @@ IR::Statement *gen_methodcall(bool is_in_func) {
     IR::MethodCallExpression *mce = nullptr;
 
     // functions cannot call actions or tables so set their chance to zero
-    short tmp_action_pct = PCT.ASSIGNMENTORMETHODCALLSTATEMENT_METHOD_ACTION;
-    short tmp_tbl_pct = PCT.ASSIGNMENTORMETHODCALLSTATEMENT_METHOD_TABLE;
+    int16_t tmp_action_pct = PCT.ASSIGNMENTORMETHODCALLSTATEMENT_METHOD_ACTION;
+    int16_t tmp_tbl_pct = PCT.ASSIGNMENTORMETHODCALLSTATEMENT_METHOD_TABLE;
+    int16_t tmp_ctrl_pct = PCT.ASSIGNMENTORMETHODCALLSTATEMENT_METHOD_CTRL;
     if (is_in_func) {
         PCT.ASSIGNMENTORMETHODCALLSTATEMENT_METHOD_ACTION = 0;
         PCT.ASSIGNMENTORMETHODCALLSTATEMENT_METHOD_TABLE = 0;
+    }
+    if (P4Scope::prop.in_action) {
+        PCT.ASSIGNMENTORMETHODCALLSTATEMENT_METHOD_CTRL = 0;
     }
     std::vector<int64_t> percent = {
         PCT.ASSIGNMENTORMETHODCALLSTATEMENT_METHOD_ACTION,
@@ -183,6 +187,7 @@ IR::Statement *gen_methodcall(bool is_in_func) {
     // restore previous probabilities
     PCT.ASSIGNMENTORMETHODCALLSTATEMENT_METHOD_ACTION = tmp_action_pct;
     PCT.ASSIGNMENTORMETHODCALLSTATEMENT_METHOD_TABLE = tmp_tbl_pct;
+    PCT.ASSIGNMENTORMETHODCALLSTATEMENT_METHOD_CTRL = tmp_ctrl_pct;
     if (mce) {
         return new IR::MethodCallStatement(mce);
     } else {

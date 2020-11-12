@@ -45,15 +45,14 @@ IR::P4Parser *Top::gen_p() {
     }
 
     // generate decls
-    /*        for (int i = 0; i < 5; i++) {
-                auto var_decl = variableDeclaration::gen();
-                parserLocals.push_back(var_decl);
-            }*/
+    for (int i = 0; i < 5; i++) {
+        auto var_decl = variableDeclaration::gen();
+        parserLocals.push_back(var_decl);
+    }
 
     // generate states
-    IR::IndexedVector<IR::ParserState> states;
-    states.push_back(p4State::gen_start_state());
-    states.push_back(p4State::gen_hdr_states());
+    p4State::build_parser_tree();
+    IR::IndexedVector<IR::ParserState> states = p4State::get_states();
 
     P4Scope::end_local_scope();
 

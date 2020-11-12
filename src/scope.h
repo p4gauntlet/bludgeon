@@ -20,17 +20,19 @@ struct Requirements {
     Requirements()
         : require_scalar(false),
           compile_time_known(false), no_methodcalls{false}, not_zero(false),
-          not_negative(false), byte_align_headers(false){};
+          not_negative(false), byte_align_headers(false) {}
 };
 
 struct Properties {
     bool width_unknown;
     bool has_methodcall;
+    bool in_action;
     size_t depth = 0;
     // this means we are in a block that returns
     // we need to return an expression with the specified type
     const IR::Type *ret_type = nullptr;
-    Properties() : width_unknown(false), has_methodcall{false} {}
+    Properties()
+        : width_unknown(false), has_methodcall{false}, in_action{false} {}
 };
 
 class P4Scope {

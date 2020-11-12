@@ -1,68 +1,11 @@
 #include "p4state.h"
 
+#include "baseType.h"
+#include "expressionList.h"
+
 namespace CODEGEN {
-IR::MethodCallStatement *gen_methodcall_stat(
-    cstring field_name, std::vector<cstring> hdr_fields_names,
-    std::map<const cstring, const IR::Type *> hdr_fields_types) {
-    auto pkt_call = new IR::Member(new IR::PathExpression("pkt"), "extract");
 
-    IR::Vector<IR::Argument> *args = new IR::Vector<IR::Argument>();
-
-    auto field_type = hdr_fields_types[field_name];
-
-    auto mem = new IR::Member(new IR::PathExpression("hdr"), field_name);
-
-    if (field_type->is<IR::Type_Stack>()) {
-        IR::Argument *arg;
-        auto tp_stack = field_type->to<IR::Type_Stack>();
-        auto size =
-            get_rnd_int(0, tp_stack->size->to<IR::Constant>()->asInt() - 1);
-        auto arr_index = new IR::ArrayIndex(mem, new IR::Constant(size));
-
-        if (tp_stack->elementType->is<IR::Type_Name>()) {
-            auto tp_name = tp_stack->elementType->to<IR::Type_Name>();
-            auto real_tp = P4Scope::get_type_by_name(tp_name->path->name.name);
-            if (real_tp->is<IR::Type_HeaderUnion>()) {
-                auto tp_hdr_union = real_tp->to<IR::Type_HeaderUnion>();
-                auto rand_ind = get_rnd_int(0, tp_hdr_union->fields.size() - 1);
-                auto sf = tp_hdr_union->fields.at(rand_ind);
-                arg = new IR::Argument(
-                    new IR::Member(arr_index, IR::ID(sf->name.name)));
-            } else {
-                arg = new IR::Argument(arr_index);
-            }
-        } else {
-            arg = new IR::Argument(arr_index);
-        }
-
-        args->push_back(arg);
-    } else {
-        IR::Argument *arg;
-        auto field_ind = std::find(hdr_fields_names.begin(),
-                                   hdr_fields_names.end(), field_name);
-        hdr_fields_names.erase(field_ind);
-
-        if (field_type->is<IR::Type_Name>()) {
-            auto tp_name = field_type->to<IR::Type_Name>();
-            auto real_tp = P4Scope::get_type_by_name(tp_name->path->name.name);
-            if (real_tp->is<IR::Type_HeaderUnion>()) {
-                auto tp_hdr_union = real_tp->to<IR::Type_HeaderUnion>();
-                auto rand_ind = get_rnd_int(0, tp_hdr_union->fields.size() - 1);
-                auto sf = tp_hdr_union->fields.at(rand_ind);
-                arg = new IR::Argument(
-                    new IR::Member(mem, IR::ID(sf->name.name)));
-            } else {
-                arg = new IR::Argument(mem);
-            }
-        } else {
-            arg = new IR::Argument(mem);
-        }
-        args->push_back(arg);
-    }
-
-    auto mce = new IR::MethodCallExpression(pkt_call, args);
-    return new IR::MethodCallStatement(mce);
-}
+IR::IndexedVector<IR::ParserState> p4State::state_list;
 
 IR::MethodCallStatement *p4State::gen_hdr_extract(IR::Member *pkt_call,
                                                   IR::Expression *mem) {
@@ -113,14 +56,12 @@ IR::ParserState *p4State::gen_hdr_states() {
         hdr_fields_types.emplace(sf->name.name, sf->type);
     }
 
+    auto pkt_call = new IR::Member(new IR::PathExpression("pkt"), "extract");
     for (size_t i = 0; i < hdr_fields_names.size(); i++) {
-        auto pkt_call =
-            new IR::Member(new IR::PathExpression("pkt"), "extract");
-
         auto sf_name = hdr_fields_names.at(i);
         auto sf_type = hdr_fields_types[sf_name];
-        auto mem = new IR::Member(new IR::PathExpression("hdr"), sf_name);
         if (auto sf_tp_s = sf_type->to<IR::Type_Stack>()) {
+            auto mem = new IR::Member(new IR::PathExpression("hdr"), sf_name);
             size_t size = sf_tp_s->getSize();
             auto ele_tp_name = sf_tp_s->elementType;
             auto ele_tp = P4Scope::get_type_by_name(
@@ -140,6 +81,7 @@ IR::ParserState *p4State::gen_hdr_states() {
                 BUG("wtf here %s", sf_type->node_type_name());
             }
         } else if (sf_type->is<IR::Type_Name>()) {
+            auto mem = new IR::Member(new IR::PathExpression("hdr"), sf_name);
             auto hdr_field_tp = P4Scope::get_type_by_name(
                 sf_type->to<IR::Type_Name>()->path->name.name);
             if (hdr_field_tp->is<IR::Type_HeaderUnion>()) {
@@ -157,19 +99,56 @@ IR::ParserState *p4State::gen_hdr_states() {
 
     // transition part
     // transition = new IR::PathExpression(new IR::Path(IR::ID("state_0")));
-    transition = new IR::PathExpression("accept");
+    cstring next_state = randstr(6);
+    gen_state(next_state);
+    transition = new IR::PathExpression(next_state);
 
     auto ret = new IR::ParserState("parse_hdrs", components, transition);
     P4Scope::add_to_scope(ret);
     return ret;
 }
 
-IR::ParserState *gen_state(cstring state_name) {
-    IR::ID name(state_name);
+IR::ListExpression *build_match_expr(IR::Vector<IR::Type> types) {
+    IR::Vector<IR::Expression> components;
+    for (auto tb : types) {
+        IR::Expression *expr;
+        switch (get_rnd_int(0, 2)) {
+        case 0: {
+            // TODO: Figure out allowed expressions
+            // if (P4Scope::check_lval(tb)) {
+            if (false) {
+                cstring lval_name = P4Scope::pick_lval(tb);
+                expr = new IR::PathExpression(lval_name);
+            } else {
+                expr = baseType::gen_bit_literal(tb);
+            }
+            break;
+        }
+        case 1: {
+            // Range
+            big_int max_range =  (big_int)1U << tb->width_bits();
+            big_int lower = get_rnd_big_int(0, max_range);
+            big_int higher = get_rnd_big_int(lower, max_range);
+            auto lower_expr = new IR::Constant(lower);
+            auto higher_expr = new IR::Constant(higher);
+            expr = new IR::Range(tb, lower_expr, higher_expr);
+            break;
+        }
+        case 2: {
+            // Mask
+            auto left = baseType::gen_bit_literal(tb);
+            auto right = baseType::gen_bit_literal(tb);
+            expr = new IR::Mask(tb, left, right);
+            break;
+        }
+        }
+        components.push_back(expr);
+    }
+    return new IR::ListExpression(components);
+}
+
+void p4State::gen_state(cstring name) {
     IR::IndexedVector<IR::StatOrDecl> components;
-    std::vector<cstring> states = {
-        "state_0", "state_1", "state_2", "state_3", "state_4",
-    };
 
     P4Scope::start_local_scope();
 
@@ -189,14 +168,12 @@ IR::ParserState *gen_state(cstring state_name) {
 
     // expression
     IR::Expression *transition;
-    IR::Vector<IR::Expression> exprs;
-    IR::Vector<IR::SelectCase> cases;
-    std::vector<const IR::Type *> types;
 
     std::vector<int64_t> percent = {
         PCT.P4STATE_TRANSITION_ACCEPT, PCT.P4STATE_TRANSITION_REJECT,
         PCT.P4STATE_TRANSITION_STATE, PCT.P4STATE_TRANSITION_SELECT};
 
+    P4Scope::end_local_scope();
     switch (randind(percent)) {
     case 0: {
         transition = new IR::PathExpression("accept");
@@ -207,58 +184,71 @@ IR::ParserState *gen_state(cstring state_name) {
         break;
     }
     case 2: {
-        transition = new IR::PathExpression(
-            states.at(get_rnd_int(0, states.size() - 1)));
+        cstring next_state = randstr(6);
+        gen_state(next_state);
+        transition = new IR::PathExpression(next_state);
         break;
     }
     case 3: {
-        // size_t num = get_rnd_int(1, 3);
-        auto get_le_flag = false;
-        // auto get_le_flag = expression::get_list_expressions(exprs,
-        // types,
-        // num);
-        if (get_le_flag) {
-            size_t num_transitions = get_rnd_int(1, 3);
-            for (size_t i = 0; i < num_transitions; i++) {
-                IR::Expression *keyset;
-                IR::Vector<IR::Expression> args;
-                for (size_t i = 0; i < types.size(); i++) {
-                    auto tp = types.at(i)->to<IR::Type_Bits>();
-                    int size = tp->size > 4 ? 4 : tp->size;
-                    int val = get_rnd_int(0, 1 << size);
-                    args.push_back(new IR::Constant(val));
-                }
-                keyset = new IR::ListExpression(args);
-                auto states_at_rnd =
-                    states.at(get_rnd_int(0, states.size() - 1));
-                auto sw_case = new IR::SelectCase(
-                    keyset, new IR::PathExpression(states_at_rnd));
-                cases.push_back(sw_case);
-            }
-            if (get_rnd_int(0, 1)) {
-                cases.push_back(
-                    new IR::SelectCase(new IR::DefaultExpression,
-                                       new IR::PathExpression("accept")));
-            } else {
-                cases.push_back(
-                    new IR::SelectCase(new IR::DefaultExpression,
-                                       new IR::PathExpression("reject")));
-            }
+        IR::Vector<IR::Expression> exprs;
+        IR::Vector<IR::SelectCase> cases;
+        size_t num_transitions = get_rnd_int(1, 3);
+        size_t key_set_len = get_rnd_int(1, 4);
 
-            transition =
-                new IR::SelectExpression(new IR::ListExpression(exprs), cases);
-        } else {
-            transition = new IR::PathExpression(
-                states.at(get_rnd_int(0, states.size() - 1)));
+        IR::Vector<IR::Type> types;
+        for (size_t i = 0; i <= key_set_len; i++) {
+            auto tb = baseType::gen_bit_type(false);
+            types.push_back(tb);
         }
+
+        for (size_t i = 0; i < num_transitions; i++) {
+            IR::Expression *match_set;
+            // TODO: Do not always have a default
+            if (i == (num_transitions - 1)) {
+                P4Scope::req.compile_time_known = true;
+                match_set = build_match_expr(types);
+                P4Scope::req.compile_time_known = false;
+            } else {
+                match_set = new IR::DefaultExpression();
+            }
+            switch (get_rnd_int(0, 2)) {
+            case 0: {
+                cases.push_back(new IR::SelectCase(
+                    match_set, new IR::PathExpression("accept")));
+                break;
+            }
+            case 1: {
+                cases.push_back(new IR::SelectCase(
+                    match_set, new IR::PathExpression("reject")));
+                break;
+            }
+            case 2: {
+                cstring next_state = randstr(6);
+                gen_state(next_state);
+                auto sw_case = new IR::SelectCase(
+                    match_set, new IR::PathExpression(next_state));
+                cases.push_back(sw_case);
+                break;
+            }
+            }
+        }
+        P4Scope::req.require_scalar = true;
+        IR::ListExpression *key_set = expressionList::gen(types, false);
+        P4Scope::req.require_scalar = false;
+        transition = new IR::SelectExpression(key_set, cases);
         break;
     }
     }
 
-    P4Scope::end_local_scope();
     // add to scope
     auto ret = new IR::ParserState(name, components, transition);
     P4Scope::add_to_scope(ret);
-    return ret;
+    state_list.push_back(ret);
 }
+
+void p4State::build_parser_tree() {
+    state_list.push_back(p4State::gen_start_state());
+    state_list.push_back(p4State::gen_hdr_states());
+}
+
 } // namespace CODEGEN

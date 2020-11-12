@@ -10,6 +10,8 @@ class expressionList {
     const char *types[1] = {"expression"};
 
     expressionList() {}
+    static IR::ListExpression *gen(IR::Vector<IR::Type> types,
+                                   bool only_lval = false);
 };
 
 } // namespace CODEGEN

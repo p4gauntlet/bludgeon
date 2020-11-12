@@ -13,6 +13,7 @@ namespace CODEGEN {
 class p4State {
  public:
     p4State() {}
+    static IR::IndexedVector<IR::ParserState> state_list;
 
     ~p4State() {}
 
@@ -26,7 +27,11 @@ class p4State {
     static IR::ParserState *gen_start_state();
 
     static IR::ParserState *gen_hdr_states();
-
+    static void gen_state(cstring name);
+    static void build_parser_tree();
+    static IR::IndexedVector<IR::ParserState> get_states() {
+        return state_list;
+    }
 }; // class p4State
 } // namespace CODEGEN
 
