@@ -99,9 +99,11 @@ IR::ParserState *p4State::gen_hdr_states() {
 
     // transition part
     // transition = new IR::PathExpression(new IR::Path(IR::ID("state_0")));
-    cstring next_state = randstr(6);
+/*    cstring next_state = randstr(6);
     gen_state(next_state);
-    transition = new IR::PathExpression(next_state);
+    transition = new IR::PathExpression(next_state);*/
+
+    transition = new IR::PathExpression("accept");
 
     auto ret = new IR::ParserState("parse_hdrs", components, transition);
     P4Scope::add_to_scope(ret);
