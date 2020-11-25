@@ -34,7 +34,7 @@ IR::Function *functionDeclaration::gen() {
         PCT.FUNCTIONDECLARATION_TYPE_MATCH_KIND,
     };
     IR::Type *return_type = typeRef::pick_rnd_type(type_percent);
-    tm = new IR::Type_Method(return_type, params);
+    tm = new IR::Type_Method(return_type, params, name);
 
     P4Scope::prop.ret_type = return_type;
     blk = blockStatement::gen(true);
