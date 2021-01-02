@@ -1,4 +1,5 @@
 #include "scope.h"
+#include "expression.h"
 
 namespace CODEGEN {
 std::vector<IR::Vector<IR::Node> *> P4Scope::scope;
@@ -87,13 +88,11 @@ void P4Scope::delete_lval(const IR::Type *tp, cstring name) {
         type_key = IR::Type_Stack::static_type_name();
         bit_bucket = 1;
         if (auto tn_type = ts->elementType->to<IR::Type_Name>()) {
-            for (size_t idx = 0; idx < stack_size; ++idx) {
-                std::stringstream ss;
-                ss.str("");
-                ss << name << "[" << idx << "]";
-                cstring stack_name(ss.str());
-                delete_lval(tn_type, stack_name);
-            }
+            std::stringstream ss;
+            ss.str("");
+            ss << name << "[" << (stack_size - 1) << "]";
+            cstring stack_name(ss.str());
+            delete_lval(tn_type, stack_name);
         } else {
             BUG("Type_Name %s not yet supported",
                 ts->elementType->node_type_name());
@@ -163,13 +162,11 @@ void P4Scope::add_lval(const IR::Type *tp, cstring name, bool read_only) {
         type_key = IR::Type_Stack::static_type_name();
         bit_bucket = 1;
         if (auto tn_type = ts->elementType->to<IR::Type_Name>()) {
-            for (size_t idx = 0; idx < stack_size; ++idx) {
-                std::stringstream ss;
-                ss.str("");
-                ss << name << "[" << idx << "]";
-                cstring stack_name(ss.str());
-                add_lval(tn_type, stack_name, read_only);
-            }
+            std::stringstream ss;
+            ss.str("");
+            ss << name << "[" << (stack_size - 1) << "]";
+            cstring stack_name(ss.str());
+            add_lval(tn_type, stack_name, read_only);
         } else {
             BUG("Type_Name %s not yet supported",
                 ts->elementType->node_type_name());
@@ -275,20 +272,81 @@ cstring P4Scope::pick_lval(const IR::Type *tp, bool must_write) {
     return *lval;
 }
 
+size_t split(const std::string &txt, std::vector<cstring> &strs, char ch) {
+    size_t pos = txt.find(ch);
+    size_t initialPos = 0;
+    strs.clear();
+
+    // Decompose statement
+    while (pos != std::string::npos) {
+        strs.push_back(txt.substr(initialPos, pos - initialPos));
+        initialPos = pos + 1;
+
+        pos = txt.find(ch, initialPos);
+    }
+
+    // Add the last one
+    strs.push_back(
+        txt.substr(initialPos, std::min(pos, txt.size()) - initialPos + 1));
+
+    return strs.size();
+}
+
+IR::Expression *edit_hdr_stack(cstring lval) {
+    // check if there is a stack bracket inside the string
+    // FIXME: terrible but at least works for now
+    if (!lval.find('[')) {
+        return new IR::PathExpression(lval);
+    }
+    std::vector<cstring> split_str;
+    int size = split(lval.c_str(), split_str, '.');
+    if (size < 1) {
+        BUG("Unexpected split size. %d", size);
+    }
+    auto s_iter = std::begin(split_str);
+    IR::Expression *expr = new IR::PathExpression(*s_iter);
+    for (advance(s_iter, 1); s_iter != split_str.end(); ++s_iter) {
+        // if there is an index, convert it towards the proper expression
+        auto sub_str = *s_iter;
+        auto hdr_brkt = sub_str.find('[');
+        if (hdr_brkt) {
+            auto stack_str = sub_str.substr((size_t)(hdr_brkt - sub_str + 1));
+            auto stack_sz_end = stack_str.find(']');
+            if (!stack_sz_end) {
+                BUG("There should be a closing bracket.");
+            }
+            int stack_sz = std::stoi(stack_str.before(stack_sz_end).c_str());
+            expr = new IR::Member(expr, sub_str.before(hdr_brkt));
+            auto tb = new IR::Type_Bits(3, false);
+            IR::Expression *idx = expression::gen_expr(tb);
+            IR::Vector<IR::Argument> *args = new IR::Vector<IR::Argument>();
+            args->push_back(new IR::Argument(idx));
+            args->push_back(new IR::Argument(new IR::Constant(tb, stack_sz)));
+            idx = new IR::MethodCallExpression(new IR::PathExpression("max"),
+                                               args);
+
+            expr = new IR::ArrayIndex(expr, idx);
+        } else {
+            expr = new IR::Member(expr, sub_str);
+        }
+    }
+    return expr;
+}
+
 IR::Expression *P4Scope::pick_lval_or_slice(const IR::Type *tp) {
-    IR::Expression *expr = nullptr;
+    cstring lval_str = pick_lval(tp, true);
+    IR::Expression *expr = edit_hdr_stack(lval_str);
+
     if (auto tb = tp->to<IR::Type_Bits>()) {
         std::vector<int64_t> percent = {PCT.SCOPE_LVAL_PATH,
                                         PCT.SCOPE_LVAL_SLICE};
         switch (randind(percent)) {
         case 0: {
-            expr = new IR::PathExpression(pick_lval(tb, true));
             break;
         }
         case 1: {
             cstring type_key = IR::Type_Bits::static_type_name();
             if (lval_map_rw.count(type_key) == 0) {
-                expr = new IR::PathExpression(pick_lval(tb, true));
                 break;
             }
             auto key_types = lval_map_rw[type_key];
@@ -304,7 +362,6 @@ IR::Expression *P4Scope::pick_lval_or_slice(const IR::Type *tp) {
                 }
             }
             if (candidates.empty()) {
-                expr = new IR::PathExpression(pick_lval(tb, true));
                 break;
             }
             size_t idx = get_rnd_int(0, candidates.size() - 1);
@@ -318,8 +375,6 @@ IR::Expression *P4Scope::pick_lval_or_slice(const IR::Type *tp) {
             expr = new IR::Slice(slice_expr, high, low);
         } break;
         }
-    } else {
-        expr = new IR::PathExpression(P4Scope::pick_lval(tp, true));
     }
     return expr;
 }

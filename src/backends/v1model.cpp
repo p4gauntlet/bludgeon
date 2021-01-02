@@ -18,6 +18,9 @@ namespace CODEGEN {
 void V1Model::generate_includes(std::ostream *ostream) {
     *ostream << "#include <core.p4>\n";
     *ostream << "#include <v1model.p4>\n\n";
+    *ostream << "bit<3> max(in bit<3> val, in bit<3> bound) {\n";
+    *ostream << "    return val < bound ? val : bound;\n";
+    *ostream << "}\n";
 }
 
 IR::P4Parser *V1Model::gen_p() {

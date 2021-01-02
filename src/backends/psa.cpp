@@ -18,6 +18,9 @@ namespace CODEGEN {
 void PSA::generate_includes(std::ostream *ostream) {
     *ostream << "#include <core.p4>\n";
     *ostream << "#include <psa.p4>\n\n";
+    *ostream << "bit<3> max(in bit<3> val, in bit<3> bound) {\n";
+    *ostream << "    return val < bound ? val : bound;\n";
+    *ostream << "}\n";
 }
 
 IR::P4Parser *PSA::gen_switch_ingress_parser() {
