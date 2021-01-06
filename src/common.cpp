@@ -8,8 +8,8 @@
 #include "common.h"
 #include "scope.h"
 
-const std::vector<cstring> str_keywords = {"if", "void", "else", "key",
-                                           "actions"};
+const std::vector<cstring> str_keywords = {"if",  "void",    "else",
+                                           "key", "actions", "true"};
 
 static const char alphanum[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                                "abcdefghijklmnopqrstuvwxyz";
