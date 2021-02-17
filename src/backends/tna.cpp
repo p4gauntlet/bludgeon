@@ -19,9 +19,6 @@ void TNA::generate_includes(std::ostream *ostream) {
     *ostream << "#include <core.p4>\n";
     *ostream << "#define __TARGET_TOFINO__ 1\n";
     *ostream << "#include <tna.p4>\n\n";
-    *ostream << "bit<3> max(in bit<3> val, in bit<3> bound) {\n";
-    *ostream << "    return val < bound ? val : bound;\n";
-    *ostream << "}\n";
 }
 
 IR::P4Parser *TNA::gen_switch_ingress_parser() {
