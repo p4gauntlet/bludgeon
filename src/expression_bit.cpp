@@ -278,8 +278,8 @@ expression_bit::construct_ternary_expr(const IR::Type_Bits *tb) {
             P4Scope::prop.width_unknown = false;
         }
         auto margin = new_type_size - type_width;
-        size_t high = get_rnd_int(0, margin - 1) + type_width;
-        size_t low = high - type_width + 1;
+        auto high = get_rnd_int(0, margin - 1) + type_width;
+        auto low = high - type_width + 1;
         expr = new IR::Slice(slice_expr, high, low);
         break;
     }

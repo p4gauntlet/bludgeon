@@ -56,6 +56,8 @@ IR::Parameter *parameter::gen(bool if_none_dir) {
         case 2:
             dir = IR::Direction::InOut;
             break;
+        default:
+            dir = IR::Direction::None;
         }
     }
     tp = typeRef::pick_rnd_type(type_percent);

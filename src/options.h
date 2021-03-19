@@ -4,11 +4,12 @@
 #include <getopt.h>
 #include <unordered_set>
 
+#include "frontends/common/options.h"
 #include "lib/options.h"
 
 namespace CODEGEN {
 
-class BludgeonOptions : public Util::Options {
+class BludgeonOptions : public ParserOptions {
 
  public:
     BludgeonOptions();
@@ -22,8 +23,9 @@ class BludgeonOptions : public Util::Options {
 };
 
 /// A compilation context which exposes compiler options.
-class P4CContext : public BaseCompileContext {};
+using P4toZ3Context = P4CContextWithOptions<BludgeonOptions>;
 
 } // namespace CODEGEN
+
 
 #endif /* BLUDGEON_OPTIONS_H_ */

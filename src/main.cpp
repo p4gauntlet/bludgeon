@@ -51,12 +51,9 @@ void gen_p4_code(cstring output_file, cstring target) {
 
 int main(int argc, char **argv) {
 
-    setup_gc_logging();
-    setup_signals();
-
     // add a dummy context
-    AutoCompileContext autoBludgeonContext(new CODEGEN::P4CContext);
-    auto options = CODEGEN::BludgeonOptions();
+    AutoCompileContext autoP4toZ3Context(new CODEGEN::P4toZ3Context);
+    auto &options = CODEGEN::P4toZ3Context::get().options();
     // we only handle P4_16 right now
     options.compiler_version = CODEGEN_VERSION_STRING;
 
@@ -97,7 +94,6 @@ int main(int argc, char **argv) {
     }
     std::cerr << "Seed:" << seed << "\n";
     CODEGEN::set_seed(seed);
-
     CODEGEN::gen_p4_code(options.output_file, options.arch);
 
     return EXIT_SUCCESS;

@@ -4,24 +4,7 @@ namespace CODEGEN {
 
 const char *defaultMessage = "Generate a P4 program";
 
-BludgeonOptions::BludgeonOptions() : Util::Options(defaultMessage) {
-    registerOption(
-        "--help", nullptr,
-        [this](const char *) {
-            usage();
-            exit(0);
-            return false;
-        },
-        "Print this help message");
-    registerOption(
-        "--version", nullptr,
-        [this](const char *) {
-            std::cerr << binaryName << std::endl;
-            std::cerr << "Version " << compiler_version << std::endl;
-            exit(0);
-            return false;
-        },
-        "Print compiler version");
+BludgeonOptions::BludgeonOptions() {
     registerOption(
         "--output", "file",
         [this](const char *arg) {
