@@ -1,4 +1,6 @@
-# Bludgeon: The P4 Random Code Generator
+THIS REPOSITORY HAS BEEN MERGED INTO https://github.com/p4lang/p4c/tree/main/backends/p4tools/modules/smith
+
+# [DEPRECATED] Bludgeon: The P4 Random Code Generator
 Bludgeon is a tool to fuzz test P4 compilers. It generates [P4-16](https://p4.org/p4-spec/docs/P4-16-v1.2.0) code that compiles for various P4 architecture modules. The primary target of Bludgeon is the P4-16 reference compiler, [P4C](https://github.com/p4lang/p4c). 
 
 ## Requirements
